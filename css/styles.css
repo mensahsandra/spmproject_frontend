@@ -228,3 +228,18 @@ body {
     margin-bottom: 18px;
   }
 }
+@media (max-width: 600px) {
+  .login-form {
+    padding: 24px 20px;
+  }
+  .login-header h2 {
+    font-size: 1.2rem;
+  }
+  .form-group input {
+    font-size: 0.95rem;
+  }
+  .sign-in-btn, .need-help-btn {
+    font-size: 1rem;
+    padding: 10px 0;
+  }
+}
