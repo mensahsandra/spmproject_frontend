@@ -13,12 +13,18 @@ Auth: Bearer JWT required for protected routes via `Authorization: Bearer <token
 
 ## Required environment variables
 Set these in Vercel (Project → Settings → Environment Variables):
-- MONGO_URI — MongoDB connection string
+## Required environment variables
+Set these in Vercel (Project → Settings → Environment Variables):
+- MONGO_URI or MONGODB_URI — MongoDB connection string (either works; MONGODB_URI comes from Vercel Mongo integration)
 - JWT_SECRET — secret for JWT signing/verification
+- FRONTEND_ORIGINS (optional) — comma-separated list of additional allowed CORS origins (e.g. https://spm-frontend.vercel.app,https://admin.spm.app)
+- FRONTEND_ORIGIN (optional) — single origin alternative to FRONTEND_ORIGINS
 
 Optional: `PORT` (not used on Vercel serverless).
-
-## Deploy on Vercel (Root Directory = backend)
+## Notes
+- CORS allows common localhost dev origins plus any origins you supply via FRONTEND_ORIGINS / FRONTEND_ORIGIN.
+- If DB is unavailable, API runs with in-memory fallbacks for attendance sessions/logs.
+- Connection pooling uses a simple cached global Mongoose connection suitable for Vercel serverless.
 1) Push this `backend/` folder to your GitHub repo (this project already includes serverless adapter):
    - `api/index.js` wraps Express app for serverless
    - `vercel.json` routes all traffic to the serverless entry

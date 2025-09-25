@@ -15,6 +15,11 @@ app.use((req, res, next) => {
 
 // Middleware
 // CORS: Comprehensive configuration to handle all dev ports and local variations
+// Allow dynamic production origins via env FRONTEND_ORIGINS (comma-separated) or FRONTEND_ORIGIN
+const dynamicOrigins = (process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN || '')
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean);
 const allowedOrigins = new Set([
     // Localhost variations
     'http://localhost:3000',
@@ -33,6 +38,7 @@ const allowedOrigins = new Set([
     'http://localhost:5183', // <- actual frontend port in package.json
     'http://localhost:5184',
     'http://localhost:5185',
+    ...dynamicOrigins,
     // 127.0.0.1 equivalents
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5174',
