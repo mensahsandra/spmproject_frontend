@@ -6,6 +6,27 @@ import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './context/AuthContext';
 
+// Debug instrumentation: wrap fetch to log method & URL (dev only)
+if ((import.meta as any).env?.DEV && typeof window !== 'undefined') {
+  const originalFetch = window.fetch;
+  if (!(window as any)._fetchDebugWrapped) {
+    (window as any)._fetchDebugWrapped = true;
+    window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      try {
+        const method = init?.method || 'GET';
+        const url = typeof input === 'string' ? input : (input as Request).url;
+        // Only log auth/login or when explicitly POST to reduce noise
+        if (/auth\/login/.test(url) || method !== 'GET') {
+          console.log('[FETCH]', method, url, init?.headers);
+        }
+      } catch (e) {
+        console.warn('Fetch debug wrapper error:', e);
+      }
+      return originalFetch(input as any, init);
+    };
+  }
+}
+
 // For debugging purposes - to ensure React is working
 console.log("React app is initializing...");
 

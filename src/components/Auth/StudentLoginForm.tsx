@@ -16,17 +16,17 @@ const StudentLoginForm: React.FC = () => {
         e.preventDefault();
         setError(null);
 
+        const payload = { email, password, studentId };
+    console.log('submit handler firing (student)', payload);
+        console.log('[StudentLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
+
         try {
         const response = await fetch(`${endPoint}/api/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    email,
-                    password,
-            studentId,
-                }),
+                body: JSON.stringify(payload),
             });
 
             const data = await response.json();
@@ -54,7 +54,7 @@ const StudentLoginForm: React.FC = () => {
     };
 
     return (
-        <form className="login-form" onSubmit={handleSubmit} autoComplete="off">
+    <form className="login-form" method="post" onSubmit={handleSubmit} autoComplete="off">
             <div className="login-header">
                 <img 
                     src="/assets/images/KNUST Logo.png" 
