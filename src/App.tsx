@@ -37,7 +37,7 @@ function App() {
         <Route
           path='/lecturer-dashboard'
           element={
-            <ProtectedRoute isAuthenticated={!!localStorage.getItem('token')} requiredRole='lecturer'>
+            <ProtectedRoute requiredRole='lecturer'>
               <LecturerDashboardPage />
             </ProtectedRoute>
           }
