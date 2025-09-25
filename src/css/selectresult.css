@@ -1,0 +1,12 @@
+.select-result-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+.select-result-content {
+    flex: 1;
+    padding: 24px;
+    margin-left: 260px;
+    background-color: #f8fafc;
+}

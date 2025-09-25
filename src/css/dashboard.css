@@ -1,0 +1,863 @@
+/* Base */
+html, body, #root {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #f1f5f9;
+    font-family: 'Segoe UI', sans-serif;
+    color: #1f2937;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+.dashboard {
+    display: flex !important;
+    min-height: 100vh !important;
+    background-color: #f1f5f9 !important;
+    width: 100% !important;
+    position: relative !important;
+    color: #1f2937 !important;
+}
+
+.dashboard-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 24px 40px;
+    background-color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.dashboard-content.has-topbar { padding-top: 12px; }
+
+/* Header row */
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0 16px 0;
+}
+.greeting-inline h2 {
+    margin: 0;
+    font-weight: 600;
+}
+.greeting-inline p {
+    margin: 4px 0 0 0;
+    color: #6b7280;
+}
+
+/* Cards grid */
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 980px;
+    margin: 0; /* left-align with content column */
+}
+@media (min-width: 900px) {
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.topbar { position: absolute; top: 18px; right: 40px; z-index: 1500; }
+
+.profile-card { background: white!important; border-radius: 12px!important; padding: 10px 16px!important; display: flex!important; align-items: center!important; gap: 10px!important; box-shadow: 0 6px 12px rgba(0,0,0,0.08)!important; min-width: 180px!important; color: #1f2937!important; }
+.profile-bell { margin-right: 2px; }
+.profile-name { max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.profile-caret { margin-left: 4px; color: #374151; }
+
+.greeting-panel {
+    --gp-pad: 24px;
+    background: white !important;
+    border-radius: 12px !important;
+    padding: var(--gp-pad) !important;
+    padding-top: 50px !important; /* Reduced padding for the banner */
+    padding-bottom: 24px !important; /* Reduced bottom padding */
+    margin: 0 auto !important; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+    max-width: 800px !important;
+    width: 100% !important;
+    color: #1f2937 !important;
+    position: relative;
+    text-align: center;
+    overflow: hidden; /* clip the green strip to the card radius */
+    border: 1px solid #e5e7eb;
+}
+
+.profile-image-container {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-size: 0.9rem;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.topbar {
+    position: absolute;
+    top: 24px;
+    right: 40px;
+    z-index: 100;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 12px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.profile-card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* tighten spacing to match reference */
+.greeting-panel { margin: 8px 0 24px 0 !important; }
+
+.greeting-panel p {
+    color: #6b7280;
+    position: relative;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.dashboard-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+    flex: 1;
+    padding-bottom: 40px;
+    width: 100%;
+}
+
+.panel-content {
+    padding: 0;
+    width: 100%;
+}
+
+.greeting-panel h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 16px 0 12px 0; /* push heading a bit lower */
+}
+
+.greeting-panel p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #374151;
+    margin: 8px 0 0 0; /* add space under heading */
+    max-width: 640px;
+    font-style: italic;
+    text-align: left; /* per reference card */
+}
+
+.panel-card {
+    background: white !important;
+    border-radius: 12px !important;
+    padding: 24px 32px !important;
+    margin-bottom: 0 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid #e5e7eb !important;
+    color: #1f2937 !important;
+    display: flex;
+    align-items: stretch;
+}
+
+.panel-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.panel-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+    color: #1f2937 !important;
+}
+/* Loader spinner animation */
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+
+.panel-icon {
+    display: flex;
+    align-items: center;
+}
+
+.panel-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #4b5563;
+}
+
+.panel-title {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #1f2937;
+    margin: 0;
+}
+
+.panel-divider {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 16px -32px;
+}
+
+.panel-description {
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 16px 0 0 0;
+    padding: 0;
+}
+
+/* QR modal */
+.qr-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.qr-modal-content {
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    width: 360px;
+    max-width: 90vw;
+}
+.qr-close {
+    margin-top: 12px;
+    background: #0d7a3a;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Date banner */
+/* Full-width within card edges */
+.date-pill {
+    position: absolute;
+    top: 0; /* Start at the very top of the card */
+    left: 0;
+    right: 0;
+    min-height: 40px; /* reduced banner height to match screenshot */
+    background-color: #0d7a3a;
+    border-radius: 12px 12px 0 0; /* card top rounding */
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* align text to right */
+    padding-right: 20px; /* right padding for text */
+    font-weight: 500;
+    font-size: 0.9rem;
+    line-height: 1.25;
+    white-space: nowrap; /* keep on one line */
+    text-overflow: clip; /* no ellipsis inside banner */
+    overflow: visible; /* ensure text isn't clipped */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Left two-tone accents */
+.panel-accent {
+    width: 60px;
+    border-radius: 16px 0 0 16px;
+    margin-right: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.panel-accent::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60%;
+    height: 100%;
+    opacity: 0.85;
+}
+
+/* Attendance: dark + bright green */
+.attendance-accent { background-color: #0b5f2e; }
+.attendance-accent::after { background-color: #34d399; }
+
+/* Performance: reuse greens */
+.performance-accent { background-color: #0b5f2e; }
+.performance-accent::after { background-color: #34d399; }
+
+/* Deadlines: bright + dark red */
+.deadlines-accent { background-color: #b91c1c; }
+.deadlines-accent::after { background-color: #ef4444; }
+
+.sidebar {
+    width: 260px;
+    background-color: #1f2937;
+    color: white;
+    padding: 24px;
+    position: fixed;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+}
+
+/* Dashboard layout styles are already defined above */
+
+/* Duplicate styles removed */
+
+.sidebar-content {
+    flex: 0 0 auto;
+}
+
+.sidebar-footer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-top: 60px;
+}
+
+.logo-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #34495e;
+}
+
+.sidebar-logo {
+    width: 100px;
+    height: auto;
+}
+
+.sidebar h2 {
+    margin-bottom: 20px;
+    color: #ecf0f1;
+    font-size: 1.2rem;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    margin: 8px 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar li.active {
+    background-color: #22c55e;
+    color: white;
+}
+
+.services-divider {
+    margin: 50px 0 8px;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.services-section {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.services-section .section-header {
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 600;
+    cursor: default;
+    padding: 5px 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.services-section .section-header:hover {
+    background-color: transparent;
+}
+
+.services-section li:not(.section-header) {
+    margin: 15px 0;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+.services-section li:not(.section-header):hover {
+    background-color: #34495e;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 24px;
+    margin-left: 260px;
+    background-color: #f8fafc;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 80px;
+    position: relative;
+    gap: 24px;
+    min-height: 100vh;
+}
+
+/* Header Section Layout */
+.header-section {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%;
+    padding-right: 32px;
+    position: absolute;
+    top: 24px;
+    right: 0;
+    z-index: 10;
+}
+
+/* Profile Bar */
+.profile-bar {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 0;
+}
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    background-color: #f8f9fa;
+    padding: 10px 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-width: 130px;
+}
+
+.notification-btn {
+    font-size: 1.1rem;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.notification-btn:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.profile-dropdown {
+    position: relative;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+.username {
+    font-weight: 500;
+    font-size: 11px;
+    color: #333;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.arrow {
+    font-size: 0.7rem;
+    color: #333;
+}
+
+/* Greeting Section */
+.greeting-container {
+    width: calc(100% - 48px);
+    max-width: 980px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0 0 32px 24px;
+    background: white;
+    position: relative;
+    z-index: 1;
+}
+
+.date-banner {
+    background-color: #0C5A2E;
+    color: white;
+    padding: 12px 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: right;
+}
+
+.welcome-card {
+    background-color: white;
+    padding: 20px;
+    text-align: left;
+    position: relative;
+    width: 100%;
+}
+
+.welcome-card h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 8px 0;
+}
+
+.welcome-card p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #6B7280;
+    margin: 0;
+}
+
+.welcome-card::before {
+    content: none; /* remove curved top overlap */
+}
+
+.welcome-card h1 {
+    margin: 0 0 15px;
+    font-size: 1.45rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.welcome-card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.35;
+}
+
+/* Top Bar */
+.top-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+}
+
+.date {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 15px;
+    min-width: 250px;
+    z-index: 100;
+}
+
+.dropdown-menu p {
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.logout-btn {
+    display: block;
+    width: 100%;
+    background-color: #2e8b57;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #256d46;
+}
+
+.profile-dropdown.open .dropdown-menu {
+    display: block;
+}
+
+/* Welcome Panel */
+.welcome-panel {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.welcome-panel h1 {
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.welcome-panel p {
+    color: #7f8c8d;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Panels Grid */
+/* Panels Grid - compact width */
+/* Panels Grid - center and spacing */
+.main-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.panels {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: calc(100% - 48px);
+    max-width: 980px;
+    margin: 0 0 0 24px;
+}
+
+.new-panel {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    min-height: 100px;
+    border: none;
+    width: 100%;
+}
+
+.panel-accent {
+    width: 8px;
+    min-width: 8px;
+    flex-shrink: 0;
+}
+
+.panel-accent.attendance-accent,
+.panel-accent.performance-accent {
+    background: linear-gradient(to bottom, #0C5A2E 0%, #0C5A2E 50%, #34D399 50%, #34D399 100%);
+}
+
+.panel-accent.deadlines-accent {
+    background: linear-gradient(to bottom, #DC2626 0%, #DC2626 50%, #EF4444 50%, #EF4444 100%);
+}
+
+.new-panel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.panel-accent {
+    width: 48px;
+    min-width: 48px;
+    flex-shrink: 0;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+}
+
+.panel-accent.green {
+    background: linear-gradient(to bottom, #10b981, #059669);
+}
+
+/* Panel accents */
+.panel-accent.attendance-accent {
+    background: linear-gradient(to bottom, #22c55e 0%, #22c55e 50%, #4ade80 50%, #4ade80 100%);
+}
+
+.panel-accent.performance-accent {
+    background: linear-gradient(to bottom, #22c55e 0%, #22c55e 50%, #4ade80 50%, #4ade80 100%);
+}
+
+.panel-accent.cwa-accent {
+    background: linear-gradient(to bottom, #f59e0b 0%, #f59e0b 50%, #fbbf24 50%, #fbbf24 100%);
+}
+
+.panel-accent.deadlines-accent {
+    background: linear-gradient(to bottom, #dc2626 0%, #dc2626 50%, #ef4444 50%, #ef4444 100%);
+}
+
+.panel-content {
+    flex: 1;
+    padding: 16px 20px;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.panel-divider {
+    display: none;
+}
+
+.panel-description {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #6B7280;
+    padding-left: 36px;
+}
+
+.panel-description {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    .top-bar {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .header-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .profile-card {
+        width: 100%;
+    }
+    
+    .new-panel {
+        flex-direction: column;
+    }
+    
+    .panel-accent {
+        width: 100%;
+        height: 8px;
+        min-width: 0;
+        border-radius: 16px 16px 0 0;
+    }
+}
+
+/* ==== Preferred UI overrides (screenshot match) ==== */
+/* Greeting panel: deeper shadow, bigger radius, full-width green date strip */
+/* remove older override that centered text and used inner margins */
+.greeting-panel h1, .greeting-panel p { margin-left: auto; margin-right: auto; }
+
+/* Panel centered content + underline accent */
+.panel-content.panel-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.panel-title-row { display: flex; align-items: center; gap: 10px; }
+.panel-title-stack { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.panel-title { font-size: 1.25rem; }
+.panel-underline { width: 240px; height: 2px; background: #e5e7eb; margin-top: 6px; }
+.panel-underline.light-solid { background: #d1fae5; width: 320px; }
+.panel-qr-icon { color: #374151; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25)); }
+.panel-underline.attendance-accent { background: linear-gradient(90deg,#e5e7eb 0,#e5e7eb 55%,#34d399 55%,#34d399 100%); }
+.panel-underline.performance-accent { background: linear-gradient(90deg,#e5e7eb 0,#e5e7eb 55%,#34d399 55%,#34d399 100%); }
+.panel-underline.deadlines-accent { background: linear-gradient(90deg,#e5e7eb 0,#e5e7eb 55%,#ef4444 55%,#ef4444 100%); }
+
+/* Slightly larger panel radius and shadow for card look */
+.panel-card { border-radius: 16px !important; box-shadow: 0 8px 16px rgba(0,0,0,0.06) !important; }

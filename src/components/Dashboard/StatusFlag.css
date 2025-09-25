@@ -1,0 +1,38 @@
+.status-flag {
+    width: 20px;
+    height: 40px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.status-flag:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.half {
+    flex: 1;
+    transition: background-color 0.3s ease;
+}
+
+.top.dark-green {
+    background-color: #2E7D32;
+}
+
+.bottom.bright-green {
+    background-color: #66BB6A;
+}
+
+/* Optional inactive state */
+.top.gray {
+    background-color: #BDBDBD;
+}
+
+.bottom.light-gray {
+    background-color: #E0E0E0;
+}

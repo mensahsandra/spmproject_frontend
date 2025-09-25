@@ -1,0 +1,70 @@
+.record-attendance-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+.record-attendance-content {
+    flex: 1;
+    padding: 24px;
+    margin-left: 260px;
+    background-color: #f8fafc;
+}
+
+.record-attendance-card {
+    width: 100%;
+    max-width: 700px;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-sizing: border-box;
+    margin: 0 auto;
+    position: relative;
+}
+
+.scan-button {
+    background: linear-gradient(135deg, #0C5A2E 0%, #34D399 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 20px 0;
+    transition: all 0.3s ease;
+}
+
+.scan-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(12, 90, 46, 0.2);
+}
+
+.scanner-container {
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Responsive overrides */
+@media (max-width: 1400px) {
+    .record-attendance-card {
+        max-width: 600px !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .record-attendance-card {
+        max-width: 480px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .record-attendance-card {
+        max-width: 100% !important;
+    }
+}

@@ -1,0 +1,29 @@
+import React from 'react';
+import Sidebar from './Sidebar';
+import TopBar from './TopBar';
+import GreetingSection from './GreetingSection';
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  showGreeting?: boolean;
+  maxWidth?: number;
+  style?: React.CSSProperties;
+}
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, showGreeting = false, maxWidth = 1000, style }) => {
+  return (
+    <div className="dashboard">
+      <Sidebar />
+      <main className="dashboard-content has-topbar" style={style}>
+        <TopBar />
+        {showGreeting && <GreetingSection />}
+        {showGreeting && <div style={{ height: 30 }} />}
+        <div style={{ maxWidth, margin: '0 auto', width: '100%' }}>
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default DashboardLayout;
