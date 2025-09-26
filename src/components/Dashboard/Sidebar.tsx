@@ -24,14 +24,12 @@ const Sidebar: React.FC = () => {
 
     // helper: safe navigate ensuring role separation
     const go = (target: string) => {
-        if (isLecturer && target.startsWith('/dashboard')) return; // block student dashboard if lecturer
-        if (!isLecturer && target.startsWith('/lecturer-dashboard')) return; // block lecturer dashboard if student
         navigate(target);
     };
 
     const setLecturerSection = (section: string) => {
         // keep same base path
-        if (location.pathname !== '/lecturer-dashboard') navigate('/lecturer-dashboard');
+    if (location.pathname !== '/lecturer/dashboard') navigate('/lecturer/dashboard');
         // update hash for dashboard content to react to
         window.location.hash = section;
     };
@@ -53,10 +51,10 @@ const Sidebar: React.FC = () => {
                     <ul>
             {!isLecturer && (
                             <>
-                <li className={isActive('/dashboard') ? 'active' : ''} onClick={() => go('/dashboard')}>🏠 Home</li>
-                                <li className={isActive('/record-attendance') ? 'active' : ''} onClick={() => navigate('/record-attendance')}>📋 Attendance</li>
-                                <li className={isActive('/select-result') ? 'active' : ''} onClick={() => navigate('/select-result', { state: { showCurrent: true } })}>📊 Performance</li>
-                                <li className={isActive(/\/deadlines|^\/notifications/) ? 'active' : ''} onClick={() => navigate('/notifications?tab=deadlines', { state: { from: 'deadlines' } })}>
+                <li className={isActive('/student/dashboard') ? 'active' : ''} onClick={() => go('/student/dashboard')}>🏠 Home (Student)</li>
+                                <li className={isActive('/student/record-attendance') ? 'active' : ''} onClick={() => navigate('/student/record-attendance')}>📋 Attendance (Student)</li>
+                                <li className={isActive('/student/select-result') ? 'active' : ''} onClick={() => navigate('/student/select-result', { state: { showCurrent: true } })}>📊 Performance (Student)</li>
+                                <li className={isActive(/\/student\/deadlines|^\/student\/notifications/) ? 'active' : ''} onClick={() => navigate('/student/notifications?tab=deadlines', { state: { from: 'deadlines' } })}>
                                     📅 Deadlines
                                     {unread > 0 && (
                                         <span style={{
@@ -74,7 +72,7 @@ const Sidebar: React.FC = () => {
                         )}
             {isLecturer && (
                             <>
-                <li className={path === '/lecturer-dashboard' && !location.hash ? 'active' : ''} onClick={() => { window.location.hash=''; go('/lecturer-dashboard'); }}>🏠 Home</li>
+                <li className={path === '/lecturer/dashboard' && !location.hash ? 'active' : ''} onClick={() => { window.location.hash=''; go('/lecturer/dashboard'); }}>🏠 Home (Lecturer)</li>
                                 <li className={location.hash === '#Generate-Session-Code' ? 'active' : ''} onClick={() => setLecturerSection('Generate-Session-Code')}>🧾 Generate Session</li>
                                 <li className={location.hash === '#View-Attendance-Log' ? 'active' : ''} onClick={() => setLecturerSection('View-Attendance-Log')}>📋 View Attendance</li>
                                 <li className={location.hash === '#Update-Grade' ? 'active' : ''} onClick={() => setLecturerSection('Update-Grade')}>📝 Update Grades</li>

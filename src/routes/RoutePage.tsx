@@ -32,46 +32,59 @@ const RoutePage = () => {
       <Route path="/lecturer-login" element={<LecturerLoginPage />} />
       <Route path="/register" element={<RegistrationPage />} />
       <Route path="/role-selection" element={<RoleSelectionPage />} />
-      <Route path="/dashboard" element={
+      {/* Student namespaced routes */}
+      <Route path="/student/dashboard" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<Dashboard />)}
         </ProtectedRoute>
       } />
-      <Route path="/lecturer-dashboard" element={
-        <ProtectedRoute requiredRole="lecturer">
-          {withLecturer(<LecturerDashboardPage />)}
-        </ProtectedRoute>
-      } />
-      <Route path="/record-attendance" element={
+      <Route path="/student/record-attendance" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<RecordAttendance />)}
         </ProtectedRoute>
       } />
-      <Route path="/select-result" element={
+      <Route path="/student/select-result" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<SelectResult />)}
         </ProtectedRoute>
       } />
-      <Route path="/notifications" element={
+      <Route path="/student/notifications" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<NotificationsPage />)}
         </ProtectedRoute>
       } />
-      <Route path="/display-result" element={
+      <Route path="/student/display-result" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<DisplayResultPage />)}
         </ProtectedRoute>
       } />
-      <Route path="/display-cwa" element={
+      <Route path="/student/display-cwa" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<DisplayCWAResultPage />)}
         </ProtectedRoute>
       } />
-      <Route path="/deadlines" element={
+      <Route path="/student/deadlines" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<DeadlinesPage />)}
         </ProtectedRoute>
       } />
+
+      {/* Legacy student paths -> redirect to namespaced */}
+      <Route path="/dashboard" element={<Navigate to="/student/dashboard" replace />} />
+      <Route path="/record-attendance" element={<Navigate to="/student/record-attendance" replace />} />
+      <Route path="/select-result" element={<Navigate to="/student/select-result" replace />} />
+      <Route path="/notifications" element={<Navigate to="/student/notifications" replace />} />
+      <Route path="/display-result" element={<Navigate to="/student/display-result" replace />} />
+      <Route path="/display-cwa" element={<Navigate to="/student/display-cwa" replace />} />
+      <Route path="/deadlines" element={<Navigate to="/student/deadlines" replace />} />
+      {/* Lecturer namespaced route */}
+      <Route path="/lecturer/dashboard" element={
+        <ProtectedRoute requiredRole="lecturer">
+          {withLecturer(<LecturerDashboardPage />)}
+        </ProtectedRoute>
+      } />
+      {/* Legacy lecturer path redirect */}
+      <Route path="/lecturer-dashboard" element={<Navigate to="/lecturer/dashboard" replace />} />
       <Route path="/profile" element={
         <ProtectedRoute>
           {(() => {
