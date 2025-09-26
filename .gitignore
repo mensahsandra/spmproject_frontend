@@ -28,3 +28,7 @@ dist-ssr
 # Environment files
 .env
 .env.*
+
+# Backend specific
+spm-backend-main/students-performance-metric/node_modules
+spm-backend-main/students-performance-metric/.env
