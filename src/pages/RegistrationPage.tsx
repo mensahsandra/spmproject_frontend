@@ -22,7 +22,7 @@ const RegisterPage: React.FC = () => {
                     />
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
                         <p style={{ fontSize: '1rem', color: '#666', lineHeight: '1.5' }}>
-                            Sign up to access and track performance data.
+                            Sign up to access attendance and track performance data.
                         </p>
                     </div>
                 </div>

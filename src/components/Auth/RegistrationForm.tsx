@@ -306,8 +306,9 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ defaultRole }) => {
                                         onChange={handleChange}
                                     />
                                 </div>
-                                                <div className="form-group">
-                                    <label>Courses (select up to 3)</label>
+                                                                <div className="form-group">
+                                                                    <label>Courses</label>
+                                                                    <div style={{fontSize:12,color:'#555',marginBottom:4}}>Select up to 3 courses you teach</div>
                                                     <div style={{display:'flex',gap:8,marginBottom:6}}>
                                                         <input
                                                             type="text"
@@ -319,28 +320,31 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ defaultRole }) => {
                                                         />
                                                         {courseQuery && <button type="button" onClick={() => setCourseQuery('')} style={{padding:'6px 10px'}}>Clear</button>}
                                                     </div>
-                                    <div style={{maxHeight:200,overflowY:'auto',border:'1px solid #ccc',padding:8,borderRadius:4}}>
-                                                        {filteredCategories.map(cat => (
-                                            <div key={cat.category} style={{marginBottom:8}}>
-                                                <div style={{fontWeight:600,fontSize:12,opacity:.8}}>{cat.category}</div>
-                                                {cat.courses.map(c => {
-                                                    const checked = formData.lecturerCourses?.includes(c);
-                                                    return (
-                                                        <label key={c} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,margin:'2px 0'}}>
-                                                            <input
-                                                                type="checkbox"
-                                                                value={c}
-                                                                checked={checked}
-                                                                onChange={() => toggleLecturerCourse(c)}
-                                                                disabled={!checked && (formData.lecturerCourses?.length||0) >=3}
-                                                            />
-                                                            <span>{c}</span>
-                                                        </label>
-                                                    );
-                                                })}
-                                            </div>
-                                        ))}
-                                    </div>
+                                                        <div style={{maxHeight:260,overflowY:'auto',border:'1px solid #ccc',padding:8,borderRadius:4,display:'grid',gap:12}}>
+                                                            {filteredCategories.map(cat => (
+                                                                <div key={cat.category} style={{minWidth:240}}>
+                                                                    <div style={{fontWeight:600,fontSize:12,opacity:.8,marginBottom:4,borderBottom:'1px solid #eee',paddingBottom:2}}>{cat.category}</div>
+                                                                    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))',gap:4}}>
+                                                                        {cat.courses.map(c => {
+                                                                            const checked = formData.lecturerCourses?.includes(c);
+                                                                            return (
+                                                                                <label key={c} style={{display:'flex',alignItems:'center',gap:4,fontSize:12,padding:'4px 6px',border:'1px solid #ddd',borderRadius:4,background:checked?'#e6f8f0':'#fafafa',cursor:'pointer'}}>
+                                                                                    <input
+                                                                                        type="checkbox"
+                                                                                        value={c}
+                                                                                        checked={checked}
+                                                                                        onChange={() => toggleLecturerCourse(c)}
+                                                                                        disabled={!checked && (formData.lecturerCourses?.length||0) >=3}
+                                                                                        style={{margin:0}}
+                                                                                    />
+                                                                                    <span style={{lineHeight:1.2}}>{c}</span>
+                                                                                </label>
+                                                                            );
+                                                                        })}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                 </div>
                             </>
                         )}
