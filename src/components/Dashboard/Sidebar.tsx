@@ -35,10 +35,11 @@ const Sidebar: React.FC = () => {
     };
 
     const setLecturerSection = (section: string) => {
-        // keep same base path
-    if (location.pathname !== '/lecturer/dashboard') navigate('/lecturer/dashboard');
-        // update hash for dashboard content to react to
+        if (location.pathname !== '/lecturer/dashboard') navigate('/lecturer/dashboard');
+        // directly set hash (triggers listener in LecturerDashboardPage)
         window.location.hash = section;
+        // optional UX: scroll to top for card views
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {}
     };
 
     return (
