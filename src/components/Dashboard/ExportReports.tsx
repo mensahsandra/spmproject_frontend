@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import endPoint from '../../utils/endpoint';
 import { getToken } from '../../utils/auth';
+import ExportComponent from './ExportComponent';
 
 const ExportReports: React.FC = () => {
   const [courseCode, setCourseCode] = useState('BIT364');
@@ -23,8 +24,19 @@ const ExportReports: React.FC = () => {
     window.open(url.toString(), '_blank');
   };
 
+  // derive courses from local profile (aligns with other components)
+  const profileDataRaw = localStorage.getItem('profile');
+  const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : null;
+  const courseIds: string[] = profileData?.data?.courses || [];
+  const courses = useMemo(() => courseIds.map((id: string) => ({ id, name: id })), [courseIds]);
+
+  const [selectedCourse, setSelectedCourse] = useState<string>('');
+
   return (
     <div>
+      <div style={{ marginBottom: 14 }}>
+        <ExportComponent courses={courses} selectedCourse={selectedCourse} setSelectedCourse={setSelectedCourse} />
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, maxWidth: 720 }}>
         <div>
           <label>Course Code</label>

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import endPoint from '../../utils/endpoint';
 import { apiFetch } from '../../utils/api';
+import AttendanceFilter from './AttendanceFilter';
 
 const AttendanceLogs: React.FC = () => {
   const [logs, setLogs] = useState<any[]>([]);
@@ -11,6 +12,14 @@ const AttendanceLogs: React.FC = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(25);
+  // new date filter controls
+  const [filterType, setFilterType] = useState<'day' | 'week' | 'month'>('day');
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const d = new Date();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${m}-${day}`;
+  });
 
   const load = async () => {
     setError(''); setLoading(true);
@@ -20,7 +29,10 @@ const AttendanceLogs: React.FC = () => {
       if (sessionCode) params.set('sessionCode', sessionCode);
       params.set('page', String(page));
       params.set('limit', String(limit));
-      const data: any = await apiFetch(`/api/attendance/logs?${params.toString()}`, { method: 'GET', role: 'lecturer' });
+  // include optional date filters for backend; if backend ignores, we'll client-filter below
+  if (selectedDate) params.set('date', selectedDate);
+  if (filterType) params.set('filterType', filterType);
+  const data: any = await apiFetch(`/api/attendance/logs?${params.toString()}`, { method: 'GET', role: 'lecturer' });
       if (!data.ok) throw new Error(data.message || 'Request failed');
       setLogs(data.logs || []);
       setTotalPages(data.totalPages || 1);
@@ -32,17 +44,52 @@ const AttendanceLogs: React.FC = () => {
   };
 
   useEffect(() => { load(); // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit]);
+  }, [page, limit, filterType, selectedDate]);
+
+  // client-side filter fallback by date if server didn't filter
+  const filteredLogs = useMemo(() => {
+    if (!selectedDate || !logs?.length) return logs;
+    const base = new Date(selectedDate);
+    const start = new Date(base);
+    const end = new Date(base);
+    if (filterType === 'day') {
+      end.setDate(end.getDate() + 1);
+    } else if (filterType === 'week') {
+      // assume week starts on Monday
+      const day = start.getDay();
+      const diffToMonday = (day + 6) % 7; // 0->6, 1->0, ..., 6->5
+      start.setDate(start.getDate() - diffToMonday);
+      end.setDate(start.getDate() + 7);
+    } else if (filterType === 'month') {
+      start.setDate(1);
+      end.setMonth(start.getMonth() + 1);
+      end.setDate(1);
+    }
+    const s = start.getTime();
+    const e = end.getTime();
+    return logs.filter((r: any) => {
+      const t = new Date(r.timestamp || r.scannedAt || r.createdAt || r.time).getTime();
+      return !isNaN(t) && t >= s && t < e;
+    });
+  }, [logs, filterType, selectedDate]);
 
   const exportCsv = () => {
     const url = new URL(`${endPoint}/api/attendance/export`);
     if (courseCode) url.searchParams.set('courseCode', courseCode);
     if (sessionCode) url.searchParams.set('sessionCode', sessionCode);
+    if (selectedDate) url.searchParams.set('date', selectedDate);
+    if (filterType) url.searchParams.set('filterType', filterType);
     window.open(url.toString(), '_blank');
   };
 
   return (
     <div>
+      <AttendanceFilter
+        filterType={filterType}
+        setFilterType={setFilterType}
+        selectedDate={selectedDate}
+        setSelectedDate={(v) => { setSelectedDate(v); setPage(1); }}
+      />
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <input placeholder="Course Code" value={courseCode} onChange={e => setCourseCode(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #e5e7eb' }} />
         <input placeholder="Session Code" value={sessionCode} onChange={e => setSessionCode(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #e5e7eb' }} />
@@ -71,7 +118,7 @@ const AttendanceLogs: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {logs.map((r, i) => (
+            {filteredLogs.map((r, i) => (
               <tr key={i} style={{ borderBottom: '1px solid #e5e7eb' }}>
                 <td style={{ padding: 8 }}>{r.timestamp}</td>
                 <td style={{ padding: 8 }}>{r.studentId}</td>
@@ -81,7 +128,7 @@ const AttendanceLogs: React.FC = () => {
                 <td style={{ padding: 8 }}>{r.sessionCode || '-'}</td>
               </tr>
             ))}
-            {logs.length === 0 && !loading && (
+            {filteredLogs.length === 0 && !loading && (
               <tr><td colSpan={6} style={{ padding: 12, textAlign: 'center', color: '#6b7280' }}>No records</td></tr>
             )}
           </tbody>

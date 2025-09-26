@@ -1,104 +1,113 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { apiFetch } from '../../utils/api';
-
-type GradeItem = { courseCode: string; studentId: string; score: number; grade: string | null; updatedAt: string };
+import CourseSelector from './CourseSelector';
+import StudentGradeTable from './StudentGradeTable';
+import GradeSubmissionActions from './GradeSubmissionActions';
+import GradeHistoryViewer from './GradeHistoryViewer';
+import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
 
 const UpdateGrades: React.FC = () => {
-  const [courseCode, setCourseCode] = useState('BIT364');
-  const [studentId, setStudentId] = useState('');
-  const [score, setScore] = useState<number>(0);
-  const [grade, setGrade] = useState<string>('');
-  const [list, setList] = useState<GradeItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  // Courses from lecturer profile
+  const profileDataRaw = localStorage.getItem('profile');
+  const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : null;
+  const courseIds: string[] = profileData?.data?.courses || [];
+  const courses: Course[] = useMemo(() => courseIds.map((id: string) => ({ id, code: id, title: id, semester: '' })), [courseIds]);
 
-  const load = async () => {
-    setError(''); setSuccess(''); setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (courseCode) params.set('courseCode', courseCode);
-      const data: any = await apiFetch(`/api/grades/list?${params.toString()}` , { method: 'GET', role: 'lecturer' });
-      if (!data.ok) throw new Error(data.message || 'Request failed');
-      setList(data.grades || []);
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load');
-    } finally { setLoading(false); }
+  const [selectedCourseId, setSelectedCourseId] = useState<string>('');
+  const [students, setStudents] = useState<EnrolledStudent[]>([]);
+  const [editedGrades, setEditedGrades] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [history, setHistory] = useState<GradeChangeLog[]>([]);
+
+  // Load enrolled students when course changes
+  useEffect(() => {
+    const load = async () => {
+      setError('');
+      setStudents([]);
+      if (!selectedCourseId) return;
+      setLoading(true);
+      try {
+        const data: any = await apiFetch(`/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
+        // Expect shape { ok, students: [{ id, studentId, name, currentGrade }] }
+        const ss: EnrolledStudent[] = data?.students || [];
+        setStudents(ss);
+        setEditedGrades({});
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load students');
+      } finally { setLoading(false); }
+    };
+    load();
+  }, [selectedCourseId]);
+
+  // Load grade change history (optional; safe if endpoint missing)
+  useEffect(() => {
+    const loadHistory = async () => {
+      setHistory([]);
+      if (!selectedCourseId) return;
+      try {
+        const data: any = await apiFetch(`/api/grades/history?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
+        setHistory(data?.history || []);
+      } catch { /* ignore */ }
+    };
+    loadHistory();
+  }, [selectedCourseId]);
+
+  const dirtyCount = Object.keys(editedGrades).length;
+
+  const onGradeChange = (studentId: string, grade: string) => {
+    setEditedGrades(prev => ({ ...prev, [studentId]: grade }));
   };
 
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  const onReset = () => setEditedGrades({});
 
-  const save = async () => {
-    setError(''); setSuccess('');
+  const onSave = async () => {
+    if (!selectedCourseId || dirtyCount === 0) return;
+    setSaving(true); setError('');
     try {
-      const body = { courseCode, studentId, score, grade };
-      const data: any = await apiFetch('/api/grades/update', {
+      // Transform into payload array
+      const updates = Object.entries(editedGrades).map(([studentId, grade]) => ({ studentId, grade }));
+      const data: any = await apiFetch('/api/grades/bulk-update', {
         method: 'POST',
         role: 'lecturer',
-        body: JSON.stringify(body)
+        body: JSON.stringify({ courseCode: selectedCourseId, updates })
       });
-      if (!data.ok) throw new Error(data.message || 'Request failed');
-      setSuccess('Grade saved');
-      await load();
+      if (!data?.ok) throw new Error(data?.message || 'Save failed');
+      // refresh students list to reflect current grades
+      setEditedGrades({});
+      const refreshed: any = await apiFetch(`/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
+      setStudents(refreshed?.students || []);
     } catch (e: any) {
-      setError(e?.message || 'Failed to save');
-    }
+      setError(e?.message || 'Failed to save grades');
+    } finally { setSaving(false); }
   };
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, maxWidth: 720 }}>
-        <div>
-          <label>Course Code</label>
-          <input value={courseCode} onChange={e => setCourseCode(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb' }} />
-        </div>
-        <div>
-          <label>Student ID</label>
-          <input value={studentId} onChange={e => setStudentId(e.target.value)} placeholder="e.g. 9123456" style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb' }} />
-        </div>
-        <div>
-          <label>Score</label>
-          <input type="number" value={score} onChange={e => setScore(Number(e.target.value))} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb' }} />
-        </div>
-        <div>
-          <label>Grade</label>
-          <input value={grade} onChange={e => setGrade(e.target.value)} placeholder="e.g. A, B+" style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e5e7eb' }} />
-        </div>
-      </div>
-      <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-        <button onClick={save} style={{ background: '#10A75B', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: 10, cursor: 'pointer' }}>Save</button>
-        <button onClick={load} disabled={loading} style={{ background: '#047857', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: 10, cursor: 'pointer' }}>{loading ? 'Loading...' : 'Refresh'}</button>
-      </div>
-      {error && <div style={{ color: '#dc2626', marginTop: 8 }}>{error}</div>}
-      {success && <div style={{ color: '#16a34a', marginTop: 8 }}>{success}</div>}
+      <CourseSelector
+        courses={courses}
+        selectedCourseId={selectedCourseId}
+        onSelectCourse={setSelectedCourseId}
+      />
 
-      <div style={{ marginTop: 12, overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f3f4f6' }}>
-              <th style={{ textAlign: 'left', padding: 8 }}>Updated</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Course</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Student ID</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Score</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Grade</th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((g, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <td style={{ padding: 8 }}>{g.updatedAt}</td>
-                <td style={{ padding: 8 }}>{g.courseCode}</td>
-                <td style={{ padding: 8 }}>{g.studentId}</td>
-                <td style={{ padding: 8 }}>{g.score}</td>
-                <td style={{ padding: 8 }}>{g.grade ?? '-'}</td>
-              </tr>
-            ))}
-            {list.length === 0 && !loading && (
-              <tr><td colSpan={5} style={{ padding: 12, textAlign: 'center', color: '#6b7280' }}>No grades</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      <StudentGradeTable
+        students={students}
+        editedGrades={editedGrades}
+        onGradeChange={onGradeChange}
+        loading={loading}
+      />
+
+      <GradeSubmissionActions
+        onSave={onSave}
+        onReset={onReset}
+        disabled={saving || loading || !selectedCourseId}
+        dirtyCount={dirtyCount}
+      />
+
+      <GradeHistoryViewer history={history} />
     </div>
   );
 };
