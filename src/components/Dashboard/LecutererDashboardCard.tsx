@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import { FaQrcode, FaClipboardList, FaEdit, FaFileExport } from "react-icons/fa";
 import InfoCard from "../../utils/InfoCard";
 import GenerateSessionCode from "./GenerateSession";
@@ -7,11 +8,12 @@ import UpdateGrades from "./UpdateGrades";
 import ExportReports from "./ExportReports";
 
 type LecturerDashboardProps = {
-    active: string;
-    setActive: (section: string) => void;
+    active?: string;
+    setActive?: (section: string) => void;
 };
 
-const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive }) => {
+const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active }) => {
+    const navigate = useNavigate();
     const detailedSections = ["Generate-Session-Code", "View-Attendance-Log", "Update-Grade", "Export"] as const;
     const showGrid = !active || !detailedSections.includes(active as any);
 
@@ -55,7 +57,7 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive
                     Icon={FaQrcode}
                     topColor="#064e3b"
                     bottomColor="#10b981"
-                    onClick={() => setActive("Generate-Session-Code")}
+                    onClick={() => navigate('/lecturer/generate')}
                     hoverEffect={active !== "Generate-Session-Code"}
                     style={{ width: "100%" }}
                 />
@@ -76,7 +78,7 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive
                     Icon={FaClipboardList}
                     topColor="#047857"
                     bottomColor="#34d399"
-                    onClick={() => setActive("View-Attendance-Log")}
+                    onClick={() => navigate('/lecturer/attendance')}
                     hoverEffect={active !== "View-Attendance-Log"}
                     style={{ flex: "1 1 300px", minWidth: "250px" }}
                 />
@@ -86,7 +88,7 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive
                     Icon={FaEdit}
                     topColor="#065f46"
                     bottomColor="#6ee7b7"
-                    onClick={() => setActive("Update-Grade")}
+                    onClick={() => navigate('/lecturer/assessment')}
                     hoverEffect={active !== "Update-Grade"}
                     style={{ flex: "1 1 300px", minWidth: "250px" }}
                 />
@@ -100,7 +102,7 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive
                     Icon={FaFileExport}
                     topColor="#047857"
                     bottomColor="#10b981"
-                    onClick={() => setActive("Export")}
+                    onClick={() => navigate('/lecturer/export')}
                     hoverEffect={active !== "Export"}
                     style={{ width: "100%" }}
                 />

@@ -34,13 +34,7 @@ const Sidebar: React.FC = () => {
         navigate(target);
     };
 
-    const setLecturerSection = (section: string) => {
-        if (location.pathname !== '/lecturer/dashboard') navigate('/lecturer/dashboard');
-        // directly set hash (triggers listener in LecturerDashboardPage)
-        window.location.hash = section;
-        // optional UX: scroll to top for card views
-        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch {}
-    };
+    // no-op: legacy hash navigation removed for lecturer; using path routes
 
     return (
         <aside className="sidebar">
@@ -80,11 +74,11 @@ const Sidebar: React.FC = () => {
                         )}
             {isLecturer && (
                             <>
-                <li className={path === '/lecturer/dashboard' && !location.hash ? 'active' : ''} onClick={() => { window.location.hash=''; go('/lecturer/dashboard'); }}>🏠 Home</li>
-                                <li className={location.hash === '#Generate-Session-Code' ? 'active' : ''} onClick={() => setLecturerSection('Generate-Session-Code')}>🧾 Generate</li>
-                                <li className={location.hash === '#View-Attendance-Log' ? 'active' : ''} onClick={() => setLecturerSection('View-Attendance-Log')}>📋 Attendance</li>
-                                <li className={location.hash === '#Update-Grade' ? 'active' : ''} onClick={() => setLecturerSection('Update-Grade')}>📝 Assessment</li>
-                                <li className={location.hash === '#Export' ? 'active' : ''} onClick={() => setLecturerSection('Export')}>📤 Export</li>
+                <li className={path === '/lecturer/dashboard' ? 'active' : ''} onClick={() => { window.location.hash=''; go('/lecturer/dashboard'); }}>🏠 Home</li>
+                                <li className={path === '/lecturer/generate' ? 'active' : ''} onClick={() => go('/lecturer/generate')}>🧾 Generate</li>
+                                <li className={path === '/lecturer/attendance' ? 'active' : ''} onClick={() => go('/lecturer/attendance')}>📋 Attendance</li>
+                                <li className={path === '/lecturer/assessment' ? 'active' : ''} onClick={() => go('/lecturer/assessment')}>📝 Assessment</li>
+                                <li className={path === '/lecturer/export' ? 'active' : ''} onClick={() => go('/lecturer/export')}>📤 Export</li>
                             </>
                         )}
                     </ul>

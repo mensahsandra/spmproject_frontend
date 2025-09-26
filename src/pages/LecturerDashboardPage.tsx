@@ -18,7 +18,7 @@ const LecturerDashboardPage: React.FC = () => {
     }, []);
             return (
                 <DashboardLayout showGreeting maxWidth={900}>
-                    <LecturerDashboard active={active} setActive={setActive} />
+                    <LecturerDashboard active={active} />
                 </DashboardLayout>
             );
 };

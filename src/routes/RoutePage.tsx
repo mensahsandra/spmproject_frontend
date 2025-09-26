@@ -15,6 +15,10 @@ import ProfilePage from '../pages/ProfilePage';
 import DeadlinesPage from '../pages/DeadlinesPage';
 import React from 'react';
 import LecturerDashboardPage from '../pages/LecturerDashboardPage';
+import LecturerGeneratePage from '../pages/LecturerGeneratePage';
+import LecturerAttendancePage from '../pages/LecturerAttendancePage';
+import LecturerAssessmentPage from '../pages/LecturerAssessmentPage';
+import LecturerExportPage from '../pages/LecturerExportPage';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import { normalizeRole } from '../utils/roles';
 import StudentLayout from '../layouts/StudentLayout';
@@ -77,10 +81,30 @@ const RoutePage = () => {
       <Route path="/display-result" element={<Navigate to="/student/display-result" replace />} />
       <Route path="/display-cwa" element={<Navigate to="/student/display-cwa" replace />} />
       <Route path="/deadlines" element={<Navigate to="/student/deadlines" replace />} />
-      {/* Lecturer namespaced route */}
+      {/* Lecturer namespaced routes */}
       <Route path="/lecturer/dashboard" element={
         <ProtectedRoute requiredRole="lecturer">
           {withLecturer(<LecturerDashboardPage />)}
+        </ProtectedRoute>
+      } />
+      <Route path="/lecturer/generate" element={
+        <ProtectedRoute requiredRole="lecturer">
+          {withLecturer(<LecturerGeneratePage />)}
+        </ProtectedRoute>
+      } />
+      <Route path="/lecturer/attendance" element={
+        <ProtectedRoute requiredRole="lecturer">
+          {withLecturer(<LecturerAttendancePage />)}
+        </ProtectedRoute>
+      } />
+      <Route path="/lecturer/assessment" element={
+        <ProtectedRoute requiredRole="lecturer">
+          {withLecturer(<LecturerAssessmentPage />)}
+        </ProtectedRoute>
+      } />
+      <Route path="/lecturer/export" element={
+        <ProtectedRoute requiredRole="lecturer">
+          {withLecturer(<LecturerExportPage />)}
         </ProtectedRoute>
       } />
       {/* Legacy lecturer path redirect */}
