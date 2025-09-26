@@ -107,6 +107,12 @@ const RoutePage = () => {
           {withLecturer(<LecturerExportPage />)}
         </ProtectedRoute>
       } />
+      {/* Alias route for generate session */}
+      <Route path="/lecturer/generatesession" element={
+        <ProtectedRoute requiredRole="lecturer">
+          {withLecturer(<LecturerGeneratePage />)}
+        </ProtectedRoute>
+      } />
       {/* Legacy lecturer path redirect */}
       <Route path="/lecturer-dashboard" element={<Navigate to="/lecturer/dashboard" replace />} />
       <Route path="/profile" element={
