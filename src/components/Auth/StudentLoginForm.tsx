@@ -16,11 +16,15 @@ const StudentLoginForm: React.FC = () => {
         e.preventDefault();
         setError(null);
 
-        const payload = { email, password, studentId };
+    // Normalize / sanitize inputs
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedStudentId = studentId.trim();
+    const payload = { email: normalizedEmail, password, studentId: normalizedStudentId };
     console.log('submit handler firing (student)', payload);
-        console.log('[StudentLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
+    console.log('[StudentLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
 
         try {
+        const started = performance.now();
         const response = await fetch(`${endPoint}/api/auth/login`, {
                 method: "POST",
                 headers: {
@@ -28,10 +32,22 @@ const StudentLoginForm: React.FC = () => {
                 },
                 body: JSON.stringify(payload),
             });
+            const elapsed = (performance.now() - started).toFixed(0);
+            let data: any = null;
+            try {
+                data = await response.json();
+            } catch (jsonErr) {
+                console.warn('[StudentLogin] Non-JSON response', jsonErr);
+            }
+            console.log('[StudentLogin] Response', {
+                status: response.status,
+                ok: response.ok,
+                elapsedMs: elapsed,
+                contentType: response.headers.get('content-type'),
+                body: data
+            });
 
-            const data = await response.json();
-
-            if (response.ok && (data.success || data.ok)) {
+            if (response.ok && (data?.success || data?.ok)) {
                 const role = (data.user?.role || 'student').toLowerCase();
                 // Store namespaced
                 storeToken(role, data.token);
@@ -41,7 +57,8 @@ const StudentLoginForm: React.FC = () => {
                 console.log("Login successful:", role, data.user);
                 navigate(role === 'lecturer' ? "/lecturer-dashboard" : "/dashboard");
             } else {
-                setError(data.message || `Login failed (${response.status})`);
+                const serverMessage = data?.message || data?.error || data?.details;
+                setError(serverMessage || `Login failed (${response.status})`);
             }
         } catch (error) {
             console.error("Login error (student) endpoint=", endPoint, "payload=", payload, error);

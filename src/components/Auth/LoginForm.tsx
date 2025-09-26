@@ -16,11 +16,16 @@ const LoginForm: React.FC = () => {
         e.preventDefault();
         setError(null);
 
-        const payload = { email, password, userId, role };
+    // Normalize / sanitize inputs
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedUserId = userId.trim();
+    const normalizedRole = role.trim().toLowerCase();
+    const payload = { email: normalizedEmail, password, userId: normalizedUserId, role: normalizedRole };
     console.log('submit handler firing (generic login)', payload);
-        console.log('[LoginForm] Submitting POST', `${endPoint}/api/auth/login`, payload);
+    console.log('[LoginForm] Submitting POST', `${endPoint}/api/auth/login`, payload);
 
         try {
+            const started = performance.now();
             const response = await fetch(`${endPoint}/api/auth/login`, {
                 method: "POST",
                 headers: {
@@ -28,11 +33,22 @@ const LoginForm: React.FC = () => {
                 },
                 body: JSON.stringify(payload),
             });
+            const elapsed = (performance.now() - started).toFixed(0);
+            let data: any = null;
+            try {
+                data = await response.json();
+            } catch (jsonErr) {
+                console.warn('[LoginForm] Non-JSON response', jsonErr);
+            }
+            console.log('[LoginForm] Response', {
+                status: response.status,
+                ok: response.ok,
+                elapsedMs: elapsed,
+                contentType: response.headers.get('content-type'),
+                body: data
+            });
 
-            const data = await response.json();
-            console.log("Login response:", response.status, data.success ? "Success" : "Failed");
-
-            if (data.success) {
+            if (data?.success) {
                 // Store token and user data
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
@@ -43,7 +59,8 @@ const LoginForm: React.FC = () => {
                 const userRole = (data.user?.role || '').toLowerCase();
                 navigate(userRole === 'lecturer' ? "/lecturer-dashboard" : "/dashboard");
             } else {
-                setError(data.message || "Login failed");
+                const serverMessage = data?.message || data?.error || data?.details;
+                setError(serverMessage || "Login failed");
             }
         } catch (error) {
             console.error("Login error (generic) endpoint=", endPoint, "payload=", payload, error);

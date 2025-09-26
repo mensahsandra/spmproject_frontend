@@ -16,17 +16,21 @@ const LecturerLoginForm: React.FC = () => {
         e.preventDefault();
         setError(null);
 
+        // Normalize / sanitize inputs
+        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedStaffId = staffId.trim();
         const payload = {
-            email,
+            email: normalizedEmail,
             password,
-            staffId,
-            userId: staffId,
-            lecturerId: staffId,
+            staffId: normalizedStaffId,
+            userId: normalizedStaffId,
+            lecturerId: normalizedStaffId,
         };
-    console.log('submit handler firing (lecturer)', payload);
+        console.log('submit handler firing (lecturer)', payload);
         console.log('[LecturerLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
 
         try {
+    const started = performance.now();
     const response = await fetch(`${endPoint}/api/auth/login`, {
                 method: "POST",
                 headers: {
@@ -34,10 +38,22 @@ const LecturerLoginForm: React.FC = () => {
                 },
                 body: JSON.stringify(payload),
             });
+            const elapsed = (performance.now() - started).toFixed(0);
+            let data: any = null;
+            try {
+                data = await response.json();
+            } catch (jsonErr) {
+                console.warn('[LecturerLogin] Non-JSON response', jsonErr);
+            }
+            console.log('[LecturerLogin] Response', {
+                status: response.status,
+                ok: response.ok,
+                elapsedMs: elapsed,
+                contentType: response.headers.get('content-type'),
+                body: data
+            });
 
-            const data = await response.json();
-
-    if (response.ok && (data.success || data.ok)) {
+    if (response.ok && (data?.success || data?.ok)) {
         // Merge/augment user with staff and course if not provided by backend
     const user = {
             ...data.user,
@@ -54,7 +70,8 @@ const LecturerLoginForm: React.FC = () => {
     navigate("/lecturer-dashboard");
             } else {
         console.warn('Lecturer login failed response:', data);
-        setError(data.message || data.error || `Login failed (${response.status})`);
+    const serverMessage = data?.message || data?.error || data?.details;
+    setError(serverMessage || `Login failed (${response.status})`);
             }
         } catch (error) {
             console.error("Login error (lecturer) endpoint=", endPoint, "payload=", payload, error);
