@@ -51,7 +51,7 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive
             <div style={{ marginBottom: 24 }}>
                 <InfoCard
                     title="Generate Session Code"
-                    description="Create a new session code for your class."
+                    description="Access all your courses in one place."
                     Icon={FaQrcode}
                     topColor="#064e3b"
                     bottomColor="#10b981"
@@ -71,8 +71,8 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive
                 }}
             >
                 <InfoCard
-                    title="View Attendance Log"
-                    description="Review attendance records for your sessions."
+                    title="View Attendance Logs"
+                    description="Get an overview of class attendance."
                     Icon={FaClipboardList}
                     topColor="#047857"
                     bottomColor="#34d399"
@@ -81,8 +81,8 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive
                     style={{ flex: "1 1 300px", minWidth: "250px" }}
                 />
                 <InfoCard
-                    title="Update Grade"
-                    description="Input or modify student grades."
+                    title="Input/Update Grades"
+                    description="View and manage pending assessments to grade."
                     Icon={FaEdit}
                     topColor="#065f46"
                     bottomColor="#6ee7b7"
@@ -95,8 +95,8 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active, setActive
             {/* Bottom full-width card */}
             <div>
                 <InfoCard
-                    title="Export"
-                    description="Export attendance and grade reports."
+                    title="Export Reports"
+                    description="Export performance reports in CSV or PDF format."
                     Icon={FaFileExport}
                     topColor="#047857"
                     bottomColor="#10b981"
