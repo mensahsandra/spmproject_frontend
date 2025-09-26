@@ -44,8 +44,8 @@ const StudentLoginForm: React.FC = () => {
                 setError(data.message || `Login failed (${response.status})`);
             }
         } catch (error) {
-            console.error("Login error:", error);
-            setError("Network error. Please check if the backend server is running.");
+            console.error("Login error (student) endpoint=", endPoint, "payload=", payload, error);
+            setError("Network/connection error. Backend unreachable or blocked.");
         }
     };
 
