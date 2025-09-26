@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { fetchUser } from '../utils/api';
 import { getUser, isAuthenticated, logout, getActiveRole, setActiveRole, storeUser } from '../utils/auth';
+import { loginPath, normalizeRole } from '../utils/roles';
 
 interface AuthState {
   user: any | null;
@@ -48,19 +49,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logoutUser = (r?: string) => {
-    logout(r);
-    if (!r || (r && (role === r))) {
+    const normalized = r ? normalizeRole(r) : undefined;
+    logout(normalized);
+    if (!normalized || (normalized && role === normalized)) {
       setUser(null);
-      const remaining = r === 'student' ? getUser('lecturer') : getUser('student');
-      if (remaining) {
-        const remainingRole = r === 'student' ? 'lecturer' : 'student';
-        setActiveRole(remainingRole);
-        setRole(remainingRole);
-        setUser(remaining);
-      } else {
-        setRole(null);
-        window.location.href = '/student-login';
-      }
+      setRole(null);
+      window.location.href = loginPath(normalized);
     }
   };
 

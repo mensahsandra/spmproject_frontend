@@ -1,6 +1,7 @@
 // src/components/ProtectedRoute.tsx
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { dashboardPath, loginPath, normalizeRole } from '../../utils/roles';
 
 interface ProtectedRouteProps {
     requiredRole?: string;
@@ -16,22 +17,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectT
     if (loading) return null; // AuthProvider already shows splash
 
     // If not logged in at all OR missing user
-    const tokenPresent = requiredRole ? !!getToken(requiredRole) : !!getToken(role || undefined || undefined);
+    const activeRole = normalizeRole(role || user?.role);
+    const tokenPresent = requiredRole ? !!getToken(requiredRole) : !!getToken(activeRole || undefined);
     if (!tokenPresent || !user) {
-        return <Navigate to={redirectTo || "/student-login"} replace />;
+        return <Navigate to={redirectTo || loginPath(requiredRole || activeRole)} replace />;
     }
 
-    // If a role is required, check stored user
     if (requiredRole) {
-        try {
-            const role = (user?.role || "").toLowerCase();
-            if (role !== requiredRole.toLowerCase()) {
-                if (role === "student") return <Navigate to="/dashboard" replace />;
-                if (role === "lecturer") return <Navigate to="/lecturer-dashboard" replace />;
-                return <Navigate to={redirectTo || "/student-login"} replace />;
-            }
-        } catch {
-            return <Navigate to={redirectTo || "/student-login"} replace />;
+        const userRole = normalizeRole(user?.role);
+        if (userRole !== normalizeRole(requiredRole)) {
+            return <Navigate to={dashboardPath(userRole)} replace />;
         }
     }
 

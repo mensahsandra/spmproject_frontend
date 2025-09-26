@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import endPoint from "../../utils/endpoint";
+import { attemptLogin } from "../../utils/loginApi";
 import { storeToken, storeRefreshToken, storeUser, setActiveRole } from '../../utils/auth';
 
 const LecturerLoginForm: React.FC = () => {
@@ -18,60 +19,38 @@ const LecturerLoginForm: React.FC = () => {
 
         // Normalize / sanitize inputs
         const normalizedEmail = email.trim().toLowerCase();
-        const normalizedStaffId = staffId.trim();
+    // const normalizedStaffId = staffId.trim(); // not needed for current minimal payload
+        const normalizedPassword = password.trim();
+        // Start minimal: backend message only documents { email, password, studentId? } so for lecturer try without extra ids first.
         const payload = {
             email: normalizedEmail,
-            password,
-            staffId: normalizedStaffId,
-            userId: normalizedStaffId,
-            lecturerId: normalizedStaffId,
+            password: normalizedPassword,
         };
         console.log('submit handler firing (lecturer)', payload);
         console.log('[LecturerLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
 
         try {
-    const started = performance.now();
-    const response = await fetch(`${endPoint}/api/auth/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
-            const elapsed = (performance.now() - started).toFixed(0);
-            let data: any = null;
-            try {
-                data = await response.json();
-            } catch (jsonErr) {
-                console.warn('[LecturerLogin] Non-JSON response', jsonErr);
-            }
-            console.log('[LecturerLogin] Response', {
-                status: response.status,
-                ok: response.ok,
-                elapsedMs: elapsed,
-                contentType: response.headers.get('content-type'),
-                body: data
-            });
-
-    if (response.ok && (data?.success || data?.ok)) {
-        // Merge/augment user with staff and course if not provided by backend
-    const user = {
-            ...data.user,
-            role: 'lecturer', // force lecturer role for this form
-            staffId: data.user?.staffId || staffId,
-            lecturerId: data.user?.lecturerId || staffId,
-        };
-    const role = 'lecturer';
-    storeToken(role, data.token);
-    if (data.refreshToken) storeRefreshToken(role, data.refreshToken);
-    storeUser(role, user);
-    setActiveRole(role);
-        console.log("Login successful:", user);
-    navigate("/lecturer-dashboard");
+            const variants = [ payload, { ...payload, studentId: staffId } ]; // second variant if backend reuses studentId for all users
+            const { response, data, variantIndex, variantPayload } = await attemptLogin(`${endPoint}/api/auth/login`, variants, { debug: true });
+            console.log('[LecturerLogin] Final attempt result', { variantIndex, variantPayload, status: response.status, body: data });
+            if (response.ok && (data?.success || data?.ok)) {
+                const user = {
+                    ...data.user,
+                    role: 'lecturer',
+                    staffId: data.user?.staffId || staffId,
+                    lecturerId: data.user?.lecturerId || staffId,
+                };
+                const role = 'lecturer';
+                storeToken(role, data.token);
+                if (data.refreshToken) storeRefreshToken(role, data.refreshToken);
+                storeUser(role, user);
+                setActiveRole(role);
+                console.log("Login successful:", user);
+                navigate("/lecturer-dashboard");
             } else {
-        console.warn('Lecturer login failed response:', data);
-    const serverMessage = data?.message || data?.error || data?.details;
-    setError(serverMessage || `Login failed (${response.status})`);
+                console.warn('Lecturer login failed response:', data);
+                const serverMessage = data?.message || data?.error || data?.details;
+                setError(serverMessage || `Login failed (${response.status}) after trying ${variantIndex + 1} variant(s)`);
             }
         } catch (error) {
             console.error("Login error (lecturer) endpoint=", endPoint, "payload=", payload, error);

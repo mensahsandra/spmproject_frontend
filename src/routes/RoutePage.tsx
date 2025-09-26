@@ -16,6 +16,7 @@ import DeadlinesPage from '../pages/DeadlinesPage';
 import React from 'react';
 import LecturerDashboardPage from '../pages/LecturerDashboardPage';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
+import { normalizeRole } from '../utils/roles';
 import StudentLayout from '../layouts/StudentLayout';
 import LecturerLayout from '../layouts/LecturerLayout';
 
@@ -72,16 +73,11 @@ const RoutePage = () => {
         </ProtectedRoute>
       } />
       <Route path="/profile" element={
-        <ProtectedRoute
-          requiredRole={(() => {
-            const raw = localStorage.getItem('user');
-            try { return raw ? (JSON.parse(raw)?.role || 'student') : 'student'; } catch { return 'student'; }
-          })()}
-        >
+        <ProtectedRoute>
           {(() => {
             const raw = localStorage.getItem('user');
             let role = 'student';
-            try { if (raw) role = (JSON.parse(raw).role || 'student').toLowerCase(); } catch {}
+            try { if (raw) role = normalizeRole(JSON.parse(raw).role); } catch {}
             return role === 'lecturer' ? withLecturer(<ProfilePage />) : withStudent(<ProfilePage />);
           })()}
         </ProtectedRoute>

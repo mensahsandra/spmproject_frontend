@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import endPoint from "../../utils/endpoint";
+import { attemptLogin } from "../../utils/loginApi";
 import { storeToken, storeRefreshToken, storeUser, setActiveRole } from '../../utils/auth';
 
 const StudentLoginForm: React.FC = () => {
@@ -19,37 +20,20 @@ const StudentLoginForm: React.FC = () => {
     // Normalize / sanitize inputs
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedStudentId = studentId.trim();
-    const payload = { email: normalizedEmail, password, studentId: normalizedStudentId };
+    const normalizedPassword = password.trim();
+    const payload = { email: normalizedEmail, password: normalizedPassword, studentId: normalizedStudentId };
     console.log('submit handler firing (student)', payload);
     console.log('[StudentLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
 
         try {
-        const started = performance.now();
-        const response = await fetch(`${endPoint}/api/auth/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
-            const elapsed = (performance.now() - started).toFixed(0);
-            let data: any = null;
-            try {
-                data = await response.json();
-            } catch (jsonErr) {
-                console.warn('[StudentLogin] Non-JSON response', jsonErr);
-            }
-            console.log('[StudentLogin] Response', {
-                status: response.status,
-                ok: response.ok,
-                elapsedMs: elapsed,
-                contentType: response.headers.get('content-type'),
-                body: data
-            });
-
+            // Build variants: start with original then alternative key spellings/backends.
+            // Only send backend-documented fields to avoid schema rejection.
+            // Backend doc (login endpoint message) says: { email, password, studentId? }
+            const variants = [ payload ];
+            const { response, data, variantIndex, variantPayload } = await attemptLogin(`${endPoint}/api/auth/login`, variants, { debug: true });
+            console.log('[StudentLogin] Final attempt result', { variantIndex, variantPayload, status: response.status, body: data });
             if (response.ok && (data?.success || data?.ok)) {
                 const role = (data.user?.role || 'student').toLowerCase();
-                // Store namespaced
                 storeToken(role, data.token);
                 if (data.refreshToken) storeRefreshToken(role, data.refreshToken);
                 storeUser(role, data.user);
@@ -58,7 +42,7 @@ const StudentLoginForm: React.FC = () => {
                 navigate(role === 'lecturer' ? "/lecturer-dashboard" : "/dashboard");
             } else {
                 const serverMessage = data?.message || data?.error || data?.details;
-                setError(serverMessage || `Login failed (${response.status})`);
+                setError(serverMessage || `Login failed (${response.status}) after trying ${variantIndex + 1} variant(s)`);
             }
         } catch (error) {
             console.error("Login error (student) endpoint=", endPoint, "payload=", payload, error);

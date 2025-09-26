@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import endPoint from "../../utils/endpoint";
 import { storeUser, setActiveRole, storeToken, storeRefreshToken } from '../../utils/auth';
+import { COURSE_CATEGORIES } from '../../utils/courses';
 
 interface FormData {
     name: string;
     honorific?: string;
     email: string;
     password: string;
-    role: "student" | "lecturer";
+    role: 'student' | 'lecturer';
     studentId?: string;
     department?: string;
     lecturerId?: string;
-    courses?: string;
+    course?: string;         // single course for student
+    lecturerCourses?: string[]; // up to 3 for lecturer
 }
 
 interface RegistrationFormProps {
@@ -21,42 +23,96 @@ interface RegistrationFormProps {
 
 const RegistrationForm: React.FC<RegistrationFormProps> = ({ defaultRole }) => {
     const [formData, setFormData] = useState<FormData>({
-        name: "",
-    honorific: "",
-        email: "",
-        password: "",
+        name: '',
+        honorific: '',
+        email: '',
+        password: '',
         role: defaultRole,
-        studentId: "",
-        department: "",
-        lecturerId: "",
-        courses: "",
+        studentId: '',
+        department: '',
+        lecturerId: '',
+        course: '',
+        lecturerCourses: []
     });
+    const [courseError, setCourseError] = useState<string | null>(null);
+        const [courseQuery, setCourseQuery] = useState('');
 
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-    ) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        if (name === 'role') {
+            // reset course fields when switching roles
+            setFormData(prev => ({ ...prev, role: value as any, course: '', lecturerCourses: [] }));
+            setCourseError(null);
+            return;
+        }
+        setFormData({ ...formData, [name]: value });
     };
+
+    const toggleLecturerCourse = (course: string) => {
+        setFormData(prev => {
+            const exists = prev.lecturerCourses?.includes(course);
+            if (exists) {
+                return { ...prev, lecturerCourses: prev.lecturerCourses!.filter(c => c !== course) };
+            }
+            if ((prev.lecturerCourses?.length || 0) >= 3) {
+                setCourseError('Lecturers can select up to 3 courses.');
+                return prev;
+            }
+            setCourseError(null);
+            return { ...prev, lecturerCourses: [...(prev.lecturerCourses || []), course] };
+        });
+    };
+
+        const normalizedQuery = courseQuery.trim().toLowerCase();
+        const filteredCategories = COURSE_CATEGORIES.map(cat => ({
+            category: cat.category,
+            courses: cat.courses.filter(c => !normalizedQuery || c.toLowerCase().includes(normalizedQuery))
+        })).filter(cat => cat.courses.length > 0);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         setLoading(true)
 
-        try {
-        const res = await fetch(`${endPoint}/api/auth/register`,
-                //"http://192.168.210.143:5000/api/auth/register",
+                try {
+                if (formData.role === 'student') {
+                    if (!formData.course) {
+                        setCourseError('Please select a course');
+                        setLoading(false);
+                        return;
+                    }
+                } else if (formData.role === 'lecturer') {
+                    if (!formData.lecturerCourses || formData.lecturerCourses.length === 0) {
+                        setCourseError('Select at least one course');
+                        setLoading(false);
+                        return;
+                    }
+                }
 
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-            body: JSON.stringify(formData),
+                const payload: any = {
+                    name: formData.name,
+                    honorific: formData.honorific,
+                    email: formData.email.trim().toLowerCase(),
+                    password: formData.password.trim(),
+                    role: formData.role,
+                };
+                if (formData.role === 'student') {
+                    payload.studentId = formData.studentId?.trim();
+                    payload.course = formData.course; // single
+                } else {
+                    payload.lecturerId = formData.lecturerId?.trim();
+                    payload.courses = formData.lecturerCourses; // array
+                }
+
+                console.log('[Registration] Submitting', payload);
+                const res = await fetch(`${endPoint}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
             if (!res.ok) {
@@ -67,7 +123,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ defaultRole }) => {
             const data = await res.json();
             console.log("Registered:", data);
 
-            // Persist minimal user profile locally for UI personalization (role-aware)
+        // Persist minimal user profile locally for UI personalization (role-aware)
             try {
                 const [firstName, ...rest] = (formData.name || '').trim().split(/\s+/);
                 const lastName = rest.length ? rest[rest.length - 1] : '';
@@ -81,6 +137,8 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ defaultRole }) => {
                     role,
                     studentId: role === 'student' ? formData.studentId : undefined,
                     lecturerId: role === 'lecturer' ? formData.lecturerId : undefined,
+            course: role === 'student' ? formData.course : undefined,
+            courses: role === 'lecturer' ? formData.lecturerCourses : undefined,
                 } as any;
                 storeUser(role, storedUser);
                 setActiveRole(role);
@@ -191,34 +249,103 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ defaultRole }) => {
             </div>
 
             {/* Student-specific fields */}
-            {formData.role === "student" && (
-                <div className="form-group">
-                    <label htmlFor="studentId">Student ID</label>
-                    <input
-                        type="text"
-                        id="studentId"
-                        name="studentId"
-                        placeholder="Enter your Student ID"
-                        value={formData.studentId}
-                        onChange={handleChange}
-                    />
-                </div>
-            )}
+                        {formData.role === 'student' && (
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="studentId">Student ID</label>
+                                    <input
+                                        type="text"
+                                        id="studentId"
+                                        name="studentId"
+                                        placeholder="Enter your Student ID"
+                                        value={formData.studentId}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                                <div className="form-group">
+                                    <label>Course (select one)</label>
+                                                    <div style={{display:'flex',gap:8,marginBottom:6}}>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Search courses..."
+                                                            value={courseQuery}
+                                                            onChange={e => setCourseQuery(e.target.value)}
+                                                            style={{flex:1,padding:'6px 8px'}}
+                                                            aria-label="Search courses"
+                                                        />
+                                                        {courseQuery && <button type="button" onClick={() => setCourseQuery('')} style={{padding:'6px 10px'}}>Clear</button>}
+                                                    </div>
+                                    <select
+                                        name="course"
+                                        value={formData.course}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="">Select course</option>
+                                                        {filteredCategories.map(cat => (
+                                                            <optgroup key={cat.category} label={cat.category}>
+                                                                {cat.courses.map(c => <option key={c} value={c}>{c}</option>)}
+                                                            </optgroup>
+                                                        ))}
+                                    </select>
+                                </div>
+                            </>
+                        )}
 
             {/* Lecturer-specific fields */}
-            {formData.role === "lecturer" && (
-                <div className="form-group">
-                    <label htmlFor="lecturerId">Staff ID</label>
-                    <input
-                        type="text"
-                        id="lecturerId"
-                        name="lecturerId"
-                        placeholder="Enter your Staff ID"
-                        value={formData.lecturerId}
-                        onChange={handleChange}
-                    />
-                </div>
-            )}
+                        {formData.role === 'lecturer' && (
+                            <>
+                                <div className="form-group">
+                                    <label htmlFor="lecturerId">Staff ID</label>
+                                    <input
+                                        type="text"
+                                        id="lecturerId"
+                                        name="lecturerId"
+                                        placeholder="Enter your Staff ID"
+                                        value={formData.lecturerId}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                                <div className="form-group">
+                                    <label>Courses (select up to 3)</label>
+                                                    <div style={{display:'flex',gap:8,marginBottom:6}}>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Search courses..."
+                                                            value={courseQuery}
+                                                            onChange={e => setCourseQuery(e.target.value)}
+                                                            style={{flex:1,padding:'6px 8px'}}
+                                                            aria-label="Search courses"
+                                                        />
+                                                        {courseQuery && <button type="button" onClick={() => setCourseQuery('')} style={{padding:'6px 10px'}}>Clear</button>}
+                                                    </div>
+                                    <div style={{maxHeight:200,overflowY:'auto',border:'1px solid #ccc',padding:8,borderRadius:4}}>
+                                                        {filteredCategories.map(cat => (
+                                            <div key={cat.category} style={{marginBottom:8}}>
+                                                <div style={{fontWeight:600,fontSize:12,opacity:.8}}>{cat.category}</div>
+                                                {cat.courses.map(c => {
+                                                    const checked = formData.lecturerCourses?.includes(c);
+                                                    return (
+                                                        <label key={c} style={{display:'flex',alignItems:'center',gap:6,fontSize:13,margin:'2px 0'}}>
+                                                            <input
+                                                                type="checkbox"
+                                                                value={c}
+                                                                checked={checked}
+                                                                onChange={() => toggleLecturerCourse(c)}
+                                                                disabled={!checked && (formData.lecturerCourses?.length||0) >=3}
+                                                            />
+                                                            <span>{c}</span>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+            {courseError && <div className="alert alert-danger" role="alert">{courseError}</div>}
 
             <button type="submit" className="sign-in-btn" disabled={loading}>
                 {loading && (
