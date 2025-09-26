@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import endPoint from "../../utils/endpoint";
+import { setActiveRole } from '../../utils/auth';
 
 const LoginForm: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -57,6 +58,7 @@ const LoginForm: React.FC = () => {
                 
                 // Redirect based on role
                 const userRole = (data.user?.role || '').toLowerCase();
+                if (userRole) setActiveRole(userRole);
                 navigate(userRole === 'lecturer' ? "/lecturer-dashboard" : "/dashboard");
             } else {
                 const serverMessage = data?.message || data?.error || data?.details;

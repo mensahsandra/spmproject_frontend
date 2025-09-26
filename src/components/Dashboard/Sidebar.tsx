@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getActiveRole, getUser } from '../../utils/auth';
 
 const Sidebar: React.FC = () => {
     const navigate = useNavigate();
@@ -16,10 +17,16 @@ const Sidebar: React.FC = () => {
                 unread = hs.unreadCount ?? Number(localStorage.getItem('unreadNotifications') || '0');
         } catch {}
     const [aboutOpen, setAboutOpen] = React.useState(false);
-    // detect role
-    let role = '';
-    try { const raw = localStorage.getItem('user'); if (raw) role = (JSON.parse(raw).role || '').toLowerCase(); } catch {}
-
+    // detect role: prefer activeRole session flag, fallback to current path semantics or stored user
+    let role = getActiveRole() || '';
+    if (!role) {
+        if (path.startsWith('/lecturer')) role = 'lecturer';
+        else if (path.startsWith('/student')) role = 'student';
+        else {
+            const u = getUser();
+            role = (u?.role || '').toLowerCase();
+        }
+    }
     const isLecturer = role === 'lecturer';
 
     // helper: safe navigate ensuring role separation
@@ -51,9 +58,9 @@ const Sidebar: React.FC = () => {
                     <ul>
             {!isLecturer && (
                             <>
-                <li className={isActive('/student/dashboard') ? 'active' : ''} onClick={() => go('/student/dashboard')}>🏠 Home (Student)</li>
-                                <li className={isActive('/student/record-attendance') ? 'active' : ''} onClick={() => navigate('/student/record-attendance')}>📋 Attendance (Student)</li>
-                                <li className={isActive('/student/select-result') ? 'active' : ''} onClick={() => navigate('/student/select-result', { state: { showCurrent: true } })}>📊 Performance (Student)</li>
+                <li className={isActive('/student/dashboard') ? 'active' : ''} onClick={() => go('/student/dashboard')}>🏠 Home</li>
+                                <li className={isActive('/student/record-attendance') ? 'active' : ''} onClick={() => navigate('/student/record-attendance')}>📋 Attendance</li>
+                                <li className={isActive('/student/select-result') ? 'active' : ''} onClick={() => navigate('/student/select-result', { state: { showCurrent: true } })}>📊 Performance</li>
                                 <li className={isActive(/\/student\/deadlines|^\/student\/notifications/) ? 'active' : ''} onClick={() => navigate('/student/notifications?tab=deadlines', { state: { from: 'deadlines' } })}>
                                     📅 Deadlines
                                     {unread > 0 && (
