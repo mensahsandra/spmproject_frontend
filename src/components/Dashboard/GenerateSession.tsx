@@ -33,6 +33,7 @@ export default function GenerateSessionCode() {
   const [showQR, setShowQR] = useState(false);
   const [sessionData, setSessionData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
   const token = getToken('lecturer');
@@ -44,6 +45,10 @@ export default function GenerateSessionCode() {
       apiFetch(`/api/lecturers/${lecturerId}`, { method: 'GET', role: 'lecturer' })
         .then((data: any) => {
           const lecturerData = data.data || data.lecturer || data;
+          if (!lecturerData || lecturerData.error) {
+            setError(lecturerData?.message || 'Could not load lecturer profile');
+            return;
+          }
           setLecturer(lecturerData);
           if (lecturerData?.courses?.length) {
             const codes = lecturerData.courses
@@ -51,9 +56,11 @@ export default function GenerateSessionCode() {
               .filter(Boolean);
             setCourseCodes(codes);
             setCourseCode(codes[0]);
+          } else {
+            setError('No courses found. Add courses to your profile.');
           }
         })
-        .catch(err => console.error("Error fetching lecturer details:", err))
+        .catch(err => { console.error("Error fetching lecturer details:", err); setError('Failed to load lecturer details.'); })
         .finally(() => setLoading(false));
     } catch (err) {
       console.error("Invalid token:", err);
@@ -68,7 +75,9 @@ export default function GenerateSessionCode() {
       : expiryValue * 60 * 60 * 1000;
 
   const handleGenerate = async () => {
-    if (!lecturer || !courseCode) return;
+  setError(null);
+  if (!lecturer) { setError('Lecturer profile not loaded'); return; }
+  if (!courseCode) { setError('Select a course'); return; }
     const payload = {
       lecturer: lecturer._id,
       courseCode,
@@ -79,8 +88,9 @@ export default function GenerateSessionCode() {
   const data: any = await apiFetch('/api/attendance-sessions', { method: 'POST', role: 'lecturer', body: JSON.stringify(payload) });
   setSessionData(data.session || data.data || data);
       setShowQR(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error creating session:", err);
+      setError(err?.message || 'Failed to create session');
     } finally {
       setLoading(false);
     }
@@ -95,6 +105,9 @@ export default function GenerateSessionCode() {
               <h3 className="mb-4 fw-bold text-primary d-flex align-items-center gap-2">
                 <QrCode size={24} /> Generate Session Code
               </h3>
+              {error && (
+                <div className="alert alert-danger" style={{padding:'8px 12px',fontSize:13}}>{error}</div>
+              )}
               {loading && (
                 <div className="d-flex justify-content-center align-items-center my-3">
                   <Loader2 className="spin me-2" size={20} />

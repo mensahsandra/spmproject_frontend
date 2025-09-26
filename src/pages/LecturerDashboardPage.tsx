@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LecturerDashboard from "../components/Dashboard/LecutererDashboardCard";
-import DashboardLayout from "../components/Dashboard/DashboardLayout";
+import LecturerLayout from "../layouts/LecturerLayout";
+import TopBar from '../components/Dashboard/TopBar';
 import "../css/dashboard.css";
 
 const LecturerDashboardPage: React.FC = () => {
@@ -16,11 +17,14 @@ const LecturerDashboardPage: React.FC = () => {
         window.addEventListener('hashchange', applyHash);
         return () => window.removeEventListener('hashchange', applyHash);
     }, []);
-    return (
-        <DashboardLayout showGreeting maxWidth={900}>
-            <LecturerDashboard active={active} setActive={setActive} />
-        </DashboardLayout>
-    );
+        return (
+            <LecturerLayout>
+                <TopBar />
+                <div style={{padding:'20px 24px', width:'100%', boxSizing:'border-box'}}>
+                    <LecturerDashboard active={active} setActive={setActive} />
+                </div>
+            </LecturerLayout>
+        );
 };
 
 export default LecturerDashboardPage;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getUser } from '../../utils/auth';
+import { getUser, logout, getActiveRole } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom';
 
 const TopBar: React.FC = () => {
@@ -69,15 +69,14 @@ const TopBar: React.FC = () => {
                                         <button
                                             className="logout-btn"
                                             onClick={() => {
-                                                // Clear session/auth data
+                                                const active = (getActiveRole() || role) as string;
+                                                logout(active || undefined);
+                                                // remove any legacy single-user artifacts
                                                 try {
-                                                    localStorage.removeItem('token');
-                                                    localStorage.removeItem('user');
                                                     localStorage.removeItem('currentCenter');
                                                     localStorage.removeItem('selectedCenter');
                                                 } catch {}
-                                                // Navigate to login
-                                                navigate('/student-login', { replace: true });
+                                                navigate(active === 'lecturer' ? '/lecturer-login' : '/student-login', { replace: true });
                                             }}
                                         >
                                             Log Out
