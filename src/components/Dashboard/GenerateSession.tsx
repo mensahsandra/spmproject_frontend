@@ -34,6 +34,7 @@ export default function GenerateSessionCode() {
   const [sessionData, setSessionData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [manualCourse, setManualCourse] = useState("");
 
   useEffect(() => {
   const token = getToken('lecturer');
@@ -42,11 +43,12 @@ export default function GenerateSessionCode() {
       const decoded = jwtDecode<DecodedToken>(token);
       const lecturerId = decoded.id;
       setLoading(true);
-      apiFetch(`/api/lecturers/${lecturerId}`, { method: 'GET', role: 'lecturer' })
+  apiFetch(`/api/lecturers/${lecturerId}`, { method: 'GET', role: 'lecturer' })
         .then((data: any) => {
           const lecturerData = data.data || data.lecturer || data;
           if (!lecturerData || lecturerData.error) {
-            setError(lecturerData?.message || 'Could not load lecturer profile');
+    const msg = lecturerData?.message || lecturerData?.error || 'Could not load lecturer profile';
+    setError(msg === 'Route not found' ? 'Lecturer profile endpoint not found on backend.' : msg);
             return;
           }
           setLecturer(lecturerData);
@@ -57,7 +59,7 @@ export default function GenerateSessionCode() {
             setCourseCodes(codes);
             setCourseCode(codes[0]);
           } else {
-            setError('No courses found. Add courses to your profile.');
+    setError('No courses found. You can enter one manually below.');
           }
         })
         .catch(err => { console.error("Error fetching lecturer details:", err); setError('Failed to load lecturer details.'); })
@@ -77,10 +79,11 @@ export default function GenerateSessionCode() {
   const handleGenerate = async () => {
   setError(null);
   if (!lecturer) { setError('Lecturer profile not loaded'); return; }
-  if (!courseCode) { setError('Select a course'); return; }
+  const selectedCourse = courseCode || manualCourse.trim();
+  if (!selectedCourse) { setError('Select or enter a course'); return; }
     const payload = {
-      lecturer: lecturer._id,
-      courseCode,
+  lecturer: lecturer._id,
+  courseCode: selectedCourse,
       expiresAt: new Date(Date.now() + expiryInMs).toISOString(),
     };
     try {
@@ -124,9 +127,19 @@ export default function GenerateSessionCode() {
                 <label className="form-label fw-semibold">
                   <Book size={16} className="me-1 text-success" /> Course Code
                 </label>
-                <select value={courseCode} onChange={e => setCourseCode(e.target.value)} className="form-select">
-                  {courseCodes.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                {courseCodes.length > 0 ? (
+                  <select value={courseCode} onChange={e => setCourseCode(e.target.value)} className="form-select">
+                    {courseCodes.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter course code"
+                    value={manualCourse}
+                    onChange={e => setManualCourse(e.target.value)}
+                  />
+                )}
               </div>
               <div className="mb-4">
                 <label className="form-label fw-semibold">

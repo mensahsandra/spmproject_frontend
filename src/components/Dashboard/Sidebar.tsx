@@ -74,7 +74,7 @@ const Sidebar: React.FC = () => {
                         )}
             {isLecturer && (
                             <>
-                <li className={path === '/lecturer-dashboard' && !location.hash ? 'active' : ''} onClick={() => go('/lecturer-dashboard')}>🏠 Home</li>
+                <li className={path === '/lecturer-dashboard' && !location.hash ? 'active' : ''} onClick={() => { window.location.hash=''; go('/lecturer-dashboard'); }}>🏠 Home</li>
                                 <li className={location.hash === '#Generate-Session-Code' ? 'active' : ''} onClick={() => setLecturerSection('Generate-Session-Code')}>🧾 Generate Session</li>
                                 <li className={location.hash === '#View-Attendance-Log' ? 'active' : ''} onClick={() => setLecturerSection('View-Attendance-Log')}>📋 View Attendance</li>
                                 <li className={location.hash === '#Update-Grade' ? 'active' : ''} onClick={() => setLecturerSection('Update-Grade')}>📝 Update Grades</li>
