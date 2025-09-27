@@ -57,7 +57,7 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active }) => {
                     Icon={FaQrcode}
                     topColor="#064e3b"
                     bottomColor="#10b981"
-                    onClick={() => navigate('/lecturer/generatesession')}
+                    onClick={() => navigate('/lecturer/generatesession', { state: { fromNav: true } })}
                     hoverEffect={active !== "Generate-Session-Code"}
                     style={{ width: "100%" }}
                 />

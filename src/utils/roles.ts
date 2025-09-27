@@ -8,8 +8,8 @@ export function loginPath(role?: string) {
 }
 
 export function dashboardPath(role?: string) {
-  if (!role) return '/student-login';
-  return role === LECTURER_ROLE ? '/lecturer-dashboard' : '/dashboard';
+  if (!role) return '/student/dashboard';
+  return role === LECTURER_ROLE ? '/lecturer/dashboard' : '/student/dashboard';
 }
 
 export function normalizeRole(r?: string | null) {

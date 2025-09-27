@@ -75,7 +75,7 @@ const Sidebar: React.FC = () => {
             {isLecturer && (
                             <>
                 <li className={path === '/lecturer/dashboard' ? 'active' : ''} onClick={() => { window.location.hash=''; go('/lecturer/dashboard'); }}>🏠 Home</li>
-                                <li className={path === '/lecturer/generatesession' ? 'active' : ''} onClick={() => go('/lecturer/generatesession')}>🧾 Generate</li>
+                                <li className={path === '/lecturer/generatesession' ? 'active' : ''} onClick={() => navigate('/lecturer/generatesession', { state: { fromNav: true } })}>🧾 Generate</li>
                                 <li className={path === '/lecturer/attendance' ? 'active' : ''} onClick={() => go('/lecturer/attendance')}>📋 Attendance</li>
                                 <li className={path === '/lecturer/assessment' ? 'active' : ''} onClick={() => go('/lecturer/assessment')}>📝 Assessment</li>
                                 <li className={path === '/lecturer/export' ? 'active' : ''} onClick={() => go('/lecturer/export')}>📤 Export</li>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import endPoint from "../../utils/endpoint";
 import { attemptLogin } from "../../utils/loginApi";
 import { storeToken, storeRefreshToken, storeUser, setActiveRole } from '../../utils/auth';
+import { useAuth } from '../../context/AuthContext';
 
 const LecturerLoginForm: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ const LecturerLoginForm: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
+    const { refresh, switchRole } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,7 +32,12 @@ const LecturerLoginForm: React.FC = () => {
         console.log('[LecturerLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
 
         try {
-            const variants = [ payload, { ...payload, studentId: staffId } ]; // second variant if backend reuses studentId for all users
+            const variants = [
+                payload,
+                { ...payload, studentId: staffId },
+                { ...payload, staffId },
+                { ...payload, lecturerId: staffId },
+            ];
             const { response, data, variantIndex, variantPayload } = await attemptLogin(`${endPoint}/api/auth/login`, variants, { debug: true });
             console.log('[LecturerLogin] Final attempt result', { variantIndex, variantPayload, status: response.status, body: data });
             if (response.ok && (data?.success || data?.ok)) {
@@ -45,6 +52,8 @@ const LecturerLoginForm: React.FC = () => {
                 if (data.refreshToken) storeRefreshToken(role, data.refreshToken);
                 storeUser(role, user);
                 setActiveRole(role);
+                switchRole(role);
+                await refresh(role);
                 console.log("Login successful:", user);
                 navigate("/lecturer-dashboard");
             } else {

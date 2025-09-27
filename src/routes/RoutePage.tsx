@@ -22,14 +22,22 @@ import LecturerExportPage from '../pages/LecturerExportPage';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import { normalizeRole } from '../utils/roles';
 import StudentLayout from '../layouts/StudentLayout';
-import LecturerLayout from '../layouts/LecturerLayout';
 
 const withStudent = (node: React.ReactNode) => <StudentLayout>{node}</StudentLayout>;
-const withLecturer = (node: React.ReactNode) => <LecturerLayout>{node}</LecturerLayout>;
+const withLecturer = (node: React.ReactNode) => <>{node}</>;
 
 const RoutePage = () => {
+  console.log('RoutePage rendering...');
+  
   return (
     <Routes>
+      <Route path="/test" element={
+        <div style={{ padding: '20px', background: 'red', color: 'white', minHeight: '100vh' }}>
+          <h1>BASIC TEST PAGE</h1>
+          <p>React is working!</p>
+          <p>Current URL: {window.location.href}</p>
+        </div>
+      } />
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Navigate to="/student-login" />} />
       <Route path="/student-login" element={<StudentLoginPage />} />
@@ -109,6 +117,13 @@ const RoutePage = () => {
       } />
       {/* Alias route for generate session */}
       <Route path="/lecturer/generatesession" element={
+        <div style={{ padding: '20px', background: 'white', minHeight: '100vh' }}>
+          <h1>Generate Session Test Page</h1>
+          <p>If you can see this, routing is working!</p>
+          <p>Path: /lecturer/generatesession</p>
+        </div>
+      } />
+      <Route path="/lecturer/generatesession-protected" element={
         <ProtectedRoute requiredRole="lecturer">
           {withLecturer(<LecturerGeneratePage />)}
         </ProtectedRoute>
@@ -124,6 +139,20 @@ const RoutePage = () => {
             return role === 'lecturer' ? withLecturer(<ProfilePage />) : withStudent(<ProfilePage />);
           })()}
         </ProtectedRoute>
+      } />
+      {/* Catch-all route for debugging */}
+      <Route path="*" element={
+        <div style={{ padding: '20px', background: 'orange', color: 'black', minHeight: '100vh' }}>
+          <h1>Route Not Found</h1>
+          <p>Current path: {window.location.pathname}</p>
+          <p>Available routes:</p>
+          <ul>
+            <li>/test - Basic test page</li>
+            <li>/lecturer/generatesession - Generate session test</li>
+            <li>/lecturer/dashboard - Lecturer dashboard</li>
+            <li>/student/dashboard - Student dashboard</li>
+          </ul>
+        </div>
       } />
     </Routes>
   );
