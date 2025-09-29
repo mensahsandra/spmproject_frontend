@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import endPoint from "../../utils/endpoint";
+import { getApiBase } from "../../utils/endpoint";
 import { attemptLogin } from "../../utils/loginApi";
 import { storeToken, storeRefreshToken, storeUser, setActiveRole } from '../../utils/auth';
 import { useAuth } from '../../context/AuthContext';
@@ -29,7 +29,9 @@ const LecturerLoginForm: React.FC = () => {
             password: normalizedPassword,
         };
         console.log('submit handler firing (lecturer)', payload);
-        console.log('[LecturerLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
+        const apiBase = getApiBase();
+        console.log('[LecturerLogin] Using API base:', apiBase);
+        console.log('[LecturerLogin] Submitting POST', `${apiBase}/api/auth/login`, payload);
 
         try {
             const variants = [
@@ -38,7 +40,7 @@ const LecturerLoginForm: React.FC = () => {
                 { ...payload, staffId },
                 { ...payload, lecturerId: staffId },
             ];
-            const { response, data, variantIndex, variantPayload } = await attemptLogin(`${endPoint}/api/auth/login`, variants, { debug: true });
+            const { response, data, variantIndex, variantPayload } = await attemptLogin(`${apiBase}/api/auth/login`, variants, { debug: true });
             console.log('[LecturerLogin] Final attempt result', { variantIndex, variantPayload, status: response.status, body: data });
             if (response.ok && (data?.success || data?.ok)) {
                 const user = {
@@ -62,7 +64,7 @@ const LecturerLoginForm: React.FC = () => {
                 setError(serverMessage || `Login failed (${response.status}) after trying ${variantIndex + 1} variant(s)`);
             }
         } catch (error) {
-            console.error("Login error (lecturer) endpoint=", endPoint, "payload=", payload, error);
+            console.error("Login error (lecturer) endpoint=", apiBase, "payload=", payload, error);
             setError("Network/connection error. Backend unreachable or blocked.");
         }
     };

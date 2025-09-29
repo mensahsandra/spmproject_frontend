@@ -1,141 +1,309 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import endPoint from '../../utils/endpoint';
+import { useEffect, useState } from 'react';
+import { Users, Clock, MapPin, User, Book, UserCheck } from 'lucide-react';
 import { apiFetch } from '../../utils/api';
-import AttendanceFilter from './AttendanceFilter';
+import { getToken } from '../../utils/auth';
+import { jwtDecode } from 'jwt-decode';
 
-const AttendanceLogs: React.FC = () => {
-  const [logs, setLogs] = useState<any[]>([]);
-  const [courseCode, setCourseCode] = useState('');
-  const [sessionCode, setSessionCode] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [limit, setLimit] = useState(25);
-  // new date filter controls
-  const [filterType, setFilterType] = useState<'day' | 'week' | 'month'>('day');
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const d = new Date();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${d.getFullYear()}-${m}-${day}`;
-  });
+type DecodedToken = {
+  id: string;
+  exp: number;
+  iat: number;
+};
 
-  const load = async () => {
-    setError(''); setLoading(true);
+type AttendanceRecord = {
+  _id: string;
+  studentId: string;
+  studentName: string;
+  centre: string;
+  timestamp: string;
+  sessionCode: string;
+  courseCode: string;
+};
+
+type SessionInfo = {
+  lecturer: string;
+  courseCode: string;
+  classRepresentative: string;
+  totalAttendees: number;
+};
+
+export default function AttendanceLogs() {
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAttendanceData();
+    
+    // Set up polling to refresh data every 10 seconds
+    const interval = setInterval(fetchAttendanceData, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchAttendanceData = async () => {
     try {
-      const params = new URLSearchParams();
-      if (courseCode) params.set('courseCode', courseCode);
-      if (sessionCode) params.set('sessionCode', sessionCode);
-      params.set('page', String(page));
-      params.set('limit', String(limit));
-  // include optional date filters for backend; if backend ignores, we'll client-filter below
-  if (selectedDate) params.set('date', selectedDate);
-  if (filterType) params.set('filterType', filterType);
-  const data: any = await apiFetch(`/api/attendance/logs?${params.toString()}`, { method: 'GET', role: 'lecturer' });
-      if (!data.ok) throw new Error(data.message || 'Request failed');
-      setLogs(data.logs || []);
-      setTotalPages(data.totalPages || 1);
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load');
+      const token = getToken('lecturer');
+      if (!token) {
+        setError('Please log in as a lecturer to view attendance.');
+        return;
+      }
+
+      const decoded = jwtDecode<DecodedToken>(token);
+      const lecturerId = decoded.id;
+
+      // Fetch lecturer profile for session info
+      const profileData = await apiFetch('/api/auth/lecturer/profile', { 
+        method: 'GET', 
+        role: 'lecturer' 
+      });
+
+      if (profileData.success && profileData.lecturer) {
+        const lecturer = profileData.lecturer;
+        
+        // Fetch attendance records
+        const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
+          method: 'GET',
+          role: 'lecturer'
+        });
+
+        if (attendanceData.success) {
+          const records = attendanceData.records || [];
+          setAttendanceRecords(records);
+          
+          // Set session info
+          setSessionInfo({
+            lecturer: lecturer.name || 'Unknown Lecturer',
+            courseCode: records.length > 0 ? records[0].courseCode : 'No Active Session',
+            classRepresentative: 'To be assigned', // This would come from backend
+            totalAttendees: records.length
+          });
+        } else {
+          setAttendanceRecords([]);
+          setSessionInfo({
+            lecturer: lecturer.name || 'Unknown Lecturer',
+            courseCode: 'No Active Session',
+            classRepresentative: 'N/A',
+            totalAttendees: 0
+          });
+        }
+      }
+    } catch (err: any) {
+      console.error('Error fetching attendance data:', err);
+      setError('Failed to load attendance data. This feature requires backend support.');
+      
+      // Mock data for demonstration
+      setSessionInfo({
+        lecturer: 'Kwabena Lecturer',
+        courseCode: 'CS101 - Introduction to Computer Science',
+        classRepresentative: 'John Doe',
+        totalAttendees: 3
+      });
+      
+      setAttendanceRecords([
+        {
+          _id: '1',
+          studentId: '1234567',
+          studentName: 'Ransford Student',
+          centre: 'Kumasi',
+          timestamp: new Date().toISOString(),
+          sessionCode: 'ABC123',
+          courseCode: 'CS101'
+        },
+        {
+          _id: '2',
+          studentId: '2345678',
+          studentName: 'Jane Smith',
+          centre: 'Accra',
+          timestamp: new Date(Date.now() - 300000).toISOString(),
+          sessionCode: 'ABC123',
+          courseCode: 'CS101'
+        },
+        {
+          _id: '3',
+          studentId: '3456789',
+          studentName: 'Michael Johnson',
+          centre: 'Takoradi',
+          timestamp: new Date(Date.now() - 600000).toISOString(),
+          sessionCode: 'ABC123',
+          courseCode: 'CS101'
+        }
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { load(); // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit, filterType, selectedDate]);
-
-  // client-side filter fallback by date if server didn't filter
-  const filteredLogs = useMemo(() => {
-    if (!selectedDate || !logs?.length) return logs;
-    const base = new Date(selectedDate);
-    const start = new Date(base);
-    const end = new Date(base);
-    if (filterType === 'day') {
-      end.setDate(end.getDate() + 1);
-    } else if (filterType === 'week') {
-      // assume week starts on Monday
-      const day = start.getDay();
-      const diffToMonday = (day + 6) % 7; // 0->6, 1->0, ..., 6->5
-      start.setDate(start.getDate() - diffToMonday);
-      end.setDate(start.getDate() + 7);
-    } else if (filterType === 'month') {
-      start.setDate(1);
-      end.setMonth(start.getMonth() + 1);
-      end.setDate(1);
-    }
-    const s = start.getTime();
-    const e = end.getTime();
-    return logs.filter((r: any) => {
-      const t = new Date(r.timestamp || r.scannedAt || r.createdAt || r.time).getTime();
-      return !isNaN(t) && t >= s && t < e;
+  const formatTime = (timestamp: string) => {
+    return new Date(timestamp).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
     });
-  }, [logs, filterType, selectedDate]);
-
-  const exportCsv = () => {
-    const url = new URL(`${endPoint}/api/attendance/export`);
-    if (courseCode) url.searchParams.set('courseCode', courseCode);
-    if (sessionCode) url.searchParams.set('sessionCode', sessionCode);
-    if (selectedDate) url.searchParams.set('date', selectedDate);
-    if (filterType) url.searchParams.set('filterType', filterType);
-    window.open(url.toString(), '_blank');
   };
 
+  const formatDate = (timestamp: string) => {
+    return new Date(timestamp).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="container py-4">
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="text-muted">Loading attendance data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <AttendanceFilter
-        filterType={filterType}
-        setFilterType={setFilterType}
-        selectedDate={selectedDate}
-        setSelectedDate={(v) => { setSelectedDate(v); setPage(1); }}
-      />
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        <input placeholder="Course Code" value={courseCode} onChange={e => setCourseCode(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #e5e7eb' }} />
-        <input placeholder="Session Code" value={sessionCode} onChange={e => setSessionCode(e.target.value)} style={{ padding: 8, borderRadius: 8, border: '1px solid #e5e7eb' }} />
-        <button onClick={() => { setPage(1); load(); }} disabled={loading} style={{ background: '#10A75B', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 8, cursor: 'pointer' }}>{loading ? 'Loading...' : 'Filter'}</button>
-        <button onClick={exportCsv} style={{ background: '#047857', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 8, cursor: 'pointer' }}>Export CSV</button>
-        <select value={limit} onChange={e => { setLimit(Number(e.target.value)); setPage(1);} } style={{ padding: 8, borderRadius: 8, border: '1px solid #e5e7eb' }}>
-          {[10,25,50,100].map(l => <option key={l} value={l}>{l}/page</option>)}
-        </select>
+    <div className="container py-4" style={{ paddingLeft: 0, paddingRight: 0 }}>
+      {/* Session Header */}
+      <div className="card shadow-sm border-0 mb-4">
+        <div className="card-body p-4">
+          <div className="row align-items-center">
+            <div className="col-md-8">
+              <h3 className="mb-3 fw-bold text-primary d-flex align-items-center gap-2">
+                <Users size={24} /> Attendance Logs
+              </h3>
+              <div className="row g-3">
+                <div className="col-sm-6">
+                  <div className="d-flex align-items-center gap-2">
+                    <User size={16} className="text-success" />
+                    <span className="fw-semibold">Lecturer:</span>
+                    <span>{sessionInfo?.lecturer}</span>
+                  </div>
+                </div>
+                <div className="col-sm-6">
+                  <div className="d-flex align-items-center gap-2">
+                    <Book size={16} className="text-success" />
+                    <span className="fw-semibold">Course:</span>
+                    <span>{sessionInfo?.courseCode}</span>
+                  </div>
+                </div>
+                <div className="col-sm-6">
+                  <div className="d-flex align-items-center gap-2">
+                    <UserCheck size={16} className="text-success" />
+                    <span className="fw-semibold">Class Rep:</span>
+                    <span>{sessionInfo?.classRepresentative}</span>
+                  </div>
+                </div>
+                <div className="col-sm-6">
+                  <div className="d-flex align-items-center gap-2">
+                    <Users size={16} className="text-success" />
+                    <span className="fw-semibold">Total Attendees:</span>
+                    <span className="badge bg-success">{sessionInfo?.totalAttendees}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-4 text-md-end">
+              <div className="text-muted">
+                <small>Last updated: {new Date().toLocaleTimeString()}</small>
+              </div>
+              <button 
+                onClick={fetchAttendanceData}
+                className="btn btn-outline-primary btn-sm mt-2"
+                disabled={loading}
+              >
+                Refresh Data
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style={{ marginTop: 8, display: 'flex', gap: 8, alignItems: 'center' }}>
-        <button disabled={page<=1} onClick={() => setPage(p=>Math.max(1,p-1))} style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #d1d5db', background: page<=1? '#f3f4f6':'#fff', cursor: page<=1? 'not-allowed':'pointer' }}>Prev</button>
-        <div style={{ fontSize: 13 }}>Page {page} / {totalPages}</div>
-        <button disabled={page>=totalPages} onClick={() => setPage(p=>Math.min(totalPages,p+1))} style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #d1d5db', background: page>=totalPages? '#f3f4f6':'#fff', cursor: page>=totalPages? 'not-allowed':'pointer' }}>Next</button>
+
+      {/* Error Message */}
+      {error && (
+        <div className="alert alert-warning mb-4">
+          <strong>Note:</strong> {error}
+          <br />
+          <small>Showing sample data for demonstration purposes.</small>
+        </div>
+      )}
+
+      {/* Attendance Table */}
+      <div className="card shadow-sm border-0">
+        <div className="card-body p-0">
+          {attendanceRecords.length === 0 ? (
+            <div className="text-center py-5">
+              <Users size={48} className="text-muted mb-3" />
+              <h5 className="text-muted">No attendance records yet</h5>
+              <p className="text-muted">Students who mark attendance will appear here in real-time.</p>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-hover mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th scope="col" className="px-4 py-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <Clock size={16} />
+                        Time
+                      </div>
+                    </th>
+                    <th scope="col" className="px-4 py-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <User size={16} />
+                        Student ID
+                      </div>
+                    </th>
+                    <th scope="col" className="px-4 py-3">Student Name</th>
+                    <th scope="col" className="px-4 py-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <MapPin size={16} />
+                        Centre
+                      </div>
+                    </th>
+                    <th scope="col" className="px-4 py-3">Session Code</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {attendanceRecords.map((record, index) => (
+                    <tr key={record._id} className={index === 0 ? 'table-success' : ''}>
+                      <td className="px-4 py-3">
+                        <div>
+                          <div className="fw-semibold">{formatTime(record.timestamp)}</div>
+                          <small className="text-muted">{formatDate(record.timestamp)}</small>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="badge bg-primary">{record.studentId}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="fw-semibold">{record.studentName}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="badge bg-info">{record.centre}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <code>{record.sessionCode}</code>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
-      {error && <div style={{ color: '#dc2626', marginTop: 8 }}>{error}</div>}
-      <div style={{ marginTop: 12, overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f3f4f6' }}>
-              <th style={{ textAlign: 'left', padding: 8 }}>Time</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Student ID</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Centre</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Course</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Lecturer</th>
-              <th style={{ textAlign: 'left', padding: 8 }}>Session Code</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredLogs.map((r, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <td style={{ padding: 8 }}>{r.timestamp}</td>
-                <td style={{ padding: 8 }}>{r.studentId}</td>
-                <td style={{ padding: 8 }}>{r.centre || '-'}</td>
-                <td style={{ padding: 8 }}>{r.courseCode ? `${r.courseCode} - ${r.courseName || ''}` : (r.courseName || '-')}</td>
-                <td style={{ padding: 8 }}>{r.lecturer || '-'}</td>
-                <td style={{ padding: 8 }}>{r.sessionCode || '-'}</td>
-              </tr>
-            ))}
-            {filteredLogs.length === 0 && !loading && (
-              <tr><td colSpan={6} style={{ padding: 12, textAlign: 'center', color: '#6b7280' }}>No records</td></tr>
-            )}
-          </tbody>
-        </table>
+
+      {/* Auto-refresh indicator */}
+      <div className="text-center mt-3">
+        <small className="text-muted">
+          <Clock size={12} className="me-1" />
+          Auto-refreshing every 10 seconds
+        </small>
       </div>
     </div>
   );
-};
-
-export default AttendanceLogs;
+}

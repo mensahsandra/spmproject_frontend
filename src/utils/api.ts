@@ -6,7 +6,7 @@ import { logout, getToken, getRefreshToken, storeToken, storeRefreshToken, getAc
 // - Backend endpoints: POST /api/auth/refresh { refreshToken } -> { token, refreshToken? }
 // - Optional user info endpoint: GET /api/auth/me -> { user }
 
-const endPoint = (await import('./endpoint')).default;
+const { getApiBase } = await import('./endpoint');
 
 let refreshing: Promise<string | null> | null = null;
 
@@ -14,7 +14,7 @@ async function refreshToken(role?: string): Promise<string | null> {
   if (refreshing) return refreshing;
   const rt = getRefreshToken(role);
   if (!rt) return null;
-  refreshing = fetch(`${endPoint}/api/auth/refresh`, {
+  refreshing = fetch(`${getApiBase()}/api/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken: rt })
@@ -51,6 +51,7 @@ export interface ApiOptions extends RequestInit {
 
 export async function apiFetch<T = any>(path: string, options: ApiOptions = {}): Promise<T> {
   const { role, retry, headers, ...rest } = options;
+  const endPoint = getApiBase();
   const res = await fetch(`${endPoint}${path}`, {
     ...rest,
     headers: { ...getAuthHeaders(role, role), ...(headers || {}) }

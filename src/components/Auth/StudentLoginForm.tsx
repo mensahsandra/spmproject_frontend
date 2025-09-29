@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import endPoint from "../../utils/endpoint";
+import { getApiBase } from "../../utils/endpoint";
 import { attemptLogin } from "../../utils/loginApi";
 import { storeToken, storeRefreshToken, storeUser, setActiveRole } from '../../utils/auth';
+import { useAuth } from '../../context/AuthContext';
 
 const StudentLoginForm: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -12,40 +13,52 @@ const StudentLoginForm: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
+    const { refresh, switchRole } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
-    // Normalize / sanitize inputs
-    const normalizedEmail = email.trim().toLowerCase();
-    const normalizedStudentId = studentId.trim();
-    const normalizedPassword = password.trim();
-    const payload = { email: normalizedEmail, password: normalizedPassword, studentId: normalizedStudentId };
-    console.log('submit handler firing (student)', payload);
-    console.log('[StudentLogin] Submitting POST', `${endPoint}/api/auth/login`, payload);
+        // Normalize / sanitize inputs
+        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedStudentId = studentId.trim();
+        const normalizedPassword = password.trim();
+        const payload = { email: normalizedEmail, password: normalizedPassword, studentId: normalizedStudentId };
+        
+        const apiBase = getApiBase();
+        console.log('submit handler firing (student)', payload);
+        console.log('[StudentLogin] Using API base:', apiBase);
+        console.log('[StudentLogin] Submitting POST', `${apiBase}/api/auth/login`, payload);
 
         try {
             // Build variants: start with original then alternative key spellings/backends.
             // Only send backend-documented fields to avoid schema rejection.
             // Backend doc (login endpoint message) says: { email, password, studentId? }
             const variants = [ payload ];
-            const { response, data, variantIndex, variantPayload } = await attemptLogin(`${endPoint}/api/auth/login`, variants, { debug: true });
+            const { response, data, variantIndex, variantPayload } = await attemptLogin(`${apiBase}/api/auth/login`, variants, { debug: true });
             console.log('[StudentLogin] Final attempt result', { variantIndex, variantPayload, status: response.status, body: data });
             if (response.ok && (data?.success || data?.ok)) {
-                const role = (data.user?.role || 'student').toLowerCase();
+                const user = {
+                    ...data.user,
+                    role: 'student',
+                    studentId: data.user?.studentId || normalizedStudentId,
+                };
+                const role = 'student';
                 storeToken(role, data.token);
                 if (data.refreshToken) storeRefreshToken(role, data.refreshToken);
-                storeUser(role, data.user);
+                storeUser(role, user);
                 setActiveRole(role);
-                console.log("Login successful:", role, data.user);
-                navigate(role === 'lecturer' ? "/lecturer-dashboard" : "/dashboard");
+                switchRole(role);
+                await refresh(role);
+                console.log("Login successful:", user);
+                navigate("/student/dashboard");
             } else {
+                console.warn('Student login failed response:', data);
                 const serverMessage = data?.message || data?.error || data?.details;
                 setError(serverMessage || `Login failed (${response.status}) after trying ${variantIndex + 1} variant(s)`);
             }
         } catch (error) {
-            console.error("Login error (student) endpoint=", endPoint, "payload=", payload, error);
+            console.error("Login error (student) endpoint=", apiBase, "payload=", payload, error);
             setError("Network/connection error. Backend unreachable or blocked.");
         }
     };

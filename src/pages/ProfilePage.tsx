@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { getUser } from '../utils/auth';
+import DashboardLayout from '../components/Dashboard/DashboardLayout';
 
 const field: React.CSSProperties = {
   display: 'flex',
@@ -69,8 +70,9 @@ const ProfilePage: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-      <div style={card as React.CSSProperties}>
+    <DashboardLayout showGreeting={true} maxWidth={1000}>
+      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <div style={card as React.CSSProperties}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 160, height: 160, borderRadius: 12, overflow: 'hidden', background: '#eef2ff' }}>
             <img
@@ -134,15 +136,16 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      <div style={{ marginLeft: 24 }}>
-        <button
-          className="logout-btn"
-          onClick={() => { localStorage.removeItem('token'); window.location.href = '/student-login'; }}
-        >
-          Log Out
-        </button>
+        <div style={{ marginLeft: 24 }}>
+          <button
+            className="logout-btn"
+            onClick={() => { localStorage.removeItem('token'); window.location.href = '/student-login'; }}
+          >
+            Log Out
+          </button>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

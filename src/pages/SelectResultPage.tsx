@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 // import AcademicYearSelect from "../components/Results/AcademicYearSelect";
 import { useNavigate } from "react-router-dom";
+import DashboardLayout from "../components/Dashboard/DashboardLayout";
 
 const ResultsPage: React.FC = () => {
     const [year, setYear] = useState("");
@@ -22,8 +23,8 @@ const ResultsPage: React.FC = () => {
     };
 
     return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', position: 'relative' }}>
-            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+        <DashboardLayout showGreeting={true} maxWidth={800}>
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
                 <div style={{ width: '100%', maxWidth: 600, margin: '0 auto' }}>
                     <div style={{ background: '#fff', borderRadius: '18px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', padding: '40px 32px', position: 'relative' }}>
                         <h2 className="fw-bold text-center mb-4" style={{ color: '#222', fontSize: '2.2rem' }}>Check Grade</h2>
@@ -93,7 +94,7 @@ const ResultsPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </DashboardLayout>
     );
 };
 

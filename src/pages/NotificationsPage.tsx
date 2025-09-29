@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import DashboardLayout from '../components/Dashboard/DashboardLayout';
 import '../css/notifications.css';
 
 interface NotificationItem {
@@ -246,10 +247,11 @@ const NotificationsPage: React.FC = () => {
     };
 
     return (
-        <div className="notifications-page">
-            <div className="notifications-header">
-                {activeTab !== 'deadlines' && <h1>Notifications</h1>}
-            </div>
+        <DashboardLayout showGreeting={true} maxWidth={1000}>
+            <div className="notifications-page">
+                <div className="notifications-header">
+                    {activeTab !== 'deadlines' && <h1>Notifications</h1>}
+                </div>
             <div className="notifications-tabs">
                 <button 
                     className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
@@ -350,7 +352,8 @@ const NotificationsPage: React.FC = () => {
                     );
                 })}
             </div>
-        </div>
+            </div>
+        </DashboardLayout>
     );
 };
 

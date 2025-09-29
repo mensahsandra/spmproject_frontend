@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import DashboardLayout from "../components/Dashboard/DashboardLayout";
 
 const DisplayResultPage: React.FC = () => {
     const userDataRaw = localStorage.getItem("user");
@@ -40,15 +41,15 @@ const DisplayResultPage: React.FC = () => {
     const { year = "2024/2025", block = "Block 1" } = (location.state as any) || {};
 
     return (
-        <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
+        <DashboardLayout showGreeting={true} maxWidth={1000}>
             {/* Green banner */}
-            <div style={{ width: '100%', height: '70px', background: '#d9f5e6', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: '18px', borderTopRightRadius: '18px' }}>
+            <div style={{ width: '100%', height: '70px', background: '#d9f5e6', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: '18px', borderTopRightRadius: '18px', marginBottom: '20px' }}>
                 <div style={{ textAlign: 'center' }}>
                     <div style={{ fontWeight: 700, fontSize: '1.35rem', color: '#222' }}>KWAME NKRUMAH UNIVERSITY OF SCIENCE AND TECHNOLOGY, KUMASI</div>
                     <div style={{ fontWeight: 500, fontSize: '1.1rem', color: '#16a34a' }}>GRADES FOR  SEMESTER 1, {block.toUpperCase()}, {year}</div>
                 </div>
             </div>
-            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 'calc(100vh - 70px)' }}>
+            <div className="d-flex justify-content-center align-items-center">
                 <div style={{ width: '100%', maxWidth: 900, margin: '0 auto' }}>
                     <div style={{ background: '#fff', borderRadius: '18px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', padding: '40px 32px', position: 'relative' }}>
                         {/* Student Info Card */}
@@ -143,7 +144,7 @@ const DisplayResultPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </DashboardLayout>
     );
 };
 

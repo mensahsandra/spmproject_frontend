@@ -1,29 +1,35 @@
-// Derive API base URL following priority:
-// 1. Explicit VITE_API_URL env
-// 2. If running on a production host (e.g. vercel.app) and no env var, assume deployed backend domain
-// 3. Fallback to local dev server
+// Simple endpoint configuration
+// Force production backend URL for all Vercel deployments
 
-const envUrl = (import.meta as any)?.env?.VITE_API_URL as string | undefined;
+// Force production backend for all deployments
+const PRODUCTION_BACKEND = 'https://spmproject-backend.vercel.app';
 
-function inferProdApi(): string | undefined {
-	if (typeof window === 'undefined') return undefined;
-	const host = window.location.host;
-	// If frontend deployed to vercel and no env configured, infer backend subdomain
-	if (/vercel\.app$/i.test(host)) {
-		// Hardcode known backend domain for now
-		return 'https://spmproject-backend.vercel.app';
+function getEndpoint(): string {
+	// Always use production backend for Vercel deployments
+	if (typeof window !== 'undefined') {
+		const host = window.location.host;
+		console.log('[API] Current host:', host);
+		
+		if (host.includes('vercel.app')) {
+			console.log('[API] Using production backend for Vercel deployment');
+			return PRODUCTION_BACKEND;
+		}
+		
+		if (host.includes('localhost') || host.includes('127.0.0.1')) {
+			console.log('[API] Using local backend for development');
+			return 'http://127.0.0.1:3000';
+		}
 	}
-	return undefined;
+	
+	// Default to production backend
+	console.log('[API] Using production backend as default');
+	return PRODUCTION_BACKEND;
 }
 
-const derived = envUrl?.trim() || inferProdApi() || 'http://127.0.0.1:3000';
-
-// Normalize: remove trailing slashes
-const endPoint = derived.replace(/\/$/, '');
-
-if (typeof window !== 'undefined') {
-	console.log('[API] Base endpoint selected:', endPoint);
+// Create a getter function that always evaluates at runtime
+export function getApiBase(): string {
+	return getEndpoint();
 }
 
-export function getApiBase() { return endPoint; }
-export default endPoint;
+// For compatibility, export a default that gets the endpoint
+export default getEndpoint();
