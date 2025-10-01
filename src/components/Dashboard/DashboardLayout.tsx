@@ -7,11 +7,10 @@ import { useShowGreeting } from '../../hooks/useShowGreeting';
 interface DashboardLayoutProps {
   children: React.ReactNode;
   showGreeting?: boolean;
-  maxWidth?: number;
   style?: React.CSSProperties;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, showGreeting = false, maxWidth = 1000, style }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, showGreeting = false, style }) => {
   const shouldShowGreeting = useShowGreeting();
   const displayGreeting = showGreeting || shouldShowGreeting;
 
