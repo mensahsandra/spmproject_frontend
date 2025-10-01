@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getUser, logout } from '../utils/auth';
+import { getUser } from '../utils/auth';
 import AcademicSidebar from '../components/Dashboard/AcademicSidebar';
-import AcademicHeader from '../components/Dashboard/AcademicHeader';
-import StudentDashboard from '../components/Dashboard/StudentDashboard';
 
 const DashboardPage: React.FC = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("Home");
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,40 +25,6 @@ const DashboardPage: React.FC = () => {
     }
     setIsLoading(false);
   }, []);
-
-  // Mock dashboard data - replace with your actual API calls
-  const dashboardData = {
-    stats: {
-      totalAttended: 24,
-      coursesEnrolled: 6,
-      unreadNotifications: 3,
-    },
-    notifications: [
-      {
-        id: '1',
-        title: 'Assignment Due Soon',
-        message: 'Computer Networks assignment is due in 2 days',
-        priority: 'urgent' as const,
-        daysLeft: 2,
-      },
-      {
-        id: '2',
-        title: 'Exam Schedule Released',
-        message: 'Mid-semester exam schedule has been published',
-        priority: 'normal' as const,
-        daysLeft: 7,
-      },
-    ],
-  };
-
-  const handleLogout = () => {
-    logout(); // Use your existing logout function
-    window.location.href = '/student-login'; // Redirect to your login page
-  };
-
-  const handleNotificationClick = () => {
-    setActiveItem("Deadlines");
-  };
 
   if (isLoading) {
     return (
@@ -116,7 +79,6 @@ const DashboardPage: React.FC = () => {
     }}>
       {/* Keep the beautiful new sidebar */}
       <AcademicSidebar
-        onClose={() => setSidebarOpen(false)}
         userRole={user.role}
         activeItem={activeItem}
         onItemClick={setActiveItem}
