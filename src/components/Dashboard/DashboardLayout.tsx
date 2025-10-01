@@ -1,8 +1,6 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import ProfileDropdown from '../ProfileDropdown';
-import GreetingSection from './GreetingSection';
-import { useShowGreeting } from '../../hooks/useShowGreeting';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -10,9 +8,7 @@ interface DashboardLayoutProps {
   style?: React.CSSProperties;
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, showGreeting = false, style }) => {
-  const shouldShowGreeting = useShowGreeting();
-  const displayGreeting = showGreeting || shouldShowGreeting;
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) => {
 
   return (
     <div className="dashboard">
