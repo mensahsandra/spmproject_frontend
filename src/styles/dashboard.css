@@ -104,19 +104,23 @@
   font-style: italic;
 }
 
-/* Sidebar Styles */
-.sidebar {
-  position: fixed;
+/* Sidebar Styles - High Specificity */
+.dashboard .sidebar,
+aside.sidebar {
+  position: fixed !important;
   left: 0;
   top: 0;
   width: 250px;
   height: 100vh;
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
+  background: #F5F5F5 !important;
+  background-color: #F5F5F5 !important;
+  background-image: none !important;
+  color: #424242 !important;
   z-index: 1000;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  border-right: 1px solid #E0E0E0;
 }
 
 .sidebar-content {
@@ -127,7 +131,7 @@
 .logo-section {
   padding: 20px;
   text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #E0E0E0;
 }
 
 .sidebar-logo {
@@ -149,13 +153,16 @@
   padding: 12px 20px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-left: 3px solid transparent;
+  border-left: 0;
   display: flex;
   align-items: center;
   gap: 12px;
   font-weight: 500;
   min-height: 44px;
-  color: white;
+  color: #424242;
+  background: transparent;
+  border-radius: 0;
+  margin: 8px 0;
 }
 
 .nav-icon {
@@ -185,37 +192,20 @@
 }
 
 .main-nav li:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-left-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.main-nav li.active {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-left-color: white;
+.sidebar .main-nav li.active,
+.dashboard .sidebar .main-nav li.active {
+  background-color: #8BC34A !important;
+  background: #8BC34A !important;
+  color: white !important;
   font-weight: 600;
+  border-radius: 0;
+  margin: 8px 0;
 }
 
-/* Add subtle indicators for better visibility */
-.main-nav li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  background: white;
-  transition: height 0.2s ease;
-}
-
-.main-nav li:hover::before,
-.main-nav li.active::before {
-  height: 20px;
-}
-
-.main-nav li {
-  position: relative;
-}
+/* Remove the before pseudo-elements for cleaner look */
 
 .sidebar-footer {
   margin-top: auto;
@@ -224,7 +214,7 @@
 
 .services-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #E0E0E0;
   margin: 0 20px 20px;
 }
 
@@ -239,21 +229,25 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-size: 14px;
+  color: #424242;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .services-section li:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Other Services Section - Exact match to your image */
 .other-services {
   margin-top: 40px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid #E0E0E0;
   padding-top: 20px;
 }
 
 .nav-section-title {
-  color: rgba(255, 255, 255, 0.7);
+  color: #9E9E9E;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -263,21 +257,20 @@
 }
 
 .other-services .services-section li {
-  color: rgba(255, 255, 255, 0.9);
+  color: #424242;
   font-weight: 400;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px 20px;
-  border-left: 3px solid transparent;
+  border-left: 0;
   transition: all 0.2s ease;
   font-size: 14px;
 }
 
 .other-services .services-section li:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
-  border-left-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #424242;
 }
 
 .other-services .nav-icon {
@@ -450,4 +443,28 @@
   to {
     transform: rotate(360deg);
   }
+}
+/
+* FINAL OVERRIDE - Ensure sidebar styling */
+body .dashboard .sidebar,
+body aside.sidebar,
+html .sidebar {
+  background: #F5F5F5 !important;
+  background-color: #F5F5F5 !important;
+  background-image: none !important;
+  color: #424242 !important;
+}
+
+body .sidebar .main-nav li.active,
+body .dashboard .sidebar .main-nav li.active,
+html .sidebar li.active {
+  background: #8BC34A !important;
+  background-color: #8BC34A !important;
+  color: white !important;
+}
+
+body .sidebar .main-nav li,
+body .dashboard .sidebar .main-nav li,
+html .sidebar li {
+  color: #424242 !important;
 }

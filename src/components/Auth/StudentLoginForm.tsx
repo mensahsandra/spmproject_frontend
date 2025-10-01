@@ -24,7 +24,7 @@ const StudentLoginForm: React.FC = () => {
         const normalizedStudentId = studentId.trim();
         const normalizedPassword = password.trim();
         const payload = { email: normalizedEmail, password: normalizedPassword, studentId: normalizedStudentId };
-        
+
         const apiBase = getApiBase();
         console.log('submit handler firing (student)', payload);
         console.log('[StudentLogin] Using API base:', apiBase);
@@ -34,7 +34,7 @@ const StudentLoginForm: React.FC = () => {
             // Build variants: start with original then alternative key spellings/backends.
             // Only send backend-documented fields to avoid schema rejection.
             // Backend doc (login endpoint message) says: { email, password, studentId? }
-            const variants = [ payload ];
+            const variants = [payload];
             const { response, data, variantIndex, variantPayload } = await attemptLogin(`${apiBase}/api/auth/login`, variants, { debug: true });
             console.log('[StudentLogin] Final attempt result', { variantIndex, variantPayload, status: response.status, body: data });
             if (response.ok && (data?.success || data?.ok)) {
@@ -68,11 +68,11 @@ const StudentLoginForm: React.FC = () => {
     };
 
     return (
-    <form className="login-form" method="post" onSubmit={handleSubmit} autoComplete="off">
+        <form className="login-form" method="post" onSubmit={handleSubmit} autoComplete="off">
             <div className="login-header">
-                <img 
-                    src="/assets/images/KNUST Logo.png" 
-                    alt="KNUST Logo" 
+                <img
+                    src="/assets/images/KNUST Logo.png"
+                    alt="KNUST Logo"
                     className="knust-logo-header"
                     style={{ cursor: 'pointer' }}
                     onClick={() => navigate('/')}
@@ -142,8 +142,8 @@ const StudentLoginForm: React.FC = () => {
                 Sign In
             </button>
 
-            <button 
-                type="button" 
+            <button
+                type="button"
                 className="need-help-btn"
                 onClick={() => window.open('https://helpdesk.knust.edu.gh/', '_blank')}
             >
