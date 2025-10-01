@@ -16,8 +16,8 @@ function getEndpoint(): string {
 		}
 		
 		if (host.includes('localhost') || host.includes('127.0.0.1')) {
-			console.log('[API] Using local backend for development');
-			return 'http://127.0.0.1:3000';
+			console.log('[API] Using production backend for localhost development');
+			return PRODUCTION_BACKEND;
 		}
 	}
 	

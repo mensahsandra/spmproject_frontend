@@ -42,9 +42,11 @@ const RoutePage = () => {
       {/* Student namespaced routes */}
       <Route path="/student/dashboard" element={
         <ProtectedRoute requiredRole="student">
-          {withStudent(<Dashboard />)}
+          <Dashboard />
         </ProtectedRoute>
       } />
+      {/* Test route to see new design directly */}
+      <Route path="/test-dashboard" element={<Dashboard />} />
       <Route path="/student/record-attendance" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<RecordAttendance />)}
