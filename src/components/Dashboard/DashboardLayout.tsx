@@ -21,10 +21,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, showGreetin
         <div className="header-section">
           <ProfileDropdown />
         </div>
-        {displayGreeting && <GreetingSection />}
-        <div className="dashboard-panels">
-          {children}
-        </div>
+        {children}
       </main>
     </div>
   );
