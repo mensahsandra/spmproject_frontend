@@ -4,7 +4,7 @@ import { getUser } from '../utils/auth';
 import Sidebar from '../components/Dashboard/Sidebar';
 import ProfileDropdown from '../components/ProfileDropdown';
 
-const DashboardPage: React.FC = () => {
+const PerfectDashboard: React.FC = () => {
     const navigate = useNavigate();
     const [now, setNow] = useState(new Date());
     const [displayName, setDisplayName] = useState<string>('');
@@ -276,4 +276,4 @@ const DashboardPage: React.FC = () => {
     );
 };
 
-export default DashboardPage;
+export default PerfectDashboard;
