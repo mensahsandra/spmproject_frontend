@@ -4,7 +4,7 @@ import EnhancedExportReports from '../components/Dashboard/EnhancedExportReports
 
 const LecturerExportPage: React.FC = () => {
   return (
-    <DashboardLayout showGreeting={true} maxWidth={1200}>
+    <DashboardLayout showGreeting={true}>
       <EnhancedExportReports />
     </DashboardLayout>
   );

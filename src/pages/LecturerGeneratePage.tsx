@@ -9,7 +9,7 @@ const LecturerGeneratePage: React.FC = () => {
   const fromNav = Boolean((location.state as any)?.fromNav);
   
   return (
-    <DashboardLayout showGreeting maxWidth={900}>
+    <DashboardLayout showGreeting>
       {fromNav && (
         <div className="alert alert-info" role="status" style={{ marginBottom: 12, padding: '8px 12px' }}>
           Opening Generate Session…

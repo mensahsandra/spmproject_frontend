@@ -17,7 +17,7 @@ const LecturerDashboardPage: React.FC = () => {
         return () => window.removeEventListener('hashchange', applyHash);
     }, []);
             return (
-                <DashboardLayout showGreeting maxWidth={900}>
+                <DashboardLayout showGreeting>
                     <LecturerDashboard active={active} />
                 </DashboardLayout>
             );

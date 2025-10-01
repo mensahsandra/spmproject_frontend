@@ -70,7 +70,7 @@ const ProfilePage: React.FC = () => {
   }, []);
 
   return (
-    <DashboardLayout showGreeting={true} maxWidth={1000}>
+    <DashboardLayout showGreeting={true}>
       <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
         <div style={card as React.CSSProperties}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>

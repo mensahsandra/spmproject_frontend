@@ -5,7 +5,7 @@ import '../css/dashboard.css';
 
 const DashboardPage: React.FC = () => {
     return (
-        <DashboardLayout showGreeting maxWidth={800}>
+        <DashboardLayout showGreeting>
             <div className="panels">
                 <Panel 
                     title="Attendance" 

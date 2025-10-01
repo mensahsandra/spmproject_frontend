@@ -247,7 +247,7 @@ const NotificationsPage: React.FC = () => {
     };
 
     return (
-        <DashboardLayout showGreeting={true} maxWidth={1000}>
+        <DashboardLayout showGreeting={true}>
             <div className="notifications-page">
                 <div className="notifications-header">
                     {activeTab !== 'deadlines' && <h1>Notifications</h1>}

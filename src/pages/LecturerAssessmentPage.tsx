@@ -4,7 +4,7 @@ import UpdateGrades from '../components/Dashboard/UpdateGrades';
 
 const LecturerAssessmentPage: React.FC = () => {
   return (
-    <DashboardLayout showGreeting maxWidth={900}>
+    <DashboardLayout showGreeting>
       <UpdateGrades />
     </DashboardLayout>
   );

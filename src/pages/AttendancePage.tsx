@@ -3,7 +3,7 @@ import DashboardLayout from '../components/Dashboard/DashboardLayout';
 
 function RecordAttendancePage() {
     return (
-        <DashboardLayout showGreeting={true} maxWidth={800}>
+        <DashboardLayout showGreeting={true}>
             <RecordAttendance />
         </DashboardLayout>
     );

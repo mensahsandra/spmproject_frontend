@@ -41,7 +41,7 @@ const DisplayResultPage: React.FC = () => {
     const { year = "2024/2025", block = "Block 1" } = (location.state as any) || {};
 
     return (
-        <DashboardLayout showGreeting={true} maxWidth={1000}>
+        <DashboardLayout showGreeting={true}>
             {/* Green banner */}
             <div style={{ width: '100%', height: '70px', background: '#d9f5e6', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: '18px', borderTopRightRadius: '18px', marginBottom: '20px' }}>
                 <div style={{ textAlign: 'center' }}>

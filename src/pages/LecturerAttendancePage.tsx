@@ -4,7 +4,7 @@ import AttendanceLogs from '../components/Dashboard/AttendanceLogs';
 
 const LecturerAttendancePage: React.FC = () => {
   return (
-    <DashboardLayout showGreeting maxWidth={900}>
+    <DashboardLayout showGreeting>
       <AttendanceLogs />
     </DashboardLayout>
   );
