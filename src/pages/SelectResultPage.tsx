@@ -23,7 +23,7 @@ const ResultsPage: React.FC = () => {
     };
 
     return (
-        <DashboardLayout showGreeting={true} maxWidth={800}>
+        <DashboardLayout maxWidth={800}>
             <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
                 <div style={{ width: '100%', maxWidth: 600, margin: '0 auto' }}>
                     <div style={{ background: '#fff', borderRadius: '18px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', padding: '40px 32px', position: 'relative' }}>

@@ -52,16 +52,12 @@ body {
 
 /* Cards grid */
 .cards-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    max-width: 600px;
-    margin: 0; /* left-align with content column */
-}
-@media (min-width: 900px) {
-    .cards-grid {
-        grid-template-columns: 1fr;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0;
 }
 
 .topbar { 
@@ -76,22 +72,55 @@ body {
 .profile-name { max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
 .profile-caret { margin-left: 4px; color: #374151; }
 
-.greeting-panel {
-    --gp-pad: 24px;
-    background: white !important;
-    border-radius: 12px !important;
-    padding: var(--gp-pad) !important;
-    padding-top: 50px !important; /* Reduced padding for the banner */
-    padding-bottom: 24px !important; /* Reduced bottom padding */
-    margin: 0 0 0 0 !important; /* Remove auto centering, align to left */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
-    max-width: 500px !important;
-    width: 100% !important;
-    color: #1f2937 !important;
-    position: relative;
-    text-align: center;
-    overflow: hidden; /* clip the green strip to the card radius */
+/* Greeting Card Styles - Exact match to your image */
+.greeting-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e5e7eb;
+    margin: 0 0 24px 0;
+    overflow: hidden;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 24px;
+}
+
+.greeting-header {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    padding: 12px 20px;
+    text-align: center;
+}
+
+.date-pill {
+    background: transparent;
+    color: white;
+    padding: 0;
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.greeting-content {
+    padding: 24px 20px;
+    text-align: center;
+}
+
+.greeting-content h2 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.greeting-content p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #6b7280;
+    font-style: italic;
 }
 
 .profile-image-container {
@@ -917,6 +946,76 @@ body {
 .panel-underline.attendance-accent { background: linear-gradient(90deg,#e5e7eb 0,#e5e7eb 55%,#34d399 55%,#34d399 100%); }
 .panel-underline.performance-accent { background: linear-gradient(90deg,#e5e7eb 0,#e5e7eb 55%,#34d399 55%,#34d399 100%); }
 .panel-underline.deadlines-accent { background: linear-gradient(90deg,#e5e7eb 0,#e5e7eb 55%,#ef4444 55%,#ef4444 100%); }
+
+/* Original Card Styles to match your image */
+.dashboard-card-original {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    display: flex;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+}
+
+.dashboard-card-original:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.card-left-bar {
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-left-bar.green {
+    background: linear-gradient(to bottom, #22c55e 0%, #22c55e 60%, #16a34a 100%);
+}
+
+.card-left-bar.red {
+    background: linear-gradient(to bottom, #ef4444 0%, #ef4444 60%, #dc2626 100%);
+}
+
+.card-content-original {
+    flex: 1;
+    padding: 20px 24px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.card-icon-original {
+    font-size: 20px;
+    color: #6b7280;
+}
+
+.card-title-original {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.card-divider {
+    border: none;
+    height: 1px;
+    background: #e5e7eb;
+    margin: 12px 0 16px 0;
+}
+
+.card-description-original {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+    font-style: italic;
+}
 
 /* Slightly larger panel radius and shadow for card look */
 .panel-card { border-radius: 16px !important; box-shadow: 0 8px 16px rgba(0,0,0,0.06) !important; }
