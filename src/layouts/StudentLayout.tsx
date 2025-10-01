@@ -1,12 +1,11 @@
 import React from 'react';
-import StudentSidebar from '../components/Dashboard/StudentSidebar';
+import DashboardLayout from '../components/Dashboard/DashboardLayout';
 
 const StudentLayout: React.FC<{children: React.ReactNode}> = ({ children }) => {
   return (
-    <div className="dashboard-container">
-      <StudentSidebar />
-      <div className="dashboard-content has-topbar">{children}</div>
-    </div>
+    <DashboardLayout>
+      {children}
+    </DashboardLayout>
   );
 };
 

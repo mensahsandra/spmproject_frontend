@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from './Sidebar';
-import TopBar from './TopBar';
+import ProfileDropdown from '../ProfileDropdown';
 import GreetingSection from './GreetingSection';
 import { useShowGreeting } from '../../hooks/useShowGreeting';
 
@@ -19,7 +19,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, showGreetin
     <div className="dashboard">
       <Sidebar />
       <main className="dashboard-content has-topbar" style={style}>
-        <TopBar />
+        <div className="topbar">
+          <ProfileDropdown />
+        </div>
         {displayGreeting && <GreetingSection />}
         {displayGreeting && <div style={{ height: 30 }} />}
         <div style={{ maxWidth, margin: '0 auto', width: '100%' }}>

@@ -72,7 +72,33 @@
   border-left: 3px solid transparent;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
+  font-weight: 500;
+  min-height: 44px;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  flex: 1;
+}
+
+.notification-badge {
+  background: #ef4444;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: auto;
 }
 
 .main-nav li:hover {
@@ -84,6 +110,28 @@
   background-color: rgba(255, 255, 255, 0.15);
   border-left-color: white;
   font-weight: 600;
+}
+
+/* Add subtle indicators for better visibility */
+.main-nav li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: white;
+  transition: height 0.2s ease;
+}
+
+.main-nav li:hover::before,
+.main-nav li.active::before {
+  height: 20px;
+}
+
+.main-nav li {
+  position: relative;
 }
 
 .sidebar-footer {
@@ -114,17 +162,51 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.services-section .section-header {
-  font-weight: 600;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  opacity: 0.8;
-  cursor: default;
+/* Other Services Section - Enhanced Visibility */
+.other-services {
+  margin-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
 }
 
-.services-section .section-header:hover {
-  background-color: transparent;
+.nav-section-title {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 20px 12px;
+  margin-bottom: 8px;
+}
+
+.other-services .services-section li {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.other-services .services-section li:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: white;
+  border-left-color: rgba(255, 255, 255, 0.5);
+}
+
+.other-services .nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+}
+
+.other-services .nav-text {
+  flex: 1;
 }
 
 /* TopBar Styles */

@@ -22,9 +22,10 @@ import LecturerExportPage from '../pages/LecturerExportPage';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import { normalizeRole } from '../utils/roles';
 import StudentLayout from '../layouts/StudentLayout';
+import LecturerLayout from '../layouts/LecturerLayout';
 
 const withStudent = (node: React.ReactNode) => <StudentLayout>{node}</StudentLayout>;
-const withLecturer = (node: React.ReactNode) => <>{node}</>;
+const withLecturer = (node: React.ReactNode) => <LecturerLayout>{node}</LecturerLayout>;
 
 const RoutePage = () => {
   return (

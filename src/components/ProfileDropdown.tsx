@@ -21,7 +21,15 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
   const first = (userData.firstName || '').trim() || (full.split(' ')[0] || '');
   const last = (userData.lastName || '').trim() || (full.split(' ').slice(-1)[0] || '');
   const fullName = [honor, first, last].filter(Boolean).join(' ').trim() || 
-    (role === 'lecturer' ? 'Lecturer User' : 'Student User');
+    (role === 'lecturer' ? 'Lecturer User' : 'Ransford Yeboah');
+  
+  // Student-specific data
+  const indexNo = userData.indexNo || (role === 'lecturer' ? '' : '9123456');
+  const studentId = userData.studentId || userData.lecturerId || userData.staffId || '21058161';
+  const programme = role === 'lecturer'
+    ? (userData.course || userData.programme || '—')
+    : (userData.programme || 'BSc. Information Technology IDL (TOP-UP)');
+  const currentCenter = (localStorage.getItem('currentCenter') || localStorage.getItem('selectedCenter') || userData.center || (role === 'lecturer' ? '—' : 'IDL - Kumasi Center'));
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -76,6 +84,45 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
               <div className="user-role">{role}</div>
             </div>
           </div>
+          <div className="dropdown-divider"></div>
+          
+          {/* Student Details */}
+          {role === 'student' ? (
+            <div className="student-details">
+              <div className="detail-row">
+                <span className="detail-label">Index Number</span>
+                <span className="detail-value">{indexNo}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Student Number</span>
+                <span className="detail-value">{studentId}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Programme</span>
+                <span className="detail-value">{programme}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Center</span>
+                <span className="detail-value">{currentCenter}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="lecturer-details">
+              <div className="detail-row">
+                <span className="detail-label">Staff Number</span>
+                <span className="detail-value">{studentId}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Course</span>
+                <span className="detail-value">{programme}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">Email</span>
+                <span className="detail-value">{userData.email || '—'}</span>
+              </div>
+            </div>
+          )}
+          
           <div className="dropdown-divider"></div>
           <button className="dropdown-item">Profile Settings</button>
           <button className="dropdown-item">Change Password</button>

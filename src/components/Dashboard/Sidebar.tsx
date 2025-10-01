@@ -53,32 +53,49 @@ const Sidebar: React.FC = () => {
                     <ul>
             {!isLecturer && (
                             <>
-                <li className={isActive('/student/dashboard') ? 'active' : ''} onClick={() => go('/student/dashboard')}>🏠 Home</li>
-                                <li className={isActive('/student/record-attendance') ? 'active' : ''} onClick={() => navigate('/student/record-attendance')}>📋 Attendance</li>
-                                <li className={isActive('/student/select-result') ? 'active' : ''} onClick={() => navigate('/student/select-result', { state: { showCurrent: true } })}>📊 Performance</li>
+                <li className={isActive('/student/dashboard') ? 'active' : ''} onClick={() => go('/student/dashboard')}>
+                    <span className="nav-icon">🏠</span>
+                    <span className="nav-text">Home</span>
+                </li>
+                                <li className={isActive('/student/record-attendance') ? 'active' : ''} onClick={() => navigate('/student/record-attendance')}>
+                                    <span className="nav-icon">📋</span>
+                                    <span className="nav-text">Attendance</span>
+                                </li>
+                                <li className={isActive('/student/select-result') ? 'active' : ''} onClick={() => navigate('/student/select-result', { state: { showCurrent: true } })}>
+                                    <span className="nav-icon">📊</span>
+                                    <span className="nav-text">Performance</span>
+                                </li>
                                 <li className={isActive(/\/student\/deadlines|^\/student\/notifications/) ? 'active' : ''} onClick={() => navigate('/student/notifications?tab=deadlines', { state: { from: 'deadlines' } })}>
-                                    📅 Deadlines
+                                    <span className="nav-icon">📅</span>
+                                    <span className="nav-text">Deadlines</span>
                                     {unread > 0 && (
-                                        <span style={{
-                                            marginLeft: 8,
-                                            background: '#ef4444',
-                                            color: 'white',
-                                            borderRadius: 999,
-                                            padding: '2px 8px',
-                                            fontSize: 12,
-                                            fontWeight: 700
-                                        }}>{unread}</span>
+                                        <span className="notification-badge">{unread}</span>
                                     )}
                                 </li>
                             </>
                         )}
             {isLecturer && (
                             <>
-                <li className={path === '/lecturer/dashboard' ? 'active' : ''} onClick={() => { window.location.hash=''; go('/lecturer/dashboard'); }}>🏠 Home</li>
-                                <li className={path === '/lecturer/generatesession' ? 'active' : ''} onClick={() => navigate('/lecturer/generatesession', { state: { fromNav: true } })}>🧾 Generate</li>
-                                <li className={path === '/lecturer/attendance' ? 'active' : ''} onClick={() => go('/lecturer/attendance')}>📋 Attendance</li>
-                                <li className={path === '/lecturer/assessment' ? 'active' : ''} onClick={() => go('/lecturer/assessment')}>📝 Assessment</li>
-                                <li className={path === '/lecturer/export' ? 'active' : ''} onClick={() => go('/lecturer/export')}>📤 Export</li>
+                <li className={path === '/lecturer/dashboard' ? 'active' : ''} onClick={() => { window.location.hash=''; go('/lecturer/dashboard'); }}>
+                    <span className="nav-icon">🏠</span>
+                    <span className="nav-text">Home</span>
+                </li>
+                                <li className={path === '/lecturer/generatesession' ? 'active' : ''} onClick={() => navigate('/lecturer/generatesession', { state: { fromNav: true } })}>
+                                    <span className="nav-icon">🧾</span>
+                                    <span className="nav-text">Generate</span>
+                                </li>
+                                <li className={path === '/lecturer/attendance' ? 'active' : ''} onClick={() => go('/lecturer/attendance')}>
+                                    <span className="nav-icon">📋</span>
+                                    <span className="nav-text">Attendance</span>
+                                </li>
+                                <li className={path === '/lecturer/assessment' ? 'active' : ''} onClick={() => go('/lecturer/assessment')}>
+                                    <span className="nav-icon">📝</span>
+                                    <span className="nav-text">Assessment</span>
+                                </li>
+                                <li className={path === '/lecturer/export' ? 'active' : ''} onClick={() => go('/lecturer/export')}>
+                                    <span className="nav-icon">📤</span>
+                                    <span className="nav-text">Export</span>
+                                </li>
                             </>
                         )}
                     </ul>
@@ -87,11 +104,23 @@ const Sidebar: React.FC = () => {
             
             <div className="sidebar-footer">
                 <div className="services-divider"></div>
-                <ul className="services-section">
-                    <li className="section-header">Other Services</li>
-                    <li onClick={() => window.open('https://kcc.knust.edu.gh/', '_blank')}>🧠 Counselling</li>
-                                        <li onClick={() => setAboutOpen(true)}>ℹ️ About Us</li>
-                </ul>
+                <div className="other-services">
+                    <div className="nav-section-title">Other Services</div>
+                    <ul className="services-section">
+                        <li onClick={() => window.open('https://kcc.knust.edu.gh/', '_blank')}>
+                            <span className="nav-icon">🧠</span>
+                            <span className="nav-text">Counselling</span>
+                        </li>
+                        <li onClick={() => window.open('mailto:feedback@idl.knust.edu.gh', '_blank')}>
+                            <span className="nav-icon">💬</span>
+                            <span className="nav-text">Feedback</span>
+                        </li>
+                        <li onClick={() => setAboutOpen(true)}>
+                            <span className="nav-icon">ℹ️</span>
+                            <span className="nav-text">About Us</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
                         {aboutOpen && (

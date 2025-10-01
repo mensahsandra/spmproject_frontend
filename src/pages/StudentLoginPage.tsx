@@ -9,6 +9,7 @@ const StudentLoginPage: React.FC = () => {
         try {
             const token = localStorage.getItem('token');
             const raw = localStorage.getItem('user');
+            console.log("Raw: ", raw)
             if (token && raw) {
                 const role = (JSON.parse(raw).role || '').toLowerCase();
                 if (role === 'student') navigate('/dashboard');

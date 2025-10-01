@@ -30,6 +30,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 .dashboard-content.has-topbar { padding-top: 12px; }
 
@@ -54,7 +55,7 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 16px;
-    max-width: 980px;
+    max-width: 600px;
     margin: 0; /* left-align with content column */
 }
 @media (min-width: 900px) {
@@ -63,7 +64,12 @@ body {
     }
 }
 
-.topbar { position: absolute; top: 18px; right: 40px; z-index: 1500; }
+.topbar { 
+  position: absolute; 
+  top: 24px; 
+  right: 24px; 
+  z-index: 1500; 
+}
 
 .profile-card { background: white!important; border-radius: 12px!important; padding: 10px 16px!important; display: flex!important; align-items: center!important; gap: 10px!important; box-shadow: 0 6px 12px rgba(0,0,0,0.08)!important; min-width: 180px!important; color: #1f2937!important; }
 .profile-bell { margin-right: 2px; }
@@ -77,9 +83,9 @@ body {
     padding: var(--gp-pad) !important;
     padding-top: 50px !important; /* Reduced padding for the banner */
     padding-bottom: 24px !important; /* Reduced bottom padding */
-    margin: 0 auto !important; 
+    margin: 0 0 0 0 !important; /* Remove auto centering, align to left */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
-    max-width: 800px !important;
+    max-width: 500px !important;
     width: 100% !important;
     color: #1f2937 !important;
     position: relative;
@@ -131,7 +137,7 @@ body {
 }
 
 /* tighten spacing to match reference */
-.greeting-panel { margin: 8px 0 24px 0 !important; }
+.greeting-panel { margin: 8px 0 24px 0 !important; max-width: 500px !important; }
 
 .greeting-panel p {
     color: #6b7280;
@@ -319,7 +325,7 @@ body {
 
 .sidebar {
     width: 260px;
-    background-color: #1f2937;
+    background-color: #0d7a3a;
     color: white;
     padding: 24px;
     position: fixed;
@@ -380,22 +386,62 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.9);
+    border-left: 3px solid transparent;
+    position: relative;
+    min-height: 44px;
 }
 
 .sidebar li:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.12);
+    border-left-color: rgba(255, 255, 255, 0.4);
+    transform: translateX(2px);
 }
 
 .sidebar li.active {
-    background-color: #22c55e;
+    background-color: #10b981;
     color: white;
+    border-left-color: white;
+    font-weight: 600;
+}
+
+.sidebar li.active:hover {
+    background-color: #059669;
+    transform: translateX(0);
+}
+
+/* Navigation icon and text styling */
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.nav-text {
+    flex: 1;
+    font-weight: 500;
+}
+
+.notification-badge {
+    margin-left: 8px;
+    background: #ef4444;
+    color: white;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
 }
 
 .services-divider {
     margin: 50px 0 8px;
     height: 1px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .services-section {
@@ -407,29 +453,42 @@ body {
 .services-section .section-header {
     margin-bottom: 20px;
     font-size: 12px;
-    color: #94a3b8;
-    font-weight: 600;
+    color: #e2e8f0;
+    font-weight: 700;
     cursor: default;
-    padding: 5px 15px;
+    padding: 8px 15px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    border-left: 3px solid #10b981;
 }
 
 .services-section .section-header:hover {
-    background-color: transparent;
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 .services-section li:not(.section-header) {
-    margin: 15px 0;
+    margin: 8px 0;
     cursor: pointer;
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    padding: 12px 15px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
     font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    border-left: 3px solid transparent;
+    position: relative;
 }
 
 .services-section li:not(.section-header):hover {
-    background-color: #34495e;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: white;
+    border-left-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(2px);
+}
+
+.services-section li:not(.section-header):active {
+    transform: translateX(0);
 }
 
 /* Main Content */
