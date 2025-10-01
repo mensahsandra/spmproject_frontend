@@ -36,12 +36,10 @@ const GreetingSection: React.FC = () => {
     };
 
     return (
-        <div className="greeting-card">
-            <div className="greeting-header">
-                <div className="date-pill">Today is {ordinal(day)} {month} {year}, {weekday}</div>
-            </div>
-            <div className="greeting-content">
-                <h2>Hello, {displayName}!</h2>
+        <div className="greeting-container">
+            <div className="date-banner">Today is {ordinal(day)} {month} {year}, {weekday}</div>
+            <div className="welcome-card">
+                <h1>Hello, {displayName}!</h1>
                 <p>Your dashboard gives quick access to attendance, grades and notifications.<br/>
                 Helping you stay ahead every step of the way.</p>
             </div>
