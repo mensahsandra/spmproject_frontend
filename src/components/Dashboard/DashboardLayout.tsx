@@ -27,7 +27,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, showGreetin
         </div>
         <div className="main-content">
           {displayGreeting && <GreetingSection />}
-          <div style={{ maxWidth, margin: '0 auto', width: '100%', padding: '20px' }}>
+          <div style={{ maxWidth, margin: '0 auto', width: '100%' }}>
             {children}
           </div>
         </div>
