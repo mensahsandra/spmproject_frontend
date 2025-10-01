@@ -1,11 +1,10 @@
 import React from 'react';
 import Sidebar from '../components/Dashboard/Sidebar';
 import TopBar from '../components/Dashboard/TopBar';
-import GreetingSection from '../components/Dashboard/GreetingSection';
-// Panel not used for the three main cards; using custom cards instead
-import PerformanceCard from '../components/PerformanceCard';
-import DeadlinesCard from '../components/DeadlinesCard';
-import AttendanceCard from '../components/AttendanceCard';
+import SimpleGreetingCard from '../components/SimpleGreetingCard';
+import SimpleAttendanceCard from '../components/SimpleAttendanceCard';
+import SimplePerformanceCard from '../components/SimplePerformanceCard';
+import SimpleDeadlinesCard from '../components/SimpleDeadlinesCard';
 import '../css/dashboard.css';
 
 const DashboardPage: React.FC = () => {
@@ -15,16 +14,16 @@ const DashboardPage: React.FC = () => {
             <main className="dashboard-content has-topbar">
                 <TopBar />
                 {/* Greeting Card with date banner */}
-                <GreetingSection />
+                <SimpleGreetingCard />
                 {/* Added spacing div */}
                 <div style={{ height: "30px" }}></div>
                 {/* Cards Grid */}
-                <div className="cards-grid" style={{ maxWidth: "800px", margin: "0 auto" }}>
-                    <AttendanceCard />
+                <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 20px" }}>
+                    <SimpleAttendanceCard />
                     <div style={{ height: "8px" }}></div>
-                    <PerformanceCard />
+                    <SimplePerformanceCard />
                     <div style={{ height: "8px" }}></div>
-                    <DeadlinesCard />
+                    <SimpleDeadlinesCard />
                 </div>
             </main>
         </div>
