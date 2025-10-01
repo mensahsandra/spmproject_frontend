@@ -36,13 +36,15 @@ const GreetingSection: React.FC = () => {
     };
 
     return (
-        <div className="greeting-panel">
-            <div className="date-pill">Today is {ordinal(day)} {month} {year}, {weekday}</div>
-            <h1 style={{ marginTop: "8px", marginBottom: "8px" }}>Hello, {displayName}!</h1>
-            <p style={{ margin: 0, textAlign: 'center', lineHeight: 1.4 }}>
-                Your dashboard gives quick access to attendance, grades and notifications.<br/>
-                Helping you stay ahead every step of the way.
-            </p>
+        <div className="greeting-card">
+            <div className="greeting-header">
+                <div className="date-pill">Today is {ordinal(day)} {month} {year}, {weekday}</div>
+            </div>
+            <div className="greeting-content">
+                <h2>Hello, {displayName}!</h2>
+                <p>Your dashboard gives quick access to attendance, grades and notifications.<br/>
+                Helping you stay ahead every step of the way.</p>
+            </div>
         </div>
     );
 };

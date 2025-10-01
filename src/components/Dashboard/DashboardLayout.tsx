@@ -20,12 +20,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, showGreetin
       <Sidebar />
       <main className="dashboard-content has-topbar" style={style}>
         <div className="topbar">
-          <ProfileDropdown />
+          <div className="topbar-left"></div>
+          <div className="topbar-right">
+            <ProfileDropdown />
+          </div>
         </div>
-        {displayGreeting && <GreetingSection />}
-        {displayGreeting && <div style={{ height: 30 }} />}
-        <div style={{ maxWidth, margin: '0 auto', width: '100%' }}>
-          {children}
+        <div className="main-content">
+          {displayGreeting && <GreetingSection />}
+          <div style={{ maxWidth, margin: '0 auto', width: '100%', padding: '20px' }}>
+            {children}
+          </div>
         </div>
       </main>
     </div>

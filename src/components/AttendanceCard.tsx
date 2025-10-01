@@ -1,30 +1,24 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './AttendanceCard.module.css';
 
 const AttendanceCard: React.FC = () => {
   const navigate = useNavigate();
   return (
     <div
-      className={styles.card}
-      style={{ ['--top' as any]: '#0F793E', ['--bottom' as any]: '#53BC22' }}
-      onClick={() => navigate('/record-attendance')}
+      className="dashboard-card"
+      onClick={() => navigate('/student/record-attendance')}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/record-attendance'); }}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate('/student/record-attendance'); }}
+      style={{ cursor: 'pointer' }}
     >
-      <div className={styles.sideBar}>
-        <div className={styles.topBar}></div>
-        <div className={styles.bottomBar}></div>
+      <div className="card-icon attendance">
+        📋
       </div>
-      <div className={styles.content}>
-        <div className={styles.header}>
-          <span className={styles.iconBadge} aria-hidden>📋</span>
-          <h2 className={styles.title}>Attendance</h2>
-        </div>
-        <hr className={styles.divider} />
-        <p className={styles.subtitle}>
-          Here for today’s class? Click to check in and mark your attendance.
+      <div className="card-content">
+        <h3 className="card-title">Attendance</h3>
+        <p className="card-description">
+          Here for today's class? Click to check in and mark your attendance.
         </p>
       </div>
     </div>
