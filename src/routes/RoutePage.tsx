@@ -3,6 +3,7 @@ import LandingPage from '../pages/LandingPage';
 import Dashboard from '../pages/Dashboard';
 import NewDashboard from '../pages/NewDashboard';
 import NewSelectResultPage from '../pages/NewSelectResultPage';
+import SimpleTestPage from '../pages/SimpleTestPage';
 import RecordAttendance from '../components/Dashboard/RecordAttendance';
 import SelectResult from '../components/Dashboard/SelectResult';
 import NotificationsPage from '../pages/NotificationsPage';
@@ -67,6 +68,10 @@ const RoutePage = () => {
           <NewSelectResultPage />
         </ProtectedRoute>
       } />
+      {/* Test route without authentication */}
+      <Route path="/test-select-result" element={<NewSelectResultPage />} />
+      {/* Simple test route */}
+      <Route path="/simple-test" element={<SimpleTestPage />} />
       <Route path="/student/record-attendance" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<RecordAttendance />)}
