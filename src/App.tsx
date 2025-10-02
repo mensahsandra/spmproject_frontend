@@ -10,9 +10,11 @@ import './styles/dashboard.css'
 function App() {
   return (
     <Router>
-      <SessionProvider>
-        <RoutePage />
-      </SessionProvider>
+      <div style={{ padding: '50px', backgroundColor: '#e0f2e7', textAlign: 'center' }}>
+        <h1 style={{ color: 'green', fontSize: '32px' }}>🚀 APP.TSX WORKING!</h1>
+        <p>React app is loading successfully.</p>
+        <p>Testing without providers...</p>
+      </div>
     </Router>
   );
 }
