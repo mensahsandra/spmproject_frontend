@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from '../pages/LandingPage';
 import Dashboard from '../pages/Dashboard';
 import NewDashboard from '../pages/NewDashboard';
+import NewSelectResultPage from '../pages/NewSelectResultPage';
 import RecordAttendance from '../components/Dashboard/RecordAttendance';
 import SelectResult from '../components/Dashboard/SelectResult';
 import NotificationsPage from '../pages/NotificationsPage';
@@ -58,6 +59,12 @@ const RoutePage = () => {
       <Route path="/student/light-dashboard" element={
         <ProtectedRoute requiredRole="student">
           <NewDashboard />
+        </ProtectedRoute>
+      } />
+      {/* New select result page - bypasses all caching */}
+      <Route path="/student/fresh-select-result" element={
+        <ProtectedRoute requiredRole="student">
+          <NewSelectResultPage />
         </ProtectedRoute>
       } />
       <Route path="/student/record-attendance" element={
