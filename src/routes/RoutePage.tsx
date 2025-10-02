@@ -78,9 +78,7 @@ const RoutePage = () => {
         </ProtectedRoute>
       } />
       <Route path="/student/select-result" element={
-        <ProtectedRoute requiredRole="student">
-          {withStudent(<SelectResult />)}
-        </ProtectedRoute>
+        <NewSelectResultPage />
       } />
       <Route path="/student/notifications" element={
         <ProtectedRoute requiredRole="student">
