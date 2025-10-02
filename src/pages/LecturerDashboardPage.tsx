@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import LecturerDashboard from "../components/Dashboard/LecutererDashboardCard";
-import DashboardLayout from "../components/Dashboard/DashboardLayout";
-import "../css/dashboard.css";
 
 const LecturerDashboardPage: React.FC = () => {
     const [active, setActive] = useState<string>("");
@@ -16,11 +14,10 @@ const LecturerDashboardPage: React.FC = () => {
         window.addEventListener('hashchange', applyHash);
         return () => window.removeEventListener('hashchange', applyHash);
     }, []);
-            return (
-                <DashboardLayout showGreeting>
-                    <LecturerDashboard active={active} />
-                </DashboardLayout>
-            );
+    
+    return (
+        <LecturerDashboard active={active} />
+    );
 };
 
 export default LecturerDashboardPage;
