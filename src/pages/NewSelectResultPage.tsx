@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { getUser } from '../utils/auth';
 
 const NewSelectResultPage: React.FC = () => {
   const [academicYear, setAcademicYear] = useState('');
   const [semester, setSemester] = useState('');
   const [showResults, setShowResults] = useState(false);
 
-  // Get user data
-  const user = getUser();
+  // Mock user data since we're bypassing auth
+  const user = {
+    name: 'Ransford Yeboah',
+    email: 'student@knust.edu.gh',
+    profilePicture: 'https://i.pravatar.cc/40'
+  };
 
   const handleDisplayResults = () => {
     if (academicYear && semester) {
