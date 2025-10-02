@@ -16,19 +16,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
       <main style={{
         flex: 1,
         marginLeft: '250px',
-        padding: '24px',
+        padding: '24px 40px',
         backgroundColor: '#f8fafc',
         minHeight: '100vh',
         position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
         ...style
       }}>
         <div style={{
           position: 'absolute',
           top: '24px',
-          right: '24px',
+          right: '40px',
           zIndex: 100
         }}>
           <ProfileDropdown />
@@ -36,10 +33,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
         <div style={{ 
           paddingTop: '60px',
           width: '100%',
-          maxWidth: '1200px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center'
+          maxWidth: '1000px',
+          margin: '0 auto'
         }}>
           {children}
         </div>
