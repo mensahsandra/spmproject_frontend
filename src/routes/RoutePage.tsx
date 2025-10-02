@@ -49,7 +49,7 @@ const RoutePage = () => {
         </ProtectedRoute>
       } />
       {/* Test route to see new design directly */}
-      <Route path="/test-dashboard" element={<Dashboard />} />
+      <Route path="/test-dashboard" element={<SimpleTestPage />} />
       {/* New dashboard with light sidebar - bypasses cache */}
       <Route path="/student/new-dashboard" element={
         <ProtectedRoute requiredRole="student">
