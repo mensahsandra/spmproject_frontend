@@ -11,13 +11,28 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) => {
 
   return (
-    <div className="dashboard">
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
       <Sidebar />
-      <main className="main-content" style={style}>
-        <div className="header-section">
+      <main style={{
+        flex: 1,
+        marginLeft: '250px',
+        padding: '24px',
+        backgroundColor: '#f8fafc',
+        minHeight: '100vh',
+        position: 'relative',
+        ...style
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: '24px',
+          right: '24px',
+          zIndex: 100
+        }}>
           <ProfileDropdown />
         </div>
-        {children}
+        <div style={{ paddingTop: '60px' }}>
+          {children}
+        </div>
       </main>
     </div>
   );
