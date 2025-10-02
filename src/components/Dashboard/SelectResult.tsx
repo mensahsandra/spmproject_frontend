@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { getUser } from '../../utils/auth';
 
+// Cache buster v2.0 - Force new deployment
+
 const SelectResult: React.FC = () => {
   const [academicYear, setAcademicYear] = useState('');
   const [semester, setSemester] = useState('');
@@ -26,6 +28,22 @@ const SelectResult: React.FC = () => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         border: '1px solid #e5e7eb'
       }}>
+        {/* Debug indicator */}
+        <div style={{
+          position: 'fixed',
+          top: '10px',
+          right: '10px',
+          background: '#22c55e',
+          color: 'white',
+          padding: '8px 12px',
+          borderRadius: '6px',
+          fontSize: '12px',
+          fontWeight: 600,
+          zIndex: 9999
+        }}>
+          ✅ NEW SELECT RESULT v2.0
+        </div>
+
         <h1 style={{ 
           textAlign: 'center', 
           marginBottom: '30px', 
