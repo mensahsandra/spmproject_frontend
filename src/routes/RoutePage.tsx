@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from '../pages/LandingPage';
 import Dashboard from '../pages/Dashboard';
+import NewDashboard from '../pages/NewDashboard';
 import RecordAttendance from '../components/Dashboard/RecordAttendance';
 import SelectResult from '../components/Dashboard/SelectResult';
 import NotificationsPage from '../pages/NotificationsPage';
@@ -47,6 +48,18 @@ const RoutePage = () => {
       } />
       {/* Test route to see new design directly */}
       <Route path="/test-dashboard" element={<Dashboard />} />
+      {/* New dashboard with light sidebar - bypasses cache */}
+      <Route path="/student/new-dashboard" element={
+        <ProtectedRoute requiredRole="student">
+          <NewDashboard />
+        </ProtectedRoute>
+      } />
+      {/* Final test route */}
+      <Route path="/student/light-dashboard" element={
+        <ProtectedRoute requiredRole="student">
+          <NewDashboard />
+        </ProtectedRoute>
+      } />
       <Route path="/student/record-attendance" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<RecordAttendance />)}
