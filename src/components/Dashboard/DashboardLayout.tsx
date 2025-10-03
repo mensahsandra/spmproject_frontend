@@ -23,15 +23,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
         ...style
       }}>
         <div style={{
-          position: 'absolute',
+          position: 'fixed',
           top: '24px',
           right: '40px',
-          zIndex: 100
+          zIndex: 1002
         }}>
           <ProfileDropdown />
         </div>
         <div style={{ 
-          paddingTop: '60px',
+          paddingTop: '80px',
           width: '100%',
           maxWidth: '1000px',
           margin: '0 auto'
