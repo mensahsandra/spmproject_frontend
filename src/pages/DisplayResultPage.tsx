@@ -118,29 +118,29 @@ const DisplayResultPage: React.FC = () => {
 
         if (totalMarks >= 70) {
             performance = "Excellent";
-            insight = "Outstanding performance! You're excelling in this course.";
-            recommendation = "Keep up the great work and consider helping peers who might be struggling.";
+            insight = "Strong performance across assessments.";
+            recommendation = "Maintain current study approach.";
         } else if (totalMarks >= 60) {
             performance = "Good";
-            insight = "Solid performance with room for improvement.";
-            recommendation = "Focus on strengthening weaker areas to reach excellence.";
+            insight = "Solid foundation with improvement potential.";
+            recommendation = "Focus on weaker assessment areas.";
         } else if (totalMarks >= 50) {
             performance = "Average";
-            insight = "You're meeting basic requirements but have significant potential.";
-            recommendation = "Consider additional study time and seek help from instructors.";
+            insight = "Meeting basic requirements.";
+            recommendation = "Increase study time and seek support.";
         } else {
             performance = "Needs Improvement";
-            insight = "This course requires immediate attention and focused effort.";
-            recommendation = "Schedule regular study sessions and utilize all available resources.";
+            insight = "Requires immediate attention.";
+            recommendation = "Schedule regular study sessions.";
         }
 
         let assessmentFeedback = "";
         if (!hasAssignment && hasMidSem && hasFinal) {
-            assessmentFeedback = "Missing assignment scores - ensure all coursework is submitted.";
+            assessmentFeedback = "Missing assignment scores.";
         } else if (hasAssignment && !hasFinal) {
-            assessmentFeedback = "Strong continuous assessment - prepare well for final examination.";
+            assessmentFeedback = "Strong continuous assessment.";
         } else if (hasAssignment && hasMidSem && hasFinal) {
-            assessmentFeedback = "Complete assessment profile - good engagement across all components.";
+            assessmentFeedback = "Complete assessment profile.";
         }
 
         return {
@@ -149,7 +149,7 @@ const DisplayResultPage: React.FC = () => {
             recommendation,
             assessmentFeedback,
             totalMarks,
-            trend: totalMarks >= 65 ? "↗️ Trending Up" : totalMarks >= 50 ? "→ Stable" : "↘️ Needs Attention"
+            trend: totalMarks >= 65 ? "Trending Up" : totalMarks >= 50 ? "Stable" : "Needs Attention"
         };
     };
 
@@ -416,7 +416,7 @@ const DisplayResultPage: React.FC = () => {
                                                             fontWeight: 600, 
                                                             color: '#0c4a6e' 
                                                         }}>
-                                                            📊 Performance Analysis
+                                                            Performance Analysis
                                                         </h4>
                                                         <p style={{ 
                                                             margin: '0 0 12px 0', 
@@ -447,7 +447,7 @@ const DisplayResultPage: React.FC = () => {
                                                             fontWeight: 600, 
                                                             color: '#0c4a6e' 
                                                         }}>
-                                                            💡 Recommendations
+                                                            Recommendations
                                                         </h4>
                                                         <p style={{ 
                                                             margin: '0', 
@@ -520,7 +520,7 @@ const DisplayResultPage: React.FC = () => {
                                     e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >
-                                🖨️ Print Results
+                                Print Results
                             </button>
                         </div>
                     </div>
