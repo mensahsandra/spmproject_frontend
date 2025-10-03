@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import DashboardLayout from "../components/Dashboard/DashboardLayout";
 
 const DisplayResultPage: React.FC = () => {
     const userDataRaw = localStorage.getItem("user");
@@ -170,23 +169,67 @@ const DisplayResultPage: React.FC = () => {
                         .insight-card {
                             width: 100% !important;
                         }
+                        .main-container {
+                            padding: 20px !important;
+                        }
+                    }
+                    
+                    body {
+                        margin: 0;
+                        background: #f8fafc;
+                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     }
                 `}
             </style>
-            <DashboardLayout showGreeting={true}>
-            {/* Green banner */}
-            <div style={{ width: '100%', height: '70px', background: '#d9f5e6', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: '18px', borderTopRightRadius: '18px', marginBottom: '20px' }}>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontWeight: 700, fontSize: '1.35rem', color: '#222' }}>KWAME NKRUMAH UNIVERSITY OF SCIENCE AND TECHNOLOGY, KUMASI</div>
-                    <div style={{ fontWeight: 500, fontSize: '1.1rem', color: '#16a34a' }}>GRADES FOR {selectedSemester.toUpperCase()}, {selectedBlock.toUpperCase()}, {selectedYear}</div>
-                </div>
-            </div>
-            <div className="d-flex justify-content-center align-items-center">
-                <div style={{ width: '100%', maxWidth: 900, margin: '0 auto' }}>
-                    <div style={{ background: '#fff', borderRadius: '18px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', padding: '40px 32px', position: 'relative' }}>
+            
+            {/* Clean Full Page Layout */}
+            <div style={{
+                minHeight: '100vh',
+                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                padding: '40px 20px'
+            }}>
+                {/* Centered Container */}
+                <div className="main-container" style={{
+                    maxWidth: '1200px',
+                    margin: '0 auto',
+                    background: 'white',
+                    borderRadius: '20px',
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+                    overflow: 'hidden'
+                }}>
+                    {/* Header Banner */}
+                    <div style={{ 
+                        background: 'linear-gradient(135deg, #d9f5e6 0%, #a7f3d0 100%)', 
+                        padding: '30px 40px',
+                        textAlign: 'center',
+                        borderBottom: '1px solid #e5e7eb'
+                    }}>
+                        <div style={{ fontWeight: 700, fontSize: '1.5rem', color: '#065f46', marginBottom: '8px' }}>
+                            KWAME NKRUMAH UNIVERSITY OF SCIENCE AND TECHNOLOGY, KUMASI
+                        </div>
+                        <div style={{ fontWeight: 500, fontSize: '1.1rem', color: '#16a34a' }}>
+                            GRADES FOR {selectedSemester.toUpperCase()}, {selectedBlock.toUpperCase()}, {selectedYear}
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div style={{ padding: '40px' }}>
                         {/* Student Info Card */}
-                        <div style={{ border: '1px solid #e5e7eb', borderRadius: '12px', padding: '0', marginBottom: '32px', background: '#f8fafc' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem', background: '#f8fafc', borderRadius: '12px', overflow: 'hidden', border: '1px solid #f3f6f9', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+                        <div style={{ 
+                            border: '1px solid #e5e7eb', 
+                            borderRadius: '16px', 
+                            padding: '0', 
+                            marginBottom: '40px', 
+                            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                            boxShadow: '0 4px 16px rgba(0,0,0,0.05)'
+                        }}>
+                            <table style={{ 
+                                width: '100%', 
+                                borderCollapse: 'collapse', 
+                                fontSize: '1rem', 
+                                borderRadius: '16px', 
+                                overflow: 'hidden'
+                            }}>
                                 <tbody>
                                     <tr style={{ background: '#f3f6f9' }}>
                                         <td style={{ fontWeight: 'bold', padding: '12px 16px', width: '180px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>Name:</td>
@@ -423,32 +466,66 @@ const DisplayResultPage: React.FC = () => {
                             );
                         })}
                         {/* Back Button */}
-                        <div className="d-flex justify-content-center mt-4">
+                        <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            marginTop: '40px',
+                            gap: '16px'
+                        }}>
+                            <button
+                                style={{
+                                    background: '#6b7280',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    padding: '14px 28px',
+                                    fontWeight: 600,
+                                    fontSize: '1rem',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 2px 8px rgba(107,114,128,0.15)',
+                                    transition: 'all 0.2s ease',
+                                }}
+                                onClick={() => navigate(-1)}
+                                onMouseOver={e => {
+                                    e.currentTarget.style.background = '#4b5563';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                }}
+                                onMouseOut={e => {
+                                    e.currentTarget.style.background = '#6b7280';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}
+                            >
+                                ← Back to Selection
+                            </button>
                             <button
                                 style={{
                                     background: '#22c55e',
                                     color: '#fff',
                                     border: 'none',
-                                    borderRadius: '10px',
-                                    padding: '18px 0',
+                                    borderRadius: '12px',
+                                    padding: '14px 28px',
                                     fontWeight: 600,
-                                    fontSize: '1.25rem',
+                                    fontSize: '1rem',
                                     cursor: 'pointer',
-                                    width: '100%',
                                     boxShadow: '0 2px 8px rgba(34,197,94,0.15)',
-                                    transition: 'background 0.2s, transform 0.2s',
+                                    transition: 'all 0.2s ease',
                                 }}
-                                onClick={() => navigate(-1)}
-                                onMouseOver={e => (e.currentTarget.style.background = '#16a34a')}
-                                onMouseOut={e => (e.currentTarget.style.background = '#22c55e')}
+                                onClick={() => window.print()}
+                                onMouseOver={e => {
+                                    e.currentTarget.style.background = '#16a34a';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                }}
+                                onMouseOut={e => {
+                                    e.currentTarget.style.background = '#22c55e';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}
                             >
-                                Back
+                                🖨️ Print Results
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </DashboardLayout>
         </>
     );
 };
