@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ProfileDropdown from '../components/ProfileDropdown';
 
 const NewSelectResultPage: React.FC = () => {
   const [academicYear, setAcademicYear] = useState('');
@@ -210,31 +211,14 @@ const NewSelectResultPage: React.FC = () => {
         padding: '40px',
         maxWidth: '1000px'
       }}>
-        {/* Profile Dropdown - Consistent with other pages */}
+        {/* Profile Dropdown - Same as record-attendance */}
         <div style={{ 
           position: 'fixed', 
           top: '20px', 
           right: '20px', 
-          zIndex: 1001,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          background: 'white',
-          padding: '8px 16px',
-          borderRadius: '12px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          border: '1px solid #e5e7eb'
+          zIndex: 1001
         }}>
-          <span style={{ fontSize: '16px' }}>🔔</span>
-          <img 
-            src="https://i.pravatar.cc/40" 
-            alt="Profile" 
-            style={{ width: '32px', height: '32px', borderRadius: '50%' }}
-          />
-          <span style={{ fontWeight: 600, fontSize: '14px', color: '#374151' }}>
-            Ransford
-          </span>
-          <span style={{ fontSize: '12px', color: '#6b7280' }}>▼</span>
+          <ProfileDropdown />
         </div>
 
 

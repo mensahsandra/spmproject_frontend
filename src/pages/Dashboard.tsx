@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getUser } from '../utils/auth';
+import ProfileDropdown from '../components/ProfileDropdown';
 
 const DashboardPage: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -281,30 +282,14 @@ const DashboardPage: React.FC = () => {
       
       {/* Main Content */}
       <main style={{ marginLeft: '250px', flex: 1, padding: '20px' }}>
-        {/* Profile Dropdown */}
+        {/* Profile Dropdown - Same as record-attendance */}
         <div style={{ 
           position: 'absolute', 
           top: '24px', 
           right: '40px', 
-          zIndex: 100,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-          background: 'white',
-          padding: '8px 16px',
-          borderRadius: '12px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          zIndex: 100
         }}>
-          <span style={{ fontSize: '18px' }}>🔔</span>
-          <img 
-            src={user?.profilePicture || 'https://i.pravatar.cc/40'} 
-            alt="Profile" 
-            style={{ width: '32px', height: '32px', borderRadius: '50%' }}
-          />
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>
-            {user?.name?.split(' ')[0] || 'Student'}
-          </span>
-          <span style={{ fontSize: '12px' }}>▼</span>
+          <ProfileDropdown user={user} />
         </div>
         <div style={{
           backgroundColor: '#f1f5f9',
