@@ -162,6 +162,15 @@ const DisplayResultPage: React.FC = () => {
                         from { opacity: 0; transform: translateY(-10px); }
                         to { opacity: 1; transform: translateY(0); }
                     }
+                    
+                    @media (max-width: 768px) {
+                        .course-container {
+                            flex-direction: column !important;
+                        }
+                        .insight-card {
+                            width: 100% !important;
+                        }
+                    }
                 `}
             </style>
             <DashboardLayout showGreeting={true}>
@@ -213,9 +222,23 @@ const DisplayResultPage: React.FC = () => {
                             const isExpanded = expandedInsights[courseKey];
 
                             return (
-                                <div key={courseKey} style={{ marginBottom: '32px' }}>
+                                <div key={courseKey} className="course-container" style={{ 
+                                    marginBottom: '32px',
+                                    display: 'flex',
+                                    gap: '20px',
+                                    alignItems: 'flex-start'
+                                }}>
                                     {/* Course Results Table */}
-                                    <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, borderRadius: '16px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #e5e7eb' }}>
+                                    <table style={{ 
+                                        flex: '1',
+                                        borderCollapse: 'separate', 
+                                        borderSpacing: 0, 
+                                        borderRadius: '16px', 
+                                        overflow: 'hidden', 
+                                        background: '#fff', 
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
+                                        border: '1px solid #e5e7eb' 
+                                    }}>
                                         <thead>
                                             <tr style={{ background: '#f8fafc' }}>
                                                 <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'left' }}>Course Code</th>
@@ -246,14 +269,16 @@ const DisplayResultPage: React.FC = () => {
                                         </tbody>
                                     </table>
 
-                                    {/* AI Insight Card */}
-                                    <div style={{
-                                        marginTop: '16px',
+                                    {/* AI Insight Card - Right Side */}
+                                    <div className="insight-card" style={{
+                                        width: '300px',
+                                        flexShrink: 0,
                                         border: '1px solid #e0f2fe',
                                         borderRadius: '12px',
                                         background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
                                         overflow: 'hidden',
-                                        boxShadow: '0 2px 8px rgba(14, 165, 233, 0.1)'
+                                        boxShadow: '0 2px 8px rgba(14, 165, 233, 0.1)',
+                                        height: 'fit-content'
                                     }}>
                                         {/* Insight Header - Always Visible */}
                                         <div 
@@ -268,26 +293,12 @@ const DisplayResultPage: React.FC = () => {
                                             }}
                                             onClick={() => toggleInsight(courseKey)}
                                         >
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                <div style={{
-                                                    width: '32px',
-                                                    height: '32px',
-                                                    borderRadius: '50%',
-                                                    background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    fontSize: '16px'
-                                                }}>
-                                                    🤖
+                                            <div>
+                                                <div style={{ fontWeight: 600, color: '#0c4a6e', fontSize: '14px' }}>
+                                                    AI Performance Insight
                                                 </div>
-                                                <div>
-                                                    <div style={{ fontWeight: 600, color: '#0c4a6e', fontSize: '14px' }}>
-                                                        AI Performance Insight
-                                                    </div>
-                                                    <div style={{ color: '#0369a1', fontSize: '13px', marginTop: '2px' }}>
-                                                        {insight.performance} • {insight.trend}
-                                                    </div>
+                                                <div style={{ color: '#0369a1', fontSize: '13px', marginTop: '2px' }}>
+                                                    {insight.performance} • {insight.trend}
                                                 </div>
                                             </div>
                                             <div style={{
