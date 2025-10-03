@@ -16,7 +16,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
       <main style={{
         flex: 1,
         marginLeft: '250px',
-        padding: '20px 40px',
+        padding: '20px 40px 20px 20px',
         backgroundColor: '#f8fafc',
         minHeight: '100vh',
         position: 'relative',
@@ -34,8 +34,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
           paddingTop: '40px',
           width: '100%',
           maxWidth: '1100px',
-          margin: '0 20px',
-          marginLeft: '20px'
+          margin: '0 20px 0 0',
+          marginLeft: '0px'
         }}>
           {children}
         </div>
