@@ -4,15 +4,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // this includes Popper
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
 import './styles/dashboard.css'
+import RoutePage from './routes/RoutePage';
 
 function App() {
   return (
     <Router>
-      <div style={{ padding: '50px', backgroundColor: '#e0f2e7', textAlign: 'center' }}>
-        <h1 style={{ color: 'green', fontSize: '32px' }}>🚀 APP.TSX WORKING!</h1>
-        <p>React app is loading successfully.</p>
-        <p>Testing without providers...</p>
-      </div>
+      <RoutePage />
     </Router>
   );
 }
