@@ -7,7 +7,7 @@ const DisplayResultPage: React.FC = () => {
     const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
     const studentInfo = {
         name: (userData.name || '').trim() || 'Ransford Yeboah',
-        indexNo: userData.indexNo || '9123456',
+        indexNo: userData.indexNo || '9444114',
         studentId: userData.studentId || "21058161",
         email: userData.email || "yransford178",
         programme: userData.programme || "BSc. Information Technology IDL - TOPUP",
@@ -16,29 +16,81 @@ const DisplayResultPage: React.FC = () => {
     };
     const now = new Date();
     const dateString = now.toLocaleDateString() + " " + now.toLocaleTimeString();
-    const blocks = [
-        {
-            code: "BIT 364",
-            name: "Entrepreneurship",
-            rows: [
-                { type: "Assignment", option: "Graded", marks: 10 },
-                { type: "Project Work", option: "-", marks: "-" },
-                { type: "Mid- Semester", option: "Graded", marks: 10 },
-            ],
-        },
-        {
-            code: "BIT 366",
-            name: "Computer Graphics & Image Processing",
-            rows: [
-                { type: "Assignment", option: "-", marks: "-" },
-                { type: "Project Work", option: "-", marks: "-" },
-                { type: "Mid- Semester", option: "-", marks: 15 },
-            ],
-        },
-    ];
+    
     const navigate = useNavigate();
     const location = useLocation();
-    const { year = "2024/2025", block = "Block 1" } = (location.state as any) || {};
+    
+    // Get parameters from URL
+    const urlParams = new URLSearchParams(location.search);
+    const selectedYear = urlParams.get('year') || "2024-2025";
+    const selectedSemester = urlParams.get('semester') || "First Semester";
+    const selectedBlock = urlParams.get('block') || "Block 1";
+
+    // Block-specific course data
+    const blockData: Record<string, any[]> = {
+        "Block 1": [
+            {
+                code: "BIT 364",
+                name: "ENTREPRENEURSHIP",
+                rows: [
+                    { type: "Assignment", option: "-", marks: "-" },
+                    { type: "Mid Semester", option: "Graded", marks: 15 },
+                    { type: "Final Examination", option: "Graded", marks: 60 },
+                ],
+            },
+            {
+                code: "BIT 364",
+                name: "COMPUTER GRAPHICS & IMAGE PROCESSING",
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 5 },
+                    { type: "Mid Semester", option: "Graded", marks: 10 },
+                    { type: "Final Examination", option: "-", marks: "-" },
+                ],
+            },
+        ],
+        "Block 2": [
+            {
+                code: "BIT 365",
+                name: "WEB DEVELOPMENT",
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 8 },
+                    { type: "Mid Semester", option: "Graded", marks: 12 },
+                    { type: "Final Examination", option: "Graded", marks: 55 },
+                ],
+            },
+        ],
+        "Block 3": [
+            {
+                code: "BIT 366",
+                name: "DATABASE MANAGEMENT",
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 10 },
+                    { type: "Mid Semester", option: "Graded", marks: 14 },
+                    { type: "Final Examination", option: "Graded", marks: 58 },
+                ],
+            },
+            {
+                code: "BIT 367",
+                name: "NETWORK SECURITY",
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 7 },
+                    { type: "Mid Semester", option: "Graded", marks: 11 },
+                    { type: "Final Examination", option: "Graded", marks: 52 },
+                ],
+            },
+            {
+                code: "BIT 368",
+                name: "MOBILE APP DEVELOPMENT",
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 9 },
+                    { type: "Mid Semester", option: "Graded", marks: 13 },
+                    { type: "Final Examination", option: "Graded", marks: 60 },
+                ],
+            },
+        ],
+    };
+
+    const blocks = blockData[selectedBlock] || [];
 
     return (
         <DashboardLayout showGreeting={true}>
@@ -46,7 +98,7 @@ const DisplayResultPage: React.FC = () => {
             <div style={{ width: '100%', height: '70px', background: '#d9f5e6', display: 'flex', alignItems: 'center', justifyContent: 'center', borderTopLeftRadius: '18px', borderTopRightRadius: '18px', marginBottom: '20px' }}>
                 <div style={{ textAlign: 'center' }}>
                     <div style={{ fontWeight: 700, fontSize: '1.35rem', color: '#222' }}>KWAME NKRUMAH UNIVERSITY OF SCIENCE AND TECHNOLOGY, KUMASI</div>
-                    <div style={{ fontWeight: 500, fontSize: '1.1rem', color: '#16a34a' }}>GRADES FOR  SEMESTER 1, {block.toUpperCase()}, {year}</div>
+                    <div style={{ fontWeight: 500, fontSize: '1.1rem', color: '#16a34a' }}>GRADES FOR {selectedSemester.toUpperCase()}, {selectedBlock.toUpperCase()}, {selectedYear}</div>
                 </div>
             </div>
             <div className="d-flex justify-content-center align-items-center">
@@ -98,7 +150,7 @@ const DisplayResultPage: React.FC = () => {
                                     </thead>
                                     <tbody>
                                         {Array.isArray(block.rows) && block.rows.length > 0 ? (
-                                            block.rows.map((row, i) => (
+                                            block.rows.map((row: any, i: number) => (
                                                 <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
                                                     {i === 0 && (
                                                         <td rowSpan={block.rows.length} style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db', verticalAlign: 'middle', fontWeight: 'bold' }}>{block.code}</td>

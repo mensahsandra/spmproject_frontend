@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 const NewSelectResultPage: React.FC = () => {
   const [academicYear, setAcademicYear] = useState('');
   const [semester, setSemester] = useState('');
-  const [showResults, setShowResults] = useState(false);
+  const [selectedBlock, setSelectedBlock] = useState('');
+
 
   // Mock user data since we're bypassing auth
   const user = {
@@ -13,10 +14,16 @@ const NewSelectResultPage: React.FC = () => {
   };
 
   const handleDisplayResults = () => {
-    if (academicYear && semester) {
-      setShowResults(true);
+    if (academicYear && semester && selectedBlock) {
+      // Navigate to display-result page with selected parameters
+      const params = new URLSearchParams({
+        year: academicYear,
+        semester: semester,
+        block: selectedBlock
+      });
+      window.location.href = `/student/display-result?${params.toString()}`;
     } else {
-      alert('Please select both Academic Year and Semester');
+      alert('Please select Academic Year, Semester, and Block');
     }
   };
 
@@ -275,7 +282,7 @@ const NewSelectResultPage: React.FC = () => {
           {/* Selection Form */}
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: '1fr 1fr auto', 
+            gridTemplateColumns: '1fr 1fr 1fr auto', 
             gap: '20px', 
             alignItems: 'end',
             marginBottom: '30px',
@@ -336,6 +343,33 @@ const NewSelectResultPage: React.FC = () => {
             </div>
             
             <div>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: 500,
+                color: '#374151'
+              }}>
+                Select Block
+              </label>
+              <select
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '6px',
+                  fontSize: '14px'
+                }}
+                value={selectedBlock}
+                onChange={(e) => setSelectedBlock(e.target.value)}
+              >
+                <option value="">Select Block</option>
+                <option value="Block 1">Block 1</option>
+                <option value="Block 2">Block 2</option>
+                <option value="Block 3">Block 3</option>
+              </select>
+            </div>
+            
+            <div>
               <button
                 onClick={handleDisplayResults}
                 style={{
@@ -357,122 +391,20 @@ const NewSelectResultPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Results Display */}
-          {showResults && (
-            <div style={{ marginTop: '30px' }}>
-              {/* Header */}
-              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <h2 style={{ fontWeight: 'bold', marginBottom: '8px' }}>
-                  KNUST – Kwame Nkrumah University of Science and Technology
-                </h2>
-                <p style={{ color: '#6b7280' }}>
-                  Report for {semester === 'First Semester' ? 'Semester 1' : 'Semester 2'}, {academicYear} Academic Year
-                </p>
-              </div>
-              
-              {/* Student Info */}
-              <table style={{ 
-                width: '100%', 
-                border: '1px solid #d1d5db', 
-                borderCollapse: 'collapse',
-                marginBottom: '20px'
-              }}>
-                <tbody>
-                  <tr>
-                    <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>
-                      <strong>Name:</strong> {user?.name || 'Ransford Yeboah'}
-                    </td>
-                    <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>
-                      <strong>Index No.:</strong> 20123456
-                    </td>
-                    <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>
-                      <strong>Student ID:</strong> IDL/2024/001
-                    </td>
-                    <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>
-                      <strong>Email:</strong> {user?.email || 'student@knust.edu.gh'}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ border: '1px solid #d1d5db', padding: '8px' }} colSpan={2}>
-                      <strong>Programme:</strong> Information Systems Management
-                    </td>
-                    <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>
-                      <strong>Level:</strong> 400
-                    </td>
-                    <td style={{ border: '1px solid #d1d5db', padding: '8px' }}></td>
-                  </tr>
-                </tbody>
-              </table>
-              
-              {/* Results Table */}
-              <div style={{ marginTop: '20px' }}>
-                <h3 style={{ 
-                  marginBottom: '15px', 
-                  color: '#1f2937',
-                  fontSize: '20px',
-                  fontWeight: 600
-                }}>
-                  Course Results
-                </h3>
-                <table style={{ 
-                  width: '100%', 
-                  border: '1px solid #d1d5db', 
-                  borderCollapse: 'collapse'
-                }}>
-                  <thead style={{ backgroundColor: '#f9fafb' }}>
-                    <tr>
-                      <th style={{ border: '1px solid #d1d5db', padding: '12px', textAlign: 'left' }}>Course Code</th>
-                      <th style={{ border: '1px solid #d1d5db', padding: '12px', textAlign: 'left' }}>Course Title</th>
-                      <th style={{ border: '1px solid #d1d5db', padding: '12px', textAlign: 'left' }}>Grade</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>ISM 401</td>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>Database Systems</td>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>A</td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>ISM 402</td>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>Systems Analysis</td>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>B+</td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>ISM 403</td>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>Project Management</td>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>A-</td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>ISM 404</td>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>Information Security</td>
-                      <td style={{ border: '1px solid #d1d5db', padding: '8px' }}>B</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Print Button */}
-              <div style={{ textAlign: 'center', marginTop: '30px' }}>
-                <button
-                  onClick={() => window.print()}
-                  style={{
-                    backgroundColor: '#6b7280',
-                    color: 'white',
-                    border: 'none',
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseOver={e => (e.currentTarget.style.backgroundColor = '#4b5563')}
-                  onMouseOut={e => (e.currentTarget.style.backgroundColor = '#6b7280')}
-                >
-                  Print Results
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Info Message */}
+          <div style={{
+            textAlign: 'center',
+            padding: '20px',
+            backgroundColor: '#f0f9ff',
+            borderRadius: '8px',
+            border: '1px solid #0ea5e9',
+            marginTop: '20px'
+          }}>
+            <p style={{ color: '#0369a1', margin: 0 }}>
+              Select your Academic Year, Semester, and Block to view your results. 
+              Each block contains 1-3 courses based on your timetable.
+            </p>
+          </div>
         </div>
       </main>
     </div>
