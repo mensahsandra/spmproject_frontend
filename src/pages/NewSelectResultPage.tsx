@@ -5,14 +5,6 @@ const NewSelectResultPage: React.FC = () => {
   const [semester, setSemester] = useState('');
   const [selectedBlock, setSelectedBlock] = useState('');
 
-
-  // Mock user data since we're bypassing auth
-  const user = {
-    name: 'Ransford Yeboah',
-    email: 'student@knust.edu.gh',
-    profilePicture: 'https://i.pravatar.cc/40'
-  };
-
   const handleDisplayResults = () => {
     if (academicYear && semester && selectedBlock) {
       // Navigate to display-result page with selected parameters
@@ -218,54 +210,40 @@ const NewSelectResultPage: React.FC = () => {
         padding: '40px',
         maxWidth: '1000px'
       }}>
-        {/* Profile Dropdown */}
+        {/* Profile Dropdown - Consistent with other pages */}
         <div style={{ 
-          position: 'absolute', 
-          top: '24px', 
-          right: '40px', 
-          zIndex: 100,
+          position: 'fixed', 
+          top: '20px', 
+          right: '20px', 
+          zIndex: 1001,
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
           background: 'white',
           padding: '8px 16px',
           borderRadius: '12px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          border: '1px solid #e5e7eb'
         }}>
-          <span style={{ fontSize: '18px' }}>🔔</span>
+          <span style={{ fontSize: '16px' }}>🔔</span>
           <img 
-            src={user?.profilePicture || 'https://i.pravatar.cc/40'} 
+            src="https://i.pravatar.cc/40" 
             alt="Profile" 
             style={{ width: '32px', height: '32px', borderRadius: '50%' }}
           />
-          <span style={{ fontWeight: 600, fontSize: '14px' }}>
-            {user?.name?.split(' ')[0] || 'Student'}
+          <span style={{ fontWeight: 600, fontSize: '14px', color: '#374151' }}>
+            Ransford
           </span>
-          <span style={{ fontSize: '12px' }}>▼</span>
+          <span style={{ fontSize: '12px', color: '#6b7280' }}>▼</span>
         </div>
 
-        {/* SUCCESS INDICATOR */}
-        <div style={{
-          position: 'fixed',
-          top: '10px',
-          left: '260px',
-          background: '#22c55e',
-          color: 'white',
-          padding: '8px 12px',
-          borderRadius: '6px',
-          fontSize: '12px',
-          fontWeight: 600,
-          zIndex: 9999,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-        }}>
-          ✅ NEW SELECT RESULT WORKING!
-        </div>
+
 
         <div style={{ 
           backgroundColor: 'white', 
           padding: '30px', 
           borderRadius: '12px', 
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
           border: '1px solid #e5e7eb',
           marginTop: '20px'
         }}>
