@@ -2,20 +2,6 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const DisplayResultPage: React.FC = () => {
-    const userDataRaw = localStorage.getItem("user");
-    const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
-    const studentInfo = {
-        name: (userData.name || '').trim() || 'Ransford Yeboah',
-        indexNo: userData.indexNo || '9444114',
-        studentId: userData.studentId || "21058161",
-        email: userData.email || "yransford178",
-        programme: userData.programme || "BSc. Information Technology IDL - TOPUP",
-        year: userData.year || "2025",
-        option: userData.option || "General",
-    };
-    const now = new Date();
-    const dateString = now.toLocaleDateString() + " " + now.toLocaleTimeString();
-    
     const navigate = useNavigate();
     const location = useLocation();
     
@@ -25,92 +11,92 @@ const DisplayResultPage: React.FC = () => {
     const selectedSemester = urlParams.get('semester') || "First Semester";
     const selectedBlock = urlParams.get('block') || "Block 1";
 
-    // Block-specific course data
-    const blockData: Record<string, any[]> = {
+    // Student info
+    const studentInfo = {
+        name: 'Ransford Yeboah',
+        indexNo: '9444114',
+        studentId: '21058161',
+        email: 'yransford178',
+        programme: 'BSc. Information Technology IDL - TOPUP',
+        year: '2025',
+        option: 'General',
+    };
+
+    const now = new Date();
+    const dateString = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+    // State for collapsible insight cards
+    const [expandedInsights, setExpandedInsights] = useState<Record<string, boolean>>({});
+
+    const toggleInsight = (courseKey: string) => {
+        setExpandedInsights(prev => ({
+            ...prev,
+            [courseKey]: !prev[courseKey]
+        }));
+    };
+
+    // Enhanced course data with detailed breakdown matching the image
+    const courseData: Record<string, any[]> = {
         "Block 1": [
             {
                 code: "BIT 364",
                 name: "ENTREPRENEURSHIP",
-                rows: [
-                    { type: "Assignment", option: "-", marks: "-" },
-                    { type: "Mid Semester", option: "Graded", marks: 15 },
-                    { type: "Final Examination", option: "Graded", marks: 60 },
-                ],
+                assessments: [
+                    { type: "Assignment", totalMarks: 15, markEarned: 14, status: "Graded" },
+                    { type: "Mid Semester", totalMarks: 25, markEarned: 20, status: "Graded" },
+                    { type: "Final Examination", totalMarks: 60, markEarned: 50, status: "Graded" }
+                ]
             },
             {
                 code: "BIT 364",
                 name: "COMPUTER GRAPHICS & IMAGE PROCESSING",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 5 },
-                    { type: "Mid Semester", option: "Graded", marks: 10 },
-                    { type: "Final Examination", option: "-", marks: "-" },
-                ],
-            },
+                assessments: [
+                    { type: "Assignment", totalMarks: 10, markEarned: 5, status: "Graded" },
+                    { type: "Mid Semester", totalMarks: 20, markEarned: 10, status: "Graded" },
+                    { type: "Final Examination", totalMarks: 70, markEarned: null, status: "Pending" }
+                ]
+            }
         ],
         "Block 2": [
             {
                 code: "BIT 365",
                 name: "WEB DEVELOPMENT",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 8 },
-                    { type: "Mid Semester", option: "Graded", marks: 12 },
-                    { type: "Final Examination", option: "Graded", marks: 55 },
-                ],
-            },
+                assessments: [
+                    { type: "Assignment", totalMarks: 15, markEarned: 12, status: "Graded" },
+                    { type: "Mid Semester", totalMarks: 25, markEarned: 18, status: "Graded" },
+                    { type: "Final Examination", totalMarks: 60, markEarned: 45, status: "Graded" }
+                ]
+            }
         ],
         "Block 3": [
             {
-                code: "BIT 366",
-                name: "DATABASE MANAGEMENT",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 10 },
-                    { type: "Mid Semester", option: "Graded", marks: 14 },
-                    { type: "Final Examination", option: "Graded", marks: 58 },
-                ],
+                code: "BIT 301",
+                name: "DATA STRUCTURES AND ALGORITHMS",
+                assessments: [
+                    { type: "Quiz", totalMarks: 10, markEarned: 9, status: "Graded" },
+                    { type: "Project", totalMarks: 30, markEarned: 25, status: "Graded" },
+                    { type: "Final Examination", totalMarks: 60, markEarned: 45, status: "Graded" }
+                ]
             },
             {
-                code: "BIT 367",
-                name: "NETWORK SECURITY",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 7 },
-                    { type: "Mid Semester", option: "Graded", marks: 11 },
-                    { type: "Final Examination", option: "Graded", marks: 52 },
-                ],
-            },
-            {
-                code: "BIT 368",
-                name: "MOBILE APP DEVELOPMENT",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 9 },
-                    { type: "Mid Semester", option: "Graded", marks: 13 },
-                    { type: "Final Examination", option: "Graded", marks: 60 },
-                ],
-            },
-        ],
+                code: "BIT 302",
+                name: "SOFTWARE ENGINEERING",
+                assessments: [
+                    { type: "Assignment", totalMarks: 20, markEarned: 16, status: "Graded" },
+                    { type: "Mid Semester", totalMarks: 30, markEarned: 22, status: "Graded" },
+                    { type: "Final Examination", totalMarks: 50, markEarned: 38, status: "Graded" }
+                ]
+            }
+        ]
     };
 
-    const blocks = blockData[selectedBlock] || [];
-
-    // State for collapsible insight cards
-    const [expandedInsights, setExpandedInsights] = useState<Record<string, boolean>>({});
-
-    const toggleInsight = (courseCode: string) => {
-        setExpandedInsights(prev => ({
-            ...prev,
-            [courseCode]: !prev[courseCode]
-        }));
-    };
+    const blocks = courseData[selectedBlock] || [];
 
     // AI Insight generator function
     const generateInsight = (course: any) => {
-        const totalMarks = course.rows.reduce((sum: number, row: any) => {
-            const marks = typeof row.marks === 'number' ? row.marks : 0;
-            return sum + marks;
-        }, 0);
-
-        const hasAssignment = course.rows.some((row: any) => row.type === "Assignment" && row.marks !== "-");
-        const hasMidSem = course.rows.some((row: any) => row.type === "Mid Semester" && row.marks !== "-");
-        const hasFinal = course.rows.some((row: any) => row.type === "Final Examination" && row.marks !== "-");
+        const totalMarks = course.assessments?.reduce((sum: number, assessment: any) => {
+            return sum + (assessment.markEarned || 0);
+        }, 0) || 0;
 
         let insight = "";
         let recommendation = "";
@@ -134,20 +120,11 @@ const DisplayResultPage: React.FC = () => {
             recommendation = "Schedule regular study sessions.";
         }
 
-        let assessmentFeedback = "";
-        if (!hasAssignment && hasMidSem && hasFinal) {
-            assessmentFeedback = "Missing assignment scores.";
-        } else if (hasAssignment && !hasFinal) {
-            assessmentFeedback = "Strong continuous assessment.";
-        } else if (hasAssignment && hasMidSem && hasFinal) {
-            assessmentFeedback = "Complete assessment profile.";
-        }
-
         return {
             performance,
             insight,
             recommendation,
-            assessmentFeedback,
+            assessmentFeedback: "Complete assessment profile.",
             totalMarks,
             trend: totalMarks >= 65 ? "Trending Up" : totalMarks >= 50 ? "Stable" : "Needs Attention"
         };

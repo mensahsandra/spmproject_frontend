@@ -93,7 +93,7 @@ const RoutePage = () => {
       } />
       <Route path="/student/display-result" element={
         <ProtectedRoute requiredRole="student">
-          {withStudent(<DisplayResultPage />)}
+          <DisplayResultPage />
         </ProtectedRoute>
       } />
       <Route path="/student/display-cwa" element={
