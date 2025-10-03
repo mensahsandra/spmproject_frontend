@@ -209,9 +209,7 @@ const NewSelectResultPage: React.FC = () => {
         marginLeft: '250px', 
         flex: 1, 
         padding: '40px',
-        maxWidth: '1000px',
-        margin: '0 auto',
-        marginLeft: '250px'
+        maxWidth: '1000px'
       }}>
         {/* Profile Dropdown */}
         <div style={{ 

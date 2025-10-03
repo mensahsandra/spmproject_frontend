@@ -1,11 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import LandingPage from '../pages/LandingPage';
+// LandingPage import removed - not used in current test
 import Dashboard from '../pages/Dashboard';
 import NewDashboard from '../pages/NewDashboard';
 import NewSelectResultPage from '../pages/NewSelectResultPage';
 import SimpleTestPage from '../pages/SimpleTestPage';
 import RecordAttendance from '../components/Dashboard/RecordAttendance';
-import SelectResult from '../components/Dashboard/SelectResult';
+// SelectResult import removed - not used in current routes
 import NotificationsPage from '../pages/NotificationsPage';
 // Old unified Sidebar removed in favor of role-specific layouts
 import StudentLoginPage from '../pages/StudentLoginPage';

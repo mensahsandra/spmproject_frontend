@@ -1,4 +1,4 @@
-import React from "react";
+// React import removed - not needed in this component
 
 interface ResultsTableProps {
   data: { courseCode: string; courseTitle: string; grade: string }[];
