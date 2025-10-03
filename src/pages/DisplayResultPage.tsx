@@ -35,67 +35,77 @@ const DisplayResultPage: React.FC = () => {
         }));
     };
 
-    // Enhanced course data with detailed breakdown matching the image
+    // Block-specific course data matching the expected table structure
     const courseData: Record<string, any[]> = {
         "Block 1": [
             {
                 code: "BIT 364",
                 name: "ENTREPRENEURSHIP",
-                assessments: [
-                    { type: "Assignment", totalMarks: 15, markEarned: 14, status: "Graded" },
-                    { type: "Mid Semester", totalMarks: 25, markEarned: 20, status: "Graded" },
-                    { type: "Final Examination", totalMarks: 60, markEarned: 50, status: "Graded" }
-                ]
+                rows: [
+                    { type: "Assignment", option: "-", marks: "-" },
+                    { type: "Mid Semester", option: "Graded", marks: 15 },
+                    { type: "Final Examination", option: "Graded", marks: 60 },
+                ],
             },
             {
                 code: "BIT 364",
                 name: "COMPUTER GRAPHICS & IMAGE PROCESSING",
-                assessments: [
-                    { type: "Assignment", totalMarks: 10, markEarned: 5, status: "Graded" },
-                    { type: "Mid Semester", totalMarks: 20, markEarned: 10, status: "Graded" },
-                    { type: "Final Examination", totalMarks: 70, markEarned: null, status: "Pending" }
-                ]
-            }
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 5 },
+                    { type: "Mid Semester", option: "Graded", marks: 10 },
+                    { type: "Final Examination", option: "-", marks: "-" },
+                ],
+            },
         ],
         "Block 2": [
             {
                 code: "BIT 365",
                 name: "WEB DEVELOPMENT",
-                assessments: [
-                    { type: "Assignment", totalMarks: 15, markEarned: 12, status: "Graded" },
-                    { type: "Mid Semester", totalMarks: 25, markEarned: 18, status: "Graded" },
-                    { type: "Final Examination", totalMarks: 60, markEarned: 45, status: "Graded" }
-                ]
-            }
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 8 },
+                    { type: "Mid Semester", option: "Graded", marks: 12 },
+                    { type: "Final Examination", option: "Graded", marks: 55 },
+                ],
+            },
         ],
         "Block 3": [
             {
-                code: "BIT 301",
-                name: "DATA STRUCTURES AND ALGORITHMS",
-                assessments: [
-                    { type: "Quiz", totalMarks: 10, markEarned: 9, status: "Graded" },
-                    { type: "Project", totalMarks: 30, markEarned: 25, status: "Graded" },
-                    { type: "Final Examination", totalMarks: 60, markEarned: 45, status: "Graded" }
-                ]
+                code: "BIT 366",
+                name: "DATABASE MANAGEMENT",
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 10 },
+                    { type: "Mid Semester", option: "Graded", marks: 14 },
+                    { type: "Final Examination", option: "Graded", marks: 58 },
+                ],
             },
             {
-                code: "BIT 302",
-                name: "SOFTWARE ENGINEERING",
-                assessments: [
-                    { type: "Assignment", totalMarks: 20, markEarned: 16, status: "Graded" },
-                    { type: "Mid Semester", totalMarks: 30, markEarned: 22, status: "Graded" },
-                    { type: "Final Examination", totalMarks: 50, markEarned: 38, status: "Graded" }
-                ]
-            }
-        ]
+                code: "BIT 367",
+                name: "NETWORK SECURITY",
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 7 },
+                    { type: "Mid Semester", option: "Graded", marks: 11 },
+                    { type: "Final Examination", option: "Graded", marks: 52 },
+                ],
+            },
+            {
+                code: "BIT 368",
+                name: "MOBILE APP DEVELOPMENT",
+                rows: [
+                    { type: "Assignment", option: "Graded", marks: 9 },
+                    { type: "Mid Semester", option: "Graded", marks: 13 },
+                    { type: "Final Examination", option: "Graded", marks: 60 },
+                ],
+            },
+        ],
     };
 
     const blocks = courseData[selectedBlock] || [];
 
     // AI Insight generator function
     const generateInsight = (course: any) => {
-        const totalMarks = course.assessments?.reduce((sum: number, assessment: any) => {
-            return sum + (assessment.markEarned || 0);
+        const totalMarks = course.rows?.reduce((sum: number, row: any) => {
+            const marks = typeof row.marks === 'number' ? row.marks : 0;
+            return sum + marks;
         }, 0) || 0;
 
         let insight = "";
