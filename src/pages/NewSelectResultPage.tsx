@@ -7,17 +7,30 @@ const NewSelectResultPage: React.FC = () => {
   const [selectedBlock, setSelectedBlock] = useState('');
 
   const handleDisplayResults = () => {
-    if (academicYear && semester && selectedBlock) {
-      // Navigate to display-result page with selected parameters
-      const params = new URLSearchParams({
-        year: academicYear,
-        semester: semester,
-        block: selectedBlock
-      });
-      window.location.href = `/student/display-result?${params.toString()}`;
-    } else {
-      alert('Please select Academic Year, Semester, and Block');
+    console.log('Form values:', { academicYear, semester, selectedBlock }); // Debug log
+    
+    if (!academicYear) {
+      alert('Please select an Academic Year');
+      return;
     }
+    if (!semester) {
+      alert('Please select a Semester');
+      return;
+    }
+    if (!selectedBlock) {
+      alert('Please select a Block');
+      return;
+    }
+
+    // Navigate to display-result page with selected parameters
+    const params = new URLSearchParams({
+      year: academicYear,
+      semester: semester,
+      block: selectedBlock
+    });
+    
+    console.log('Navigating to:', `/student/display-result?${params.toString()}`); // Debug log
+    window.location.href = `/student/display-result?${params.toString()}`;
   };
 
   return (
@@ -284,7 +297,7 @@ const NewSelectResultPage: React.FC = () => {
               onFocus={(e) => e.currentTarget.style.borderColor = '#4299e1'}
               onBlur={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
             >
-              <option value="">2024 - 2025</option>
+              <option value="">Select Academic Year</option>
               <option value="2023-2024">2023 - 2024</option>
               <option value="2024-2025">2024 - 2025</option>
             </select>
@@ -325,7 +338,7 @@ const NewSelectResultPage: React.FC = () => {
               onFocus={(e) => e.currentTarget.style.borderColor = '#4299e1'}
               onBlur={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
             >
-              <option value="">----</option>
+              <option value="">Select Semester</option>
               <option value="First Semester">First Semester</option>
               <option value="Second Semester">Second Semester</option>
             </select>
@@ -366,7 +379,7 @@ const NewSelectResultPage: React.FC = () => {
               onFocus={(e) => e.currentTarget.style.borderColor = '#4299e1'}
               onBlur={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
             >
-              <option value="">----</option>
+              <option value="">Select Block</option>
               <option value="Block 1">Block 1</option>
               <option value="Block 2">Block 2</option>
               <option value="Block 3">Block 3</option>
