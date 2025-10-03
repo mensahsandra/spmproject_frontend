@@ -11,16 +11,34 @@ const DisplayResultPage: React.FC = () => {
     const selectedSemester = urlParams.get('semester') || "First Semester";
     const selectedBlock = urlParams.get('block') || "Block 1";
 
-    // Student info
-    const studentInfo = {
-        name: 'Ransford Yeboah',
-        indexNo: '9444114',
-        studentId: '21058161',
-        email: 'yransford178',
-        programme: 'BSc. Information Technology IDL - TOPUP',
-        year: '2025',
-        option: 'General',
+    // Get user data from localStorage or use defaults with "Pending" fallback
+    const getUserData = () => {
+        try {
+            const userDataRaw = localStorage.getItem("user");
+            const userData = userDataRaw ? JSON.parse(userDataRaw) : {};
+            return {
+                name: userData.name || 'Ransford Yeboah',
+                indexNo: userData.indexNo || '9444114',
+                studentId: userData.studentId || '1234567',
+                email: userData.email || 'ransford@knust.edu.gh',
+                programme: userData.programme || 'BSc. Information Technology IDL - TOPUP',
+                year: userData.year || '2025',
+                option: userData.option || 'General',
+            };
+        } catch {
+            return {
+                name: 'Pending',
+                indexNo: 'Pending',
+                studentId: 'Pending',
+                email: 'Pending',
+                programme: 'Pending',
+                year: 'Pending',
+                option: 'Pending',
+            };
+        }
     };
+
+    const studentInfo = getUserData();
 
     const now = new Date();
     const dateString = now.toLocaleDateString() + " " + now.toLocaleTimeString();
@@ -35,16 +53,16 @@ const DisplayResultPage: React.FC = () => {
         }));
     };
 
-    // Block-specific course data matching the expected table structure
+    // Block-specific course data with updated assessment types and options
     const courseData: Record<string, any[]> = {
         "Block 1": [
             {
                 code: "BIT 364",
                 name: "ENTREPRENEURSHIP",
                 rows: [
-                    { type: "Assignment", option: "-", marks: "-" },
+                    { type: "Assignment", option: "Pending", marks: "-" },
                     { type: "Mid Semester", option: "Graded", marks: 15 },
-                    { type: "Final Examination", option: "Graded", marks: 60 },
+                    { type: "Group Work", option: "Graded", marks: 60 },
                 ],
             },
             {
@@ -53,7 +71,7 @@ const DisplayResultPage: React.FC = () => {
                 rows: [
                     { type: "Assignment", option: "Graded", marks: 5 },
                     { type: "Mid Semester", option: "Graded", marks: 10 },
-                    { type: "Final Examination", option: "-", marks: "-" },
+                    { type: "Group Work", option: "Pending", marks: "-" },
                 ],
             },
         ],
@@ -64,7 +82,7 @@ const DisplayResultPage: React.FC = () => {
                 rows: [
                     { type: "Assignment", option: "Graded", marks: 8 },
                     { type: "Mid Semester", option: "Graded", marks: 12 },
-                    { type: "Final Examination", option: "Graded", marks: 55 },
+                    { type: "Group Work", option: "Graded", marks: 55 },
                 ],
             },
         ],
@@ -75,7 +93,7 @@ const DisplayResultPage: React.FC = () => {
                 rows: [
                     { type: "Assignment", option: "Graded", marks: 10 },
                     { type: "Mid Semester", option: "Graded", marks: 14 },
-                    { type: "Final Examination", option: "Graded", marks: 58 },
+                    { type: "Group Work", option: "Graded", marks: 58 },
                 ],
             },
             {
@@ -83,8 +101,8 @@ const DisplayResultPage: React.FC = () => {
                 name: "NETWORK SECURITY",
                 rows: [
                     { type: "Assignment", option: "Graded", marks: 7 },
-                    { type: "Mid Semester", option: "Graded", marks: 11 },
-                    { type: "Final Examination", option: "Graded", marks: 52 },
+                    { type: "Mid Semester", option: "Pending", marks: 11 },
+                    { type: "Group Work", option: "Graded", marks: 52 },
                 ],
             },
             {
@@ -93,7 +111,7 @@ const DisplayResultPage: React.FC = () => {
                 rows: [
                     { type: "Assignment", option: "Graded", marks: 9 },
                     { type: "Mid Semester", option: "Graded", marks: 13 },
-                    { type: "Final Examination", option: "Graded", marks: 60 },
+                    { type: "Group Work", option: "Pending", marks: 60 },
                 ],
             },
         ],
@@ -219,28 +237,28 @@ const DisplayResultPage: React.FC = () => {
                             }}>
                                 <tbody>
                                     <tr style={{ background: '#f3f6f9' }}>
-                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', width: '180px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>Name:</td>
-                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>{studentInfo.name}</td>
-                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', width: '180px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>Year:</td>
-                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5' }}>{studentInfo.year}</td>
+                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', width: '180px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Name:</td>
+                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>{studentInfo.name}</td>
+                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', width: '180px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Year:</td>
+                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', textAlign: 'center' }}>{studentInfo.year}</td>
                                     </tr>
                                     <tr>
-                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>Index No:</td>
-                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>{studentInfo.indexNo}</td>
-                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>Programme:</td>
-                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5' }}>{studentInfo.programme}</td>
+                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Index No:</td>
+                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>{studentInfo.indexNo}</td>
+                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Programme:</td>
+                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', textAlign: 'center' }}>{studentInfo.programme}</td>
                                     </tr>
                                     <tr style={{ background: '#f3f6f9' }}>
-                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>Student ID:</td>
-                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>{studentInfo.studentId}</td>
-                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db' }}>Date:</td>
-                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5' }}>{dateString}</td>
+                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Student ID:</td>
+                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>{studentInfo.studentId}</td>
+                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #f0f2f5', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Date:</td>
+                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f0f2f5', textAlign: 'center' }}>{dateString}</td>
                                     </tr>
                                     <tr>
-                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderRight: '2px solid #d1d5db' }}>Email:</td>
-                                        <td style={{ padding: '12px 16px', borderRight: '2px solid #d1d5db' }}>{studentInfo.email}</td>
-                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderRight: '2px solid #d1d5db' }}>Option:</td>
-                                        <td style={{ padding: '12px 16px' }}>{studentInfo.option}</td>
+                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Email:</td>
+                                        <td style={{ padding: '12px 16px', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>{studentInfo.email}</td>
+                                        <td style={{ fontWeight: 'bold', padding: '12px 16px', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Option:</td>
+                                        <td style={{ padding: '12px 16px', textAlign: 'center' }}>{studentInfo.option}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -271,11 +289,11 @@ const DisplayResultPage: React.FC = () => {
                                     }}>
                                         <thead>
                                             <tr style={{ background: '#f8fafc' }}>
-                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'left' }}>Course Code</th>
-                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'left' }}>Course Name</th>
-                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'left' }}>Type</th>
-                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'left' }}>Option</th>
-                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', textAlign: 'left' }}>Total Marks</th>
+                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Course Code</th>
+                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Course Name</th>
+                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Type</th>
+                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>Option</th>
+                                                <th style={{ fontWeight: 'bold', padding: '12px 16px', borderBottom: '1px solid #e5e7eb', textAlign: 'center' }}>Total Marks</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -283,14 +301,42 @@ const DisplayResultPage: React.FC = () => {
                                                 block.rows.map((row: any, i: number) => (
                                                     <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#f8fafc' }}>
                                                         {i === 0 && (
-                                                            <td rowSpan={block.rows.length} style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db', verticalAlign: 'middle', fontWeight: 'bold' }}>{block.code}</td>
+                                                            <td rowSpan={block.rows.length} style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db', verticalAlign: 'middle', fontWeight: 'bold', textAlign: 'center' }}>{block.code}</td>
                                                         )}
                                                         {i === 0 && (
-                                                            <td rowSpan={block.rows.length} style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db', verticalAlign: 'middle', fontWeight: 'bold' }}>{block.name}</td>
+                                                            <td rowSpan={block.rows.length} style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db', verticalAlign: 'middle', fontWeight: 'bold', textAlign: 'center' }}>{block.name}</td>
                                                         )}
-                                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db' }}>{row.type}</td>
-                                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db' }}>{row.option}</td>
-                                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9' }}>{row.marks}</td>
+                                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>{row.type}</td>
+                                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', borderRight: '2px solid #d1d5db', textAlign: 'center' }}>
+                                                            {row.option === "Graded" ? (
+                                                                <span style={{
+                                                                    backgroundColor: '#dcfce7',
+                                                                    color: '#166534',
+                                                                    padding: '6px 12px',
+                                                                    borderRadius: '20px',
+                                                                    fontSize: '12px',
+                                                                    fontWeight: 600,
+                                                                    display: 'inline-block'
+                                                                }}>
+                                                                    Graded
+                                                                </span>
+                                                            ) : row.option === "Pending" ? (
+                                                                <span style={{
+                                                                    backgroundColor: '#fef3c7',
+                                                                    color: '#92400e',
+                                                                    padding: '6px 12px',
+                                                                    borderRadius: '20px',
+                                                                    fontSize: '12px',
+                                                                    fontWeight: 600,
+                                                                    display: 'inline-block'
+                                                                }}>
+                                                                    Pending
+                                                                </span>
+                                                            ) : (
+                                                                <span style={{ color: '#6b7280' }}>{row.option}</span>
+                                                            )}
+                                                        </td>
+                                                        <td style={{ padding: '12px 16px', borderBottom: '1px solid #f3f6f9', textAlign: 'center', fontWeight: 600 }}>{row.marks}</td>
                                                     </tr>
                                                 ))
                                             ) : (
