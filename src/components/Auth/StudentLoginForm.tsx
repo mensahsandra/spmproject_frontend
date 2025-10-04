@@ -38,12 +38,19 @@ const StudentLoginForm: React.FC = () => {
             const { response, data, variantIndex, variantPayload } = await attemptLogin(`${apiBase}/api/auth/login`, variants, { debug: true });
             console.log('[StudentLogin] Final attempt result', { variantIndex, variantPayload, status: response.status, body: data });
             if (response.ok && (data?.success || data?.ok)) {
+                // Use backend-provided role, but validate it's actually a student
+                const backendRole = (data.user?.role || '').toLowerCase();
+                if (backendRole !== 'student') {
+                    setError("Invalid credentials. This login is for students only.");
+                    return;
+                }
+                
                 const user = {
                     ...data.user,
-                    role: 'student',
+                    role: backendRole,
                     studentId: data.user?.studentId || normalizedStudentId,
                 };
-                const role = 'student';
+                const role = backendRole;
                 storeToken(role, data.token);
                 if (data.refreshToken) storeRefreshToken(role, data.refreshToken);
                 storeUser(role, user);

@@ -10,6 +10,7 @@ interface ProtectedRouteProps {
 }
 
 import { getToken } from '../../utils/auth';
+import { validateUserRole } from '../../utils/roleValidation';
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectTo, children }) => {
     const { user, loading, role } = useAuth();
@@ -24,9 +25,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectT
     }
 
     if (requiredRole) {
-        const userRole = normalizeRole(user?.role);
-        if (userRole !== normalizeRole(requiredRole)) {
-            return <Navigate to={dashboardPath(userRole)} replace />;
+        const validation = validateUserRole(requiredRole);
+        
+        if (!validation.isValid) {
+            console.warn('Access denied:', validation.reason);
+            
+            // If user has a valid role but wrong one, redirect to their dashboard
+            if (validation.userRole) {
+                return <Navigate to={dashboardPath(validation.userRole)} replace />;
+            }
+            
+            // Otherwise redirect to login
+            return <Navigate to={redirectTo || loginPath(requiredRole)} replace />;
         }
     }
 

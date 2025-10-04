@@ -43,13 +43,20 @@ const LecturerLoginForm: React.FC = () => {
             const { response, data, variantIndex, variantPayload } = await attemptLogin(`${apiBase}/api/auth/login`, variants, { debug: true });
             console.log('[LecturerLogin] Final attempt result', { variantIndex, variantPayload, status: response.status, body: data });
             if (response.ok && (data?.success || data?.ok)) {
+                // Use backend-provided role, but validate it's actually a lecturer
+                const backendRole = (data.user?.role || '').toLowerCase();
+                if (backendRole !== 'lecturer') {
+                    setError("Invalid credentials. This login is for lecturers only.");
+                    return;
+                }
+                
                 const user = {
                     ...data.user,
-                    role: 'lecturer',
+                    role: backendRole,
                     staffId: data.user?.staffId || staffId,
                     lecturerId: data.user?.lecturerId || staffId,
                 };
-                const role = 'lecturer';
+                const role = backendRole;
                 storeToken(role, data.token);
                 if (data.refreshToken) storeRefreshToken(role, data.refreshToken);
                 storeUser(role, user);
@@ -57,7 +64,7 @@ const LecturerLoginForm: React.FC = () => {
                 switchRole(role);
                 await refresh(role);
                 console.log("Login successful:", user);
-                navigate("/lecturer-dashboard");
+                navigate("/lecturer/dashboard");
             } else {
                 console.warn('Lecturer login failed response:', data);
                 const serverMessage = data?.message || data?.error || data?.details;
