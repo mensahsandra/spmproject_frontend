@@ -26,6 +26,7 @@ import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import { normalizeRole } from '../utils/roles';
 import StudentLayout from '../layouts/StudentLayout';
 import LecturerLayout from '../layouts/LecturerLayout';
+import LandingPage from '../pages/LandingPage';
 
 const withStudent = (node: React.ReactNode) => <StudentLayout>{node}</StudentLayout>;
 const withLecturer = (node: React.ReactNode) => <LecturerLayout>{node}</LecturerLayout>;
@@ -33,13 +34,7 @@ const withLecturer = (node: React.ReactNode) => <LecturerLayout>{node}</Lecturer
 const RoutePage = () => {
   return (
     <Routes>
-      <Route path="/" element={
-        <div style={{ padding: '50px', backgroundColor: '#f0f0f0', textAlign: 'center' }}>
-          <h1 style={{ color: 'green', fontSize: '32px' }}>✅ EMERGENCY TEST WORKING!</h1>
-          <p>If you see this, React is working fine.</p>
-          <p>The issue is with specific components or routes.</p>
-        </div>
-      } />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Navigate to="/student-login" />} />
       <Route path="/student-login" element={<StudentLoginPage />} />
       <Route path="/lecturer-login" element={<LecturerLoginPage />} />
