@@ -6,6 +6,7 @@ import GenerateSessionCode from "./GenerateSession";
 import AttendanceLogs from "./AttendanceLogs";
 import UpdateGrades from "./UpdateGrades";
 import ExportReports from "./ExportReports";
+import LecturerGreetingCard from "./LecturerGreetingCard";
 
 type LecturerDashboardProps = {
     active?: string;
@@ -49,6 +50,11 @@ const LecturerDashboard: React.FC<LecturerDashboardProps> = ({ active }) => {
 
             {showGrid && (
             <>
+            {/* Greeting Card at top-left */}
+            <div style={{ marginBottom: 24 }}>
+                <LecturerGreetingCard />
+            </div>
+
             {/* Top full-width card */}
             <div style={{ marginBottom: 24 }}>
                 <InfoCard
