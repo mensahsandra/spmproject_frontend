@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getActiveRole, getUser } from '../../utils/auth';
+import { useDeadlineNotifications } from '../../hooks/useDeadlineNotifications';
 
 const LightSidebar: React.FC = () => {
     const navigate = useNavigate();
@@ -11,12 +12,8 @@ const LightSidebar: React.FC = () => {
         return to.test(path);
     };
     
-    // lightweight unread count: prefer injected count in history.state, fallback to localStorage
-    let unread = 0;
-    try {
-        const hs: any = history.state || {};
-        unread = hs.unreadCount ?? Number(localStorage.getItem('unreadNotifications') || '0');
-    } catch {}
+    // Get deadline notifications count
+    const { deadlineCount } = useDeadlineNotifications();
     
     const [aboutOpen, setAboutOpen] = React.useState(false);
     
@@ -249,7 +246,7 @@ const LightSidebar: React.FC = () => {
                                         </svg>
                                     </span>
                                     <span style={{ flex: 1 }}>Deadlines</span>
-                                    {unread > 0 && (
+                                    {deadlineCount > 0 && (
                                         <span style={{
                                             background: '#ef4444',
                                             color: 'white',
@@ -257,8 +254,10 @@ const LightSidebar: React.FC = () => {
                                             padding: '2px 6px',
                                             fontSize: '11px',
                                             fontWeight: 600,
-                                            marginLeft: 'auto'
-                                        }}>{unread}</span>
+                                            marginLeft: 'auto',
+                                            minWidth: '18px',
+                                            textAlign: 'center'
+                                        }}>{deadlineCount}</span>
                                     )}
                                 </li>
                             </>

@@ -9,6 +9,7 @@ import {
   FileText,
   Users,
 } from "lucide-react";
+import { useDeadlineNotifications } from "../../hooks/useDeadlineNotifications";
 
 interface AcademicSidebarProps {
   onClose?: () => void;
@@ -24,6 +25,7 @@ export default function AcademicSidebar({
   onItemClick 
 }: AcademicSidebarProps) {
   const navigate = useNavigate();
+  const { deadlineCount } = useDeadlineNotifications();
 
   const studentNavigationItems = [
     { name: "Home", icon: Home, route: "/student/dashboard" },
@@ -107,6 +109,11 @@ export default function AcademicSidebar({
                   <span className={`font-medium text-sm ${isActive ? "text-white" : "text-[#333333] dark:text-white/70"}`}>
                     {item.name}
                   </span>
+                  {item.name === 'Deadlines' && userRole === 'student' && deadlineCount > 0 && (
+                    <span className="ml-auto bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full min-w-[20px] text-center">
+                      {deadlineCount}
+                    </span>
+                  )}
                 </button>
               </div>
             );
