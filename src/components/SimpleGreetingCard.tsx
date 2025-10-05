@@ -48,7 +48,7 @@ const SimpleGreetingCard: React.FC = () => {
         }}>
             {/* Green Header */}
             <div style={{
-                background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+                background: 'linear-gradient(135deg, #0F793E 0%, #0d6b35 100%)',
                 color: 'white',
                 padding: '12px 20px',
                 textAlign: 'center',

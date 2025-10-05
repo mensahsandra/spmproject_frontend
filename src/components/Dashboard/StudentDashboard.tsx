@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Users, BookOpen, Clock } from "lucide-react";
+import { useDeadlineNotifications } from "../../hooks/useDeadlineNotifications";
 
 interface StudentDashboardProps {
   user?: {
@@ -25,6 +26,7 @@ interface StudentDashboardProps {
 
 export default function StudentDashboard({ user, data }: StudentDashboardProps) {
   const navigate = useNavigate();
+  const { deadlineCount } = useDeadlineNotifications();
 
   // Mock data if not provided
   const mockData = {
@@ -68,14 +70,14 @@ export default function StudentDashboard({ user, data }: StudentDashboardProps) 
       {/* Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Attendance Card */}
-        <div 
+        <div
           className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E6E6E6] dark:border-[#333333] p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
           onClick={() => navigate('/student/record-attendance')}
         >
           <div className="flex items-start gap-4">
             {/* Status Bar */}
             <div className="w-1 h-16 rounded-full bg-gradient-to-b from-[#006530] to-[#8BC34A] flex-shrink-0"></div>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
                 <Users size={24} className="text-[#007A3B]" />
@@ -94,14 +96,14 @@ export default function StudentDashboard({ user, data }: StudentDashboardProps) 
         </div>
 
         {/* Check Performance Card */}
-        <div 
+        <div
           className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E6E6E6] dark:border-[#333333] p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
           onClick={() => navigate('/student/select-result')}
         >
           <div className="flex items-start gap-4">
             {/* Status Bar */}
             <div className="w-1 h-16 rounded-full bg-gradient-to-b from-[#006530] to-[#8BC34A] flex-shrink-0"></div>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
                 <BookOpen size={24} className="text-[#007A3B]" />
@@ -120,26 +122,31 @@ export default function StudentDashboard({ user, data }: StudentDashboardProps) 
         </div>
 
         {/* Upcoming Deadlines Card */}
-        <div 
+        <div
           className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E6E6E6] dark:border-[#333333] p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
           onClick={() => navigate('/student/notifications?tab=deadlines', { state: { from: 'deadlines' } })}
         >
           <div className="flex items-start gap-4">
             {/* Status Bar - Red for urgent */}
             <div className="w-1 h-16 rounded-full bg-gradient-to-b from-[#DC2626] to-[#FF6B6B] flex-shrink-0"></div>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
                 <Clock size={24} className="text-[#DC2626]" />
                 <h3 className="text-lg font-semibold text-black dark:text-white font-bricolage">
                   Upcoming Deadlines
                 </h3>
+                {deadlineCount > 0 && (
+                  <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full min-w-[20px] text-center">
+                    {deadlineCount}
+                  </span>
+                )}
               </div>
               <p className="text-sm text-[#666666] dark:text-[#AAAAAA] mb-4 font-inter">
                 Stay on top of important deadlines
               </p>
               <div className="text-xs text-[#DC2626] font-medium">
-                Unread Notifications: {dashboardData.stats?.unreadNotifications || 0}
+                {deadlineCount > 0 ? `${deadlineCount} pending deadline${deadlineCount > 1 ? 's' : ''}` : 'No pending deadlines'}
               </div>
             </div>
           </div>
@@ -156,9 +163,8 @@ export default function StudentDashboard({ user, data }: StudentDashboardProps) 
             {dashboardData.notifications.slice(0, 3).map((notification) => (
               <div key={notification.id} className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E6E6E6] dark:border-[#333333] p-4">
                 <div className="flex items-start gap-4">
-                  <div className={`w-1 h-12 rounded-full flex-shrink-0 ${
-                    notification.priority === 'urgent' ? 'bg-gradient-to-b from-[#DC2626] to-[#FF6B6B]' : 'bg-gradient-to-b from-[#F59E0B] to-[#FCD34D]'
-                  }`}></div>
+                  <div className={`w-1 h-12 rounded-full flex-shrink-0 ${notification.priority === 'urgent' ? 'bg-gradient-to-b from-[#DC2626] to-[#FF6B6B]' : 'bg-gradient-to-b from-[#F59E0B] to-[#FCD34D]'
+                    }`}></div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-black dark:text-white mb-1">
                       {notification.title}

@@ -46,9 +46,9 @@ const LecturerGreetingCard: React.FC = () => {
             marginLeft: '0',
             marginRight: 'auto'
         }}>
-            {/* Blue Header for Lecturer */}
+            {/* Green Header for Lecturer */}
             <div style={{
-                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                background: 'linear-gradient(135deg, #0F793E 0%, #0d6b35 100%)',
                 color: 'white',
                 padding: '12px 20px',
                 textAlign: 'center',
