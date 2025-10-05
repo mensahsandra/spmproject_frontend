@@ -88,6 +88,11 @@ const DashboardPage: React.FC = () => {
   const weekday = now.toLocaleString('en-US', { weekday: 'long' });
   const day = now.getDate();
   const year = now.getFullYear();
+  const time = now.toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit', 
+    hour12: true 
+  });
 
   const ordinal = (n: number) => {
     const s = ["th", "st", "nd", "rd"];
@@ -304,9 +309,9 @@ const DashboardPage: React.FC = () => {
           borderRadius: '12px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           border: '1px solid #e5e7eb',
-          margin: '0 80px 30px 0',
+          margin: '0 20px 30px 0',
           overflow: 'hidden',
-          maxWidth: 'calc(100% - 80px)',
+          maxWidth: 'calc(100% - 20px)',
           width: 'auto'
         }}>
           {/* Green Header with Updated Color */}
@@ -318,7 +323,7 @@ const DashboardPage: React.FC = () => {
             fontSize: '14px',
             fontWeight: 500
           }}>
-            Today is {ordinal(day)} {month} {year}, {weekday}
+            Today is {ordinal(day)} {month} {year}, {weekday} at {time}
           </div>
           
           {/* Content */}
