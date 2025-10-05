@@ -304,10 +304,10 @@ const DashboardPage: React.FC = () => {
           borderRadius: '12px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           border: '1px solid #e5e7eb',
-          margin: '0 0 30px 0',
+          margin: '0 80px 30px 0',
           overflow: 'hidden',
-          maxWidth: '100%',
-          width: '100%'
+          maxWidth: 'calc(100% - 80px)',
+          width: 'auto'
         }}>
           {/* Green Header with Updated Color */}
           <div style={{
