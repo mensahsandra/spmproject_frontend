@@ -354,10 +354,10 @@ const DashboardPage: React.FC = () => {
 
         {/* Cards Container */}
         <div style={{
-          maxWidth: '800px',
-          margin: '0 auto',
+          maxWidth: '100%',
+          margin: '0',
           width: '100%',
-          padding: '0 20px'
+          padding: '0'
         }}>
           {/* Attendance Card */}
           <div 
@@ -386,7 +386,7 @@ const DashboardPage: React.FC = () => {
             <div style={{
               width: '60px',
               minWidth: '60px',
-              background: 'linear-gradient(to bottom, #22c55e 0%, #22c55e 60%, #16a34a 100%)',
+              background: 'linear-gradient(to bottom, #50be21 0%, #50be21 60%, #117840 100%)',
               display: 'flex',
               flexDirection: 'column'
             }}></div>
@@ -437,7 +437,7 @@ const DashboardPage: React.FC = () => {
             <div style={{
               width: '60px',
               minWidth: '60px',
-              background: 'linear-gradient(to bottom, #22c55e 0%, #22c55e 60%, #16a34a 100%)',
+              background: 'linear-gradient(to bottom, #50be21 0%, #50be21 60%, #117840 100%)',
               display: 'flex',
               flexDirection: 'column'
             }}></div>
@@ -488,7 +488,7 @@ const DashboardPage: React.FC = () => {
             <div style={{
               width: '60px',
               minWidth: '60px',
-              background: 'linear-gradient(to bottom, #ef4444 0%, #ef4444 60%, #dc2626 100%)',
+              background: 'linear-gradient(to bottom, #ef4444 0%, #ef4444 60%, #b91c1c 100%)',
               display: 'flex',
               flexDirection: 'column'
             }}></div>
