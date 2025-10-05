@@ -281,7 +281,7 @@ const DashboardPage: React.FC = () => {
       </aside>
       
       {/* Main Content */}
-      <main style={{ marginLeft: '250px', flex: 1, padding: '20px' }}>
+      <main style={{ marginLeft: '250px', flex: 1, padding: '0' }}>
         {/* Profile Dropdown - Same as record-attendance */}
         <div style={{ 
           position: 'absolute', 
@@ -298,22 +298,20 @@ const DashboardPage: React.FC = () => {
           fontFamily: "'Segoe UI', sans-serif"
         }}>
 
-        {/* Greeting Card with Green Header */}
+        {/* Greeting Card with Green Header - Positioned at Top */}
         <div style={{
           background: 'white',
           borderRadius: '12px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
           border: '1px solid #e5e7eb',
-          margin: '60px 0 30px 0',
+          margin: '0 0 30px 0',
           overflow: 'hidden',
-          maxWidth: '800px',
-          marginLeft: 'auto',
-          marginRight: 'auto',
+          maxWidth: '100%',
           width: '100%'
         }}>
-          {/* Green Header */}
+          {/* Green Header with Updated Color */}
           <div style={{
-            background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+            background: 'linear-gradient(135deg, #0F793E 0%, #0d6b35 100%)',
             color: 'white',
             padding: '12px 20px',
             textAlign: 'center',
