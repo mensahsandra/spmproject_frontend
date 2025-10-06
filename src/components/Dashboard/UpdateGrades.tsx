@@ -3,9 +3,12 @@ import { apiFetch } from '../../utils/api';
 import CourseSelector from './CourseSelector';
 import StudentGradeTable from './StudentGradeTable';
 import GradeHistoryViewer from './GradeHistoryViewer';
+import QuizCreator from './QuizCreator';
 import { clearTestProfile } from '../../utils/testSetup';
 import { setupKwabenaWithBIT } from '../../utils/quickSetup';
+import { simulateStudentQuizNotifications } from '../../utils/quizNotifications';
 import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
+import '../../css/assessment.css';
 
 const UpdateGrades: React.FC = () => {
   // Courses from lecturer profile
@@ -26,19 +29,19 @@ const UpdateGrades: React.FC = () => {
     // Sample specific courses for demonstration
     const specificCourses = {
       'BIT': [
-        { code: 'BIT364', name: 'Web Development', semester: '1' },
-        { code: 'BIT367', name: 'Network Security', semester: '2' },
-        { code: 'BIT301', name: 'Database Management', semester: '1' },
-        { code: 'ENT201', name: 'Entrepreneurship', semester: '2' },
-        { code: 'ACC101', name: 'Financial Accounting', semester: '1' },
-        { code: 'MGT205', name: 'Project Management', semester: '2' }
+        { code: 'BIT364', name: 'Web Development' },
+        { code: 'BIT367', name: 'Network Security' },
+        { code: 'BIT301', name: 'Database Management' },
+        { code: 'ENT201', name: 'Entrepreneurship' },
+        { code: 'ACC101', name: 'Financial Accounting' },
+        { code: 'MGT205', name: 'Project Management' }
       ],
       'BCS': [
-        { code: 'CS301', name: 'Data Structures', semester: '1' },
-        { code: 'CS405', name: 'Software Engineering', semester: '2' },
-        { code: 'CS501', name: 'Artificial Intelligence', semester: '1' },
-        { code: 'CS403', name: 'Computer Networks', semester: '2' },
-        { code: 'MAT301', name: 'Discrete Mathematics', semester: '1' }
+        { code: 'CS301', name: 'Data Structures' },
+        { code: 'CS405', name: 'Software Engineering' },
+        { code: 'CS501', name: 'Artificial Intelligence' },
+        { code: 'CS403', name: 'Computer Networks' },
+        { code: 'MAT301', name: 'Discrete Mathematics' }
       ]
     };
     
@@ -84,8 +87,7 @@ const UpdateGrades: React.FC = () => {
           allCourses.push({
             id: course.code,
             code: course.code,
-            title: `${course.name} (${programTitle})`,
-            semester: course.semester
+            title: `${course.name} (${programTitle})` // Clean title without semester numbers
           });
         });
       } else {
@@ -94,8 +96,7 @@ const UpdateGrades: React.FC = () => {
         allCourses.push({
           id: programCode,
           code: programCode,
-          title: programTitle,
-          semester: ''
+          title: programTitle
         });
       }
     });
@@ -114,14 +115,6 @@ const UpdateGrades: React.FC = () => {
   
   // Quiz creation state
   const [showQuizForm, setShowQuizForm] = useState(false);
-  const [quizData, setQuizData] = useState({
-    title: '',
-    description: '',
-    startTime: '',
-    endTime: '',
-    file: null as File | null,
-    restrictToAttendees: false
-  });
   const [quizSuccess, setQuizSuccess] = useState('');
   
   // Bulk grading state
@@ -192,48 +185,14 @@ const UpdateGrades: React.FC = () => {
     } finally { setSaving(false); }
   };
 
-  const onCreateQuiz = async () => {
-    if (!selectedCourseId || !quizData.title.trim()) return;
-    
-    try {
-      const formData = new FormData();
-      formData.append('courseCode', selectedCourseId);
-      formData.append('title', quizData.title);
-      formData.append('description', quizData.description);
-      formData.append('startTime', quizData.startTime);
-      formData.append('endTime', quizData.endTime);
-      formData.append('restrictToAttendees', quizData.restrictToAttendees.toString());
-      if (quizData.file) {
-        formData.append('file', quizData.file);
-      }
+  const handleQuizSuccess = (message: string) => {
+    setQuizSuccess(message);
+    setShowQuizForm(false);
+    setTimeout(() => setQuizSuccess(''), 5000);
+  };
 
-      // API call to create quiz
-      const response = await fetch('/api/quizzes/create', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('lecturerToken') || localStorage.getItem('token')}`
-        },
-        body: formData
-      });
-      
-      const data = await response.json();
-      if (!data.ok) throw new Error(data.message || 'Failed to create quiz');
-      
-      setQuizSuccess('Quiz created and students notified.');
-      setShowQuizForm(false);
-      setQuizData({
-        title: '',
-        description: '',
-        startTime: '',
-        endTime: '',
-        file: null,
-        restrictToAttendees: false
-      });
-      
-      setTimeout(() => setQuizSuccess(''), 5000);
-    } catch (e: any) {
-      setError(e?.message || 'Failed to create quiz');
-    }
+  const handleQuizError = (errorMessage: string) => {
+    setError(errorMessage);
   };
 
   const onBulkAssign = async () => {
@@ -272,9 +231,40 @@ const UpdateGrades: React.FC = () => {
   };
 
   return (
-    <div>
-      {/* Development Helper - Remove in production */}
-      {import.meta.env.DEV && (
+    <div className="container-fluid" style={{ 
+      width: '100%', 
+      maxWidth: 'none',
+      padding: '0',
+      overflow: 'visible'
+    }}>
+      {/* Always visible course setup button */}
+      <div className="alert alert-primary mb-3">
+        <div className="d-flex justify-content-between align-items-center">
+          <span><strong>Course Setup:</strong> Click to load courses without numbers</span>
+          <button 
+            className="btn btn-sm btn-success"
+            onClick={() => {
+              // Set up clean course data
+              const cleanCoursesData = {
+                success: true,
+                lecturer: {
+                  courses: ['Information Technology', 'Computer Science']
+                },
+                data: {
+                  courses: ['Information Technology', 'Computer Science']
+                }
+              };
+              localStorage.setItem('profile', JSON.stringify(cleanCoursesData));
+              window.location.reload();
+            }}
+          >
+            🎯 Load Clean Courses
+          </button>
+        </div>
+      </div>
+
+      {/* Development Helper - Always show for course setup */}
+      {true && (
         <div className="alert alert-warning mb-3">
           <strong>🔧 Course Hierarchy Demo:</strong>
           <div className="mt-2">
@@ -331,10 +321,43 @@ const UpdateGrades: React.FC = () => {
               className="btn btn-sm btn-outline-secondary"
               onClick={() => {
                 clearTestProfile();
+                // Also clear any cached course data
+                localStorage.removeItem('profile');
+                localStorage.removeItem('user_lecturer');
+                localStorage.removeItem('courses');
+                localStorage.removeItem('courseData');
                 window.location.reload();
               }}
             >
-              Clear Data
+              Clear All Data
+            </button>
+            <button 
+              className="btn btn-sm btn-info"
+              onClick={() => {
+                simulateStudentQuizNotifications();
+                alert('Demo quiz notifications sent to students! Check student notifications page.');
+              }}
+            >
+              📝 Demo Quiz Notifications
+            </button>
+            <button 
+              className="btn btn-sm btn-warning"
+              onClick={() => {
+                // Force clean course data
+                const cleanProfileData = {
+                  success: true,
+                  lecturer: {
+                    courses: ['Information Technology', 'Computer Science']
+                  },
+                  data: {
+                    courses: ['Information Technology', 'Computer Science']
+                  }
+                };
+                localStorage.setItem('profile', JSON.stringify(cleanProfileData));
+                window.location.reload();
+              }}
+            >
+              🔄 Fix Course Numbers
             </button>
           </div>
         </div>
@@ -351,7 +374,7 @@ const UpdateGrades: React.FC = () => {
       {bulkSuccess && <div className="alert alert-success">{bulkSuccess}</div>}
 
       {/* Quiz Creation Section */}
-      <div className="mb-4">
+      <div className="mb-4 assessment-card">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h5 className="mb-0">Quiz Management</h5>
           <button 
@@ -367,97 +390,37 @@ const UpdateGrades: React.FC = () => {
         {!selectedCourseId && (
           <div className="alert alert-info">
             <small>Please select a course to create quizzes and manage grades.</small>
+            <div className="mt-2">
+              <button 
+                className="btn btn-sm btn-primary"
+                onClick={() => {
+                  // Set up clean course data
+                  const cleanCoursesData = {
+                    success: true,
+                    lecturer: {
+                      courses: ['Information Technology', 'Computer Science']
+                    },
+                    data: {
+                      courses: ['Information Technology', 'Computer Science']
+                    }
+                  };
+                  localStorage.setItem('profile', JSON.stringify(cleanCoursesData));
+                  window.location.reload();
+                }}
+              >
+                🎯 Load Courses (No Numbers)
+              </button>
+            </div>
           </div>
         )}
 
           {showQuizForm && (
-            <div className="card shadow-sm border-0 mb-3">
-              <div className="card-body">
-                <h6 className="card-title">Create New Quiz</h6>
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Quiz Title *</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={quizData.title}
-                      onChange={(e) => setQuizData(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Enter quiz title"
-                    />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Description</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={quizData.description}
-                      onChange={(e) => setQuizData(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Brief description"
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Start Time</label>
-                    <input
-                      type="datetime-local"
-                      className="form-control"
-                      value={quizData.startTime}
-                      onChange={(e) => setQuizData(prev => ({ ...prev, startTime: e.target.value }))}
-                    />
-                  </div>
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">End Time</label>
-                    <input
-                      type="datetime-local"
-                      className="form-control"
-                      value={quizData.endTime}
-                      onChange={(e) => setQuizData(prev => ({ ...prev, endTime: e.target.value }))}
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Optional File Upload</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      onChange={(e) => setQuizData(prev => ({ ...prev, file: e.target.files?.[0] || null }))}
-                      accept=".pdf,.doc,.docx,.txt"
-                    />
-                  </div>
-                  <div className="col-md-6 mb-3 d-flex align-items-end">
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id="restrictToAttendees"
-                        checked={quizData.restrictToAttendees}
-                        onChange={(e) => setQuizData(prev => ({ ...prev, restrictToAttendees: e.target.checked }))}
-                      />
-                      <label className="form-check-label" htmlFor="restrictToAttendees">
-                        Restrict to students who attended this session
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-end gap-2">
-                  <button 
-                    className="btn btn-outline-secondary"
-                    onClick={() => setShowQuizForm(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    className="btn btn-success"
-                    onClick={onCreateQuiz}
-                    disabled={!quizData.title.trim()}
-                  >
-                    Create Quiz
-                  </button>
-                </div>
-              </div>
-            </div>
+            <QuizCreator
+              selectedCourseId={selectedCourseId}
+              onSuccess={handleQuizSuccess}
+              onError={handleQuizError}
+              onCancel={() => setShowQuizForm(false)}
+            />
           )}
       </div>
 

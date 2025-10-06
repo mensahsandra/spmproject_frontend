@@ -26,7 +26,7 @@ export default function CourseSelector({
               <option value="" disabled>Select a course you teach</option>
               {courses.map(c => (
                 <option key={c.id} value={c.id}>
-                  {c.code} — {c.title} ({c.semester})
+                  {c.code} — {c.title}
                 </option>
               ))}
             </select>

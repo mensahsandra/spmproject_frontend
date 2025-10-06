@@ -7,6 +7,7 @@ import SimpleTestPage from '../pages/SimpleTestPage';
 import RecordAttendance from '../components/Dashboard/RecordAttendance';
 // SelectResult import removed - not used in current routes
 import NotificationsPage from '../pages/NotificationsPage';
+import QuizPage from '../pages/QuizPage';
 // Old unified Sidebar removed in favor of role-specific layouts
 import StudentLoginPage from '../pages/StudentLoginPage';
 import LecturerLoginPage from '../pages/LecturerLoginPage';
@@ -84,6 +85,11 @@ const RoutePage = () => {
       <Route path="/student/notifications" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<NotificationsPage />)}
+        </ProtectedRoute>
+      } />
+      <Route path="/student/quiz/:quizId" element={
+        <ProtectedRoute requiredRole="student">
+          {withStudent(<QuizPage />)}
         </ProtectedRoute>
       } />
       <Route path="/student/display-result" element={

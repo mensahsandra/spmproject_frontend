@@ -1,0 +1,87 @@
+/* Assessment Page Styles */
+.assessment-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 10px;
+}
+
+.assessment-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.assessment-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.assessment-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.assessment-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Ensure cards don't overflow */
+.assessment-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Quiz creator specific styles */
+.quiz-creator-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.quiz-question-form {
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* Form controls responsive */
+.form-control, .form-select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar for main content */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+  border: 2px solid #f1f1f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Force scrollbar to always show */
+.custom-scrollbar {
+  overflow-y: scroll !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .assessment-container {
+    padding-right: 5px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+}
