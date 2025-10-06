@@ -115,8 +115,17 @@ const UpdateGrades: React.FC = () => {
         formData.append('file', quizData.file);
       }
 
-      // Mock API call - replace with actual endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // API call to create quiz
+      const response = await fetch('/api/quizzes/create', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('lecturerToken') || localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+      
+      const data = await response.json();
+      if (!data.ok) throw new Error(data.message || 'Failed to create quiz');
       
       setQuizSuccess('Quiz created and students notified.');
       setShowQuizForm(false);
@@ -139,10 +148,23 @@ const UpdateGrades: React.FC = () => {
     if (!selectedCourseId || !bulkScore.trim()) return;
     
     try {
-      // Mock API call - replace with actual endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // API call to bulk assign grades
+      const data: any = await apiFetch('/api/grades/bulk-assign', {
+        method: 'POST',
+        role: 'lecturer',
+        body: JSON.stringify({
+          courseCode: selectedCourseId,
+          score: bulkScore,
+          target: bulkTarget
+        })
+      });
       
-      setBulkSuccess(`Score ${bulkScore} assigned to ${bulkTarget === 'all' ? 'all students' : bulkTarget === 'attendees' ? 'attendees only' : 'quiz submitters only'}.`);
+      if (!data?.ok) throw new Error(data?.message || 'Failed to assign bulk scores');
+      
+      const targetText = bulkTarget === 'all' ? 'all students' : 
+                        bulkTarget === 'attendees' ? 'attendees only' : 
+                        'quiz submitters only';
+      setBulkSuccess(`Score ${bulkScore} assigned to ${targetText}. ${data.updated || 0} students updated.`);
       setShowBulkModal(false);
       setBulkScore('');
       setBulkTarget('all');
@@ -170,18 +192,24 @@ const UpdateGrades: React.FC = () => {
       {bulkSuccess && <div className="alert alert-success">{bulkSuccess}</div>}
 
       {/* Quiz Creation Section */}
-      {selectedCourseId && (
-        <div className="mb-4">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 className="mb-0">Quiz Management</h5>
-            <button 
-              className="btn btn-success"
-              onClick={() => setShowQuizForm(!showQuizForm)}
-              disabled={loading}
-            >
-              {showQuizForm ? 'Cancel' : 'Create Quiz'}
-            </button>
+      <div className="mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5 className="mb-0">Quiz Management</h5>
+          <button 
+            className="btn btn-success"
+            onClick={() => setShowQuizForm(!showQuizForm)}
+            disabled={loading || !selectedCourseId}
+            title={!selectedCourseId ? "Please select a course first" : ""}
+          >
+            {showQuizForm ? 'Cancel' : 'Create Quiz'}
+          </button>
+        </div>
+        
+        {!selectedCourseId && (
+          <div className="alert alert-info">
+            <small>Please select a course to create quizzes and manage grades.</small>
           </div>
+        )}
 
           {showQuizForm && (
             <div className="card shadow-sm border-0 mb-3">
@@ -272,8 +300,7 @@ const UpdateGrades: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
-      )}
+      </div>
 
       <StudentGradeTable
         students={students}
