@@ -12,7 +12,26 @@ const UpdateGrades: React.FC = () => {
   const profileDataRaw = localStorage.getItem('profile');
   const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : null;
   const courseIds: string[] = profileData?.data?.courses || [];
-  const courses: Course[] = useMemo(() => courseIds.map((id: string) => ({ id, code: id, title: id, semester: '' })), [courseIds]);
+  const courses: Course[] = useMemo(() => {
+    console.log('Raw course data:', courseIds);
+    
+    return courseIds.map((courseString: string) => {
+      // Parse course string like "BSc. Information Technology (BIT)" or "BIT"
+      const match = courseString.match(/\(([^)]+)\)$/); // Extract code from parentheses
+      const code = match ? match[1] : courseString.split(' ')[0] || courseString;
+      const title = match ? courseString.replace(/\s*\([^)]+\)$/, '') : courseString;
+      
+      const course = {
+        id: code,
+        code: code,
+        title: title,
+        semester: ''
+      };
+      
+      console.log('Parsed course:', course);
+      return course;
+    });
+  }, [courseIds]);
 
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
   const [students, setStudents] = useState<EnrolledStudent[]>([]);

@@ -37,6 +37,21 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.profile-dropdown')) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isOpen]);
+
   const handleLogout = () => {
     const active = (getActiveRole() || role) as string;
     logout(active || undefined);
