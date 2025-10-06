@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { apiFetch } from '../../utils/api';
 import CourseSelector from './CourseSelector';
 import StudentGradeTable from './StudentGradeTable';
-import GradeSubmissionActions from './GradeSubmissionActions';
 import GradeHistoryViewer from './GradeHistoryViewer';
 import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
 
@@ -20,6 +19,24 @@ const UpdateGrades: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [history, setHistory] = useState<GradeChangeLog[]>([]);
+  
+  // Quiz creation state
+  const [showQuizForm, setShowQuizForm] = useState(false);
+  const [quizData, setQuizData] = useState({
+    title: '',
+    description: '',
+    startTime: '',
+    endTime: '',
+    file: null as File | null,
+    restrictToAttendees: false
+  });
+  const [quizSuccess, setQuizSuccess] = useState('');
+  
+  // Bulk grading state
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkScore, setBulkScore] = useState('');
+  const [bulkTarget, setBulkTarget] = useState('all');
+  const [bulkSuccess, setBulkSuccess] = useState('');
 
   // Load enrolled students when course changes
   useEffect(() => {
@@ -83,6 +100,63 @@ const UpdateGrades: React.FC = () => {
     } finally { setSaving(false); }
   };
 
+  const onCreateQuiz = async () => {
+    if (!selectedCourseId || !quizData.title.trim()) return;
+    
+    try {
+      const formData = new FormData();
+      formData.append('courseCode', selectedCourseId);
+      formData.append('title', quizData.title);
+      formData.append('description', quizData.description);
+      formData.append('startTime', quizData.startTime);
+      formData.append('endTime', quizData.endTime);
+      formData.append('restrictToAttendees', quizData.restrictToAttendees.toString());
+      if (quizData.file) {
+        formData.append('file', quizData.file);
+      }
+
+      // Mock API call - replace with actual endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setQuizSuccess('Quiz created and students notified.');
+      setShowQuizForm(false);
+      setQuizData({
+        title: '',
+        description: '',
+        startTime: '',
+        endTime: '',
+        file: null,
+        restrictToAttendees: false
+      });
+      
+      setTimeout(() => setQuizSuccess(''), 5000);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to create quiz');
+    }
+  };
+
+  const onBulkAssign = async () => {
+    if (!selectedCourseId || !bulkScore.trim()) return;
+    
+    try {
+      // Mock API call - replace with actual endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setBulkSuccess(`Score ${bulkScore} assigned to ${bulkTarget === 'all' ? 'all students' : bulkTarget === 'attendees' ? 'attendees only' : 'quiz submitters only'}.`);
+      setShowBulkModal(false);
+      setBulkScore('');
+      setBulkTarget('all');
+      
+      // Refresh students list
+      const refreshed: any = await apiFetch(`/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
+      setStudents(refreshed?.students || []);
+      
+      setTimeout(() => setBulkSuccess(''), 5000);
+    } catch (e: any) {
+      setError(e?.message || 'Failed to assign bulk scores');
+    }
+  };
+
   return (
     <div>
       <CourseSelector
@@ -92,6 +166,114 @@ const UpdateGrades: React.FC = () => {
       />
 
       {error && <div className="alert alert-danger">{error}</div>}
+      {quizSuccess && <div className="alert alert-success">{quizSuccess}</div>}
+      {bulkSuccess && <div className="alert alert-success">{bulkSuccess}</div>}
+
+      {/* Quiz Creation Section */}
+      {selectedCourseId && (
+        <div className="mb-4">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="mb-0">Quiz Management</h5>
+            <button 
+              className="btn btn-success"
+              onClick={() => setShowQuizForm(!showQuizForm)}
+              disabled={loading}
+            >
+              {showQuizForm ? 'Cancel' : 'Create Quiz'}
+            </button>
+          </div>
+
+          {showQuizForm && (
+            <div className="card shadow-sm border-0 mb-3">
+              <div className="card-body">
+                <h6 className="card-title">Create New Quiz</h6>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Quiz Title *</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={quizData.title}
+                      onChange={(e) => setQuizData(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Enter quiz title"
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Description</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={quizData.description}
+                      onChange={(e) => setQuizData(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Brief description"
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Start Time</label>
+                    <input
+                      type="datetime-local"
+                      className="form-control"
+                      value={quizData.startTime}
+                      onChange={(e) => setQuizData(prev => ({ ...prev, startTime: e.target.value }))}
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">End Time</label>
+                    <input
+                      type="datetime-local"
+                      className="form-control"
+                      value={quizData.endTime}
+                      onChange={(e) => setQuizData(prev => ({ ...prev, endTime: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Optional File Upload</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      onChange={(e) => setQuizData(prev => ({ ...prev, file: e.target.files?.[0] || null }))}
+                      accept=".pdf,.doc,.docx,.txt"
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3 d-flex align-items-end">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="restrictToAttendees"
+                        checked={quizData.restrictToAttendees}
+                        onChange={(e) => setQuizData(prev => ({ ...prev, restrictToAttendees: e.target.checked }))}
+                      />
+                      <label className="form-check-label" htmlFor="restrictToAttendees">
+                        Restrict to students who attended this session
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-end gap-2">
+                  <button 
+                    className="btn btn-outline-secondary"
+                    onClick={() => setShowQuizForm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    className="btn btn-success"
+                    onClick={onCreateQuiz}
+                    disabled={!quizData.title.trim()}
+                  >
+                    Create Quiz
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <StudentGradeTable
         students={students}
@@ -100,12 +282,118 @@ const UpdateGrades: React.FC = () => {
         loading={loading}
       />
 
-      <GradeSubmissionActions
-        onSave={onSave}
-        onReset={onReset}
-        disabled={saving || loading || !selectedCourseId}
-        dirtyCount={dirtyCount}
-      />
+      <div className="d-flex justify-content-between align-items-center gap-3 mt-3">
+        <div className="text-muted">
+          {dirtyCount > 0 ? `${dirtyCount} unsaved change(s)` : "No pending changes"}
+        </div>
+        <div className="d-flex gap-2">
+          <button className="btn btn-outline-secondary" onClick={onReset} disabled={saving || loading}>
+            Reset
+          </button>
+          <button 
+            className="btn btn-warning"
+            onClick={() => setShowBulkModal(true)}
+            disabled={saving || loading || !selectedCourseId}
+          >
+            Bulk Assign Score
+          </button>
+          <button className="btn btn-primary" onClick={onSave} disabled={saving || loading || !selectedCourseId || dirtyCount === 0}>
+            Save Grades
+          </button>
+        </div>
+      </div>
+
+      {/* Bulk Assign Modal */}
+      {showBulkModal && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Bulk Assign Score</h5>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={() => setShowBulkModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Score to Assign</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={bulkScore}
+                    onChange={(e) => setBulkScore(e.target.value)}
+                    placeholder="Enter score (A, B+, 85, etc.)"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">Apply to:</label>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="bulkTarget"
+                      id="allStudents"
+                      value="all"
+                      checked={bulkTarget === 'all'}
+                      onChange={(e) => setBulkTarget(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="allStudents">
+                      All students
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="bulkTarget"
+                      id="attendeesOnly"
+                      value="attendees"
+                      checked={bulkTarget === 'attendees'}
+                      onChange={(e) => setBulkTarget(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="attendeesOnly">
+                      Only attendees
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="bulkTarget"
+                      id="quizSubmitters"
+                      value="quiz_submitters"
+                      checked={bulkTarget === 'quiz_submitters'}
+                      onChange={(e) => setBulkTarget(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="quizSubmitters">
+                      Only quiz submitters
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShowBulkModal(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-warning"
+                  onClick={onBulkAssign}
+                  disabled={!bulkScore.trim()}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <GradeHistoryViewer history={history} />
     </div>
