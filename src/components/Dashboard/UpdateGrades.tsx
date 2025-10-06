@@ -45,17 +45,40 @@ const UpdateGrades: React.FC = () => {
     const allCourses: Course[] = [];
     
     courseIds.forEach((courseString: string) => {
-      // Parse course string like "BSc. Information Technology (BIT)" or "BIT"
-      const match = courseString.match(/\(([^)]+)\)$/);
-      const programCode = match ? match[1] : courseString.split(' ')[0] || courseString;
-      const programTitle = match ? courseString.replace(/\s*\([^)]+\)$/, '') : courseString;
+      console.log('Processing course string:', courseString);
       
-      console.log('Processing program:', programCode, programTitle);
+      // Multiple parsing strategies
+      let programCode = '';
+      let programTitle = '';
+      
+      // Strategy 1: Extract from parentheses like "BSc. Information Technology (BIT)"
+      const parenthesesMatch = courseString.match(/\(([^)]+)\)$/);
+      if (parenthesesMatch) {
+        programCode = parenthesesMatch[1];
+        programTitle = courseString.replace(/\s*\([^)]+\)$/, '');
+      }
+      // Strategy 2: Look for "Information Technology" or "Computer Science" keywords
+      else if (courseString.toLowerCase().includes('information technology')) {
+        programCode = 'BIT';
+        programTitle = 'Information Technology';
+      }
+      else if (courseString.toLowerCase().includes('computer science')) {
+        programCode = 'BCS';
+        programTitle = 'Computer Science';
+      }
+      // Strategy 3: Fallback to first word
+      else {
+        programCode = courseString.split(' ')[0] || courseString;
+        programTitle = courseString;
+      }
+      
+      console.log('Parsed - Code:', programCode, 'Title:', programTitle);
       
       // Get specific courses for this program
       const programCourses = specificCourses[programCode as keyof typeof specificCourses] || [];
       
       if (programCourses.length > 0) {
+        console.log('Found', programCourses.length, 'specific courses for', programCode);
         // Add specific courses
         programCourses.forEach(course => {
           allCourses.push({
@@ -66,6 +89,7 @@ const UpdateGrades: React.FC = () => {
           });
         });
       } else {
+        console.log('No specific courses found for', programCode, '- adding program-level course');
         // Fallback to program-level course
         allCourses.push({
           id: programCode,
@@ -269,6 +293,25 @@ const UpdateGrades: React.FC = () => {
               }}
             >
               ⚡ Setup Test Data
+            </button>
+            <button 
+              className="btn btn-sm btn-primary"
+              onClick={() => {
+                // Force specific courses by updating localStorage
+                const specificCoursesData = {
+                  success: true,
+                  lecturer: {
+                    courses: ['Information Technology', 'Computer Science']
+                  },
+                  data: {
+                    courses: ['Information Technology', 'Computer Science']
+                  }
+                };
+                localStorage.setItem('profile', JSON.stringify(specificCoursesData));
+                window.location.reload();
+              }}
+            >
+              🎯 Force Specific Courses
             </button>
             <button 
               className="btn btn-sm btn-outline-info"
