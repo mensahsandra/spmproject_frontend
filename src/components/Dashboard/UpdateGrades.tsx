@@ -3,6 +3,7 @@ import { apiFetch } from '../../utils/api';
 import CourseSelector from './CourseSelector';
 import StudentGradeTable from './StudentGradeTable';
 import GradeHistoryViewer from './GradeHistoryViewer';
+import { setupKwabenaProfile, clearTestProfile, getCurrentProfile } from '../../utils/testSetup';
 import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
 
 const UpdateGrades: React.FC = () => {
@@ -181,6 +182,43 @@ const UpdateGrades: React.FC = () => {
 
   return (
     <div>
+      {/* Development Helper - Remove in production */}
+      {import.meta.env.DEV && (
+        <div className="alert alert-info mb-3">
+          <strong>Development Helper:</strong>
+          <div className="d-flex gap-2 mt-2">
+            <button 
+              className="btn btn-sm btn-outline-primary"
+              onClick={() => {
+                setupKwabenaProfile();
+                window.location.reload();
+              }}
+            >
+              Setup Kwabena Profile (BIT Course)
+            </button>
+            <button 
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => {
+                clearTestProfile();
+                window.location.reload();
+              }}
+            >
+              Clear Test Profile
+            </button>
+            <button 
+              className="btn btn-sm btn-outline-info"
+              onClick={() => {
+                const profile = getCurrentProfile();
+                console.log('Current profile:', profile);
+                alert(profile ? `Profile: ${profile.lecturer?.name}, Courses: ${profile.data?.courses?.join(', ')}` : 'No profile found');
+              }}
+            >
+              Check Profile
+            </button>
+          </div>
+        </div>
+      )}
+
       <CourseSelector
         courses={courses}
         selectedCourseId={selectedCourseId}
