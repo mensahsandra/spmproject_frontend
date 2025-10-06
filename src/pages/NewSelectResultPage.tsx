@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Clock, MessageCircle } from 'lucide-react';
 import ProfileDropdown from '../components/ProfileDropdown';
 
 const NewSelectResultPage: React.FC = () => {
@@ -150,9 +151,7 @@ const NewSelectResultPage: React.FC = () => {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-              </svg>
+              <Clock size={20} />
               <span>Deadlines</span>
             </li>
           </ul>
@@ -190,9 +189,7 @@ const NewSelectResultPage: React.FC = () => {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12,2A2,2 0 0,1 14,4A2,2 0 0,1 12,6A2,2 0 0,1 10,4A2,2 0 0,1 12,2M21,9V7L15,1H5C3.89,1 3,1.89 3,3V7H9V9H3V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V9M7,15V17H17V15H7Z"/>
-              </svg>
+              <MessageCircle size={16} />
               <span>Counselling</span>
             </li>
             <li style={{ 
