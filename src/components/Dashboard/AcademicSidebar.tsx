@@ -3,8 +3,8 @@ import {
   Home,
   Grid3x3,
   BarChart3,
-  Calendar,
-  MapPin,
+  Clock,
+  MessageCircle,
   HelpCircle,
   FileText,
   Users,
@@ -31,7 +31,7 @@ export default function AcademicSidebar({
     { name: "Home", icon: Home, route: "/student/dashboard" },
     { name: "Attendance", icon: Grid3x3, route: "/student/record-attendance" },
     { name: "Performance", icon: BarChart3, route: "/student/select-result" },
-    { name: "Deadlines", icon: Calendar, route: "/student/notifications?tab=deadlines" },
+    { name: "Deadlines", icon: Clock, route: "/student/notifications?tab=deadlines" },
   ];
 
   const lecturerNavigationItems = [
@@ -43,7 +43,7 @@ export default function AcademicSidebar({
   ];
 
   const otherServices = [
-    { name: "Counselling", icon: MapPin, action: () => window.open('https://kcc.knust.edu.gh/', '_blank') },
+    { name: "Counselling", icon: MessageCircle, action: () => window.open('https://kcc.knust.edu.gh/', '_blank') },
     { name: userRole === 'student' ? "About Us" : "Feedback", icon: HelpCircle, action: () => {} },
   ];
 
