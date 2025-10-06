@@ -8,6 +8,7 @@ import RecordAttendance from '../components/Dashboard/RecordAttendance';
 // SelectResult import removed - not used in current routes
 import NotificationsPage from '../pages/NotificationsPage';
 import QuizPage from '../pages/QuizPage';
+import StudentQuizDashboard from '../pages/StudentQuizDashboard';
 // Old unified Sidebar removed in favor of role-specific layouts
 import StudentLoginPage from '../pages/StudentLoginPage';
 import LecturerLoginPage from '../pages/LecturerLoginPage';
@@ -23,6 +24,7 @@ import LecturerGeneratePage from '../pages/LecturerGeneratePage';
 import LecturerAttendancePage from '../pages/LecturerAttendancePage';
 import LecturerAssessmentPage from '../pages/LecturerAssessmentPage';
 import LecturerExportPage from '../pages/LecturerExportPage';
+import LecturerNotificationsPage from '../pages/LecturerNotificationsPage';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import { normalizeRole } from '../utils/roles';
 import StudentLayout from '../layouts/StudentLayout';
@@ -92,6 +94,11 @@ const RoutePage = () => {
           {withStudent(<QuizPage />)}
         </ProtectedRoute>
       } />
+      <Route path="/student/assessment" element={
+        <ProtectedRoute requiredRole="student">
+          {withStudent(<StudentQuizDashboard />)}
+        </ProtectedRoute>
+      } />
       <Route path="/student/display-result" element={
         <ProtectedRoute requiredRole="student">
           <DisplayResultPage />
@@ -140,6 +147,11 @@ const RoutePage = () => {
       <Route path="/lecturer/export" element={
         <ProtectedRoute requiredRole="lecturer">
           {withLecturer(<LecturerExportPage />)}
+        </ProtectedRoute>
+      } />
+      <Route path="/lecturer/notifications" element={
+        <ProtectedRoute requiredRole="lecturer">
+          {withLecturer(<LecturerNotificationsPage />)}
         </ProtectedRoute>
       } />
       {/* Alias route for generate session */}

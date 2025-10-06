@@ -237,129 +237,35 @@ const UpdateGrades: React.FC = () => {
       padding: '0',
       overflow: 'visible'
     }}>
-      {/* Always visible course setup button */}
-      <div className="alert alert-primary mb-3">
-        <div className="d-flex justify-content-between align-items-center">
-          <span><strong>Course Setup:</strong> Click to load courses without numbers</span>
-          <button 
-            className="btn btn-sm btn-success"
-            onClick={() => {
-              // Set up clean course data
-              const cleanCoursesData = {
-                success: true,
-                lecturer: {
-                  courses: ['Information Technology', 'Computer Science']
-                },
-                data: {
-                  courses: ['Information Technology', 'Computer Science']
-                }
-              };
-              localStorage.setItem('profile', JSON.stringify(cleanCoursesData));
-              window.location.reload();
-            }}
-          >
-            🎯 Load Clean Courses
-          </button>
-        </div>
+      {/* Page Header */}
+      <div className="mb-4">
+        <h3 className="mb-1">Assessment Management</h3>
+        <p className="text-muted mb-0">Create quizzes, manage grades, and track student performance</p>
       </div>
 
-      {/* Development Helper - Always show for course setup */}
-      {true && (
-        <div className="alert alert-warning mb-3">
-          <strong>🔧 Course Hierarchy Demo:</strong>
-          <div className="mt-2">
-            <small className="d-block">
-              <strong>Programs:</strong> {JSON.stringify(courseIds)}<br/>
-              <strong>Specific Courses:</strong> {courses.length} courses available<br/>
-              <strong>Sample:</strong> {courses.slice(0, 2).map(c => c.code).join(', ')}...
-            </small>
-          </div>
-          <div className="d-flex gap-2 mt-2">
-            <button 
-              className="btn btn-sm btn-success"
-              onClick={() => {
-                setupKwabenaWithBIT();
-                window.location.reload();
-              }}
-            >
-              ⚡ Setup Test Data
-            </button>
-            <button 
-              className="btn btn-sm btn-primary"
-              onClick={() => {
-                // Force specific courses by updating localStorage
-                const specificCoursesData = {
-                  success: true,
-                  lecturer: {
-                    courses: ['Information Technology', 'Computer Science']
-                  },
-                  data: {
-                    courses: ['Information Technology', 'Computer Science']
-                  }
-                };
-                localStorage.setItem('profile', JSON.stringify(specificCoursesData));
-                window.location.reload();
-              }}
-            >
-              🎯 Force Specific Courses
-            </button>
-            <button 
-              className="btn btn-sm btn-outline-info"
-              onClick={() => {
-                console.log('=== DEBUG INFO ===');
-                console.log('profileData:', profileData);
-                console.log('courseIds:', courseIds);
-                console.log('courses:', courses);
-                console.log('localStorage profile:', localStorage.getItem('profile'));
-                console.log('localStorage user_lecturer:', localStorage.getItem('user_lecturer'));
-                alert('Debug info logged to console. Check F12 > Console tab');
-              }}
-            >
-              Debug Console
-            </button>
-            <button 
-              className="btn btn-sm btn-outline-secondary"
-              onClick={() => {
-                clearTestProfile();
-                // Also clear any cached course data
-                localStorage.removeItem('profile');
-                localStorage.removeItem('user_lecturer');
-                localStorage.removeItem('courses');
-                localStorage.removeItem('courseData');
-                window.location.reload();
-              }}
-            >
-              Clear All Data
-            </button>
-            <button 
-              className="btn btn-sm btn-info"
-              onClick={() => {
-                simulateStudentQuizNotifications();
-                alert('Demo quiz notifications sent to students! Check student notifications page.');
-              }}
-            >
-              📝 Demo Quiz Notifications
-            </button>
-            <button 
-              className="btn btn-sm btn-warning"
-              onClick={() => {
-                // Force clean course data
-                const cleanProfileData = {
-                  success: true,
-                  lecturer: {
-                    courses: ['Information Technology', 'Computer Science']
-                  },
-                  data: {
-                    courses: ['Information Technology', 'Computer Science']
-                  }
-                };
-                localStorage.setItem('profile', JSON.stringify(cleanProfileData));
-                window.location.reload();
-              }}
-            >
-              🔄 Fix Course Numbers
-            </button>
-          </div>
+      {/* Development Helper - Only show in development mode */}
+      {import.meta.env.DEV && (
+        <div className="alert alert-info mb-3">
+          <details>
+            <summary className="fw-bold" style={{ cursor: 'pointer' }}>🔧 Development Tools</summary>
+            <div className="mt-2">
+              <small className="d-block mb-2">
+                <strong>Programs:</strong> {JSON.stringify(courseIds)}<br/>
+                <strong>Courses:</strong> {courses.length} available
+              </small>
+              <div className="d-flex gap-2 flex-wrap">
+                <button className="btn btn-sm btn-outline-primary" onClick={() => { setupKwabenaWithBIT(); window.location.reload(); }}>
+                  Setup Test Data
+                </button>
+                <button className="btn btn-sm btn-outline-secondary" onClick={() => { clearTestProfile(); window.location.reload(); }}>
+                  Clear Data
+                </button>
+                <button className="btn btn-sm btn-outline-info" onClick={() => { simulateStudentQuizNotifications(); alert('Demo notifications sent!'); }}>
+                  Demo Notifications
+                </button>
+              </div>
+            </div>
+          </details>
         </div>
       )}
 
@@ -390,27 +296,6 @@ const UpdateGrades: React.FC = () => {
         {!selectedCourseId && (
           <div className="alert alert-info">
             <small>Please select a course to create quizzes and manage grades.</small>
-            <div className="mt-2">
-              <button 
-                className="btn btn-sm btn-primary"
-                onClick={() => {
-                  // Set up clean course data
-                  const cleanCoursesData = {
-                    success: true,
-                    lecturer: {
-                      courses: ['Information Technology', 'Computer Science']
-                    },
-                    data: {
-                      courses: ['Information Technology', 'Computer Science']
-                    }
-                  };
-                  localStorage.setItem('profile', JSON.stringify(cleanCoursesData));
-                  window.location.reload();
-                }}
-              >
-                🎯 Load Courses (No Numbers)
-              </button>
-            </div>
           </div>
         )}
 

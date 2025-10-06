@@ -68,7 +68,7 @@ export default function StudentDashboard({ user, data }: StudentDashboardProps) 
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Attendance Card */}
         <div
           className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E6E6E6] dark:border-[#333333] p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
@@ -116,6 +116,39 @@ export default function StudentDashboard({ user, data }: StudentDashboardProps) 
               </p>
               <div className="text-xs text-[#007A3B] font-medium">
                 Courses Enrolled: {dashboardData.stats?.coursesEnrolled || 0}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Assessment Card */}
+        <div
+          className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E6E6E6] dark:border-[#333333] p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+          onClick={() => navigate('/student/assessment')}
+        >
+          <div className="flex items-start gap-4">
+            {/* Status Bar */}
+            <div className="w-1 h-16 rounded-full bg-gradient-to-b from-[#0066CC] to-[#4A90E2] flex-shrink-0"></div>
+
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#0066CC]">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <h3 className="text-lg font-semibold text-black dark:text-white font-bricolage">
+                  Assessment
+                </h3>
+                {dashboardData.stats?.unreadNotifications && dashboardData.stats.unreadNotifications > 0 && (
+                  <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded-full min-w-[20px] text-center">
+                    {dashboardData.stats.unreadNotifications}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-[#666666] dark:text-[#AAAAAA] mb-4 font-inter">
+                Take quizzes and submit assignments
+              </p>
+              <div className="text-xs text-[#0066CC] font-medium">
+                {dashboardData.stats?.unreadNotifications ? `${dashboardData.stats.unreadNotifications} new quiz${dashboardData.stats.unreadNotifications > 1 ? 'zes' : ''}` : 'No new assessments'}
               </div>
             </div>
           </div>
