@@ -288,9 +288,6 @@ const NotificationsPage: React.FC = () => {
     return (
         <DashboardLayout showGreeting={true}>
             <div className="notifications-page">
-                <div className="notifications-header">
-                    {activeTab !== 'deadlines' && <h1>Notifications</h1>}
-                </div>
             <div className="notifications-tabs">
                 <button 
                     className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
