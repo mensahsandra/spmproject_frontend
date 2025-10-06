@@ -386,7 +386,7 @@ const DashboardPage: React.FC = () => {
             <div style={{
               width: '60px',
               minWidth: '60px',
-              background: 'linear-gradient(to bottom, #50be21 0%, #117840 100%)',
+              background: 'linear-gradient(to bottom, #50be21 0%, #50be21 50%, #117840 50%, #117840 100%)',
               display: 'flex',
               flexDirection: 'column'
             }}></div>
@@ -437,7 +437,7 @@ const DashboardPage: React.FC = () => {
             <div style={{
               width: '60px',
               minWidth: '60px',
-              background: 'linear-gradient(to bottom, #50be21 0%, #117840 100%)',
+              background: 'linear-gradient(to bottom, #50be21 0%, #50be21 50%, #117840 50%, #117840 100%)',
               display: 'flex',
               flexDirection: 'column'
             }}></div>
@@ -488,7 +488,7 @@ const DashboardPage: React.FC = () => {
             <div style={{
               width: '60px',
               minWidth: '60px',
-              background: 'linear-gradient(to bottom, #ef4444 0%, #b91c1c 100%)',
+              background: 'linear-gradient(to bottom, #ef4444 0%, #ef4444 50%, #b91c1c 50%, #b91c1c 100%)',
               display: 'flex',
               flexDirection: 'column'
             }}></div>
