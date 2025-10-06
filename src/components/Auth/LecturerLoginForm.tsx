@@ -72,13 +72,24 @@ const LecturerLoginForm: React.FC = () => {
                         role: 'lecturer' 
                     });
                     
+                    console.log('Profile fetch response:', profileData);
+                    
                     if (profileData?.success && profileData?.lecturer) {
                         // Store profile data for components that need it
                         localStorage.setItem('profile', JSON.stringify(profileData));
-                        console.log('Lecturer profile loaded:', profileData);
+                        console.log('✅ Lecturer profile stored:', profileData);
+                        
+                        // Also update the user data with courses if available
+                        if (profileData.lecturer.courses) {
+                            const updatedUser = { ...user, courses: profileData.lecturer.courses };
+                            storeUser(role, updatedUser);
+                            console.log('✅ User data updated with courses:', updatedUser);
+                        }
+                    } else {
+                        console.warn('❌ Profile fetch failed or invalid response:', profileData);
                     }
                 } catch (profileError) {
-                    console.warn('Could not fetch lecturer profile:', profileError);
+                    console.error('❌ Profile fetch error:', profileError);
                 }
                 
                 console.log("Login successful:", user);

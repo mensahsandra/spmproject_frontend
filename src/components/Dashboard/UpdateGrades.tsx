@@ -4,14 +4,22 @@ import CourseSelector from './CourseSelector';
 import StudentGradeTable from './StudentGradeTable';
 import GradeHistoryViewer from './GradeHistoryViewer';
 import { clearTestProfile } from '../../utils/testSetup';
-import { setupKwabenaWithBIT, checkCurrentSetup } from '../../utils/quickSetup';
+import { setupKwabenaWithBIT } from '../../utils/quickSetup';
 import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
 
 const UpdateGrades: React.FC = () => {
   // Courses from lecturer profile
   const profileDataRaw = localStorage.getItem('profile');
   const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : null;
-  const courseIds: string[] = profileData?.data?.courses || [];
+  
+  // Fallback: try to get courses from user data if profile is missing
+  const userDataRaw = localStorage.getItem('user_lecturer');
+  const userData = userDataRaw ? JSON.parse(userDataRaw) : null;
+  
+  const courseIds: string[] = profileData?.data?.courses || 
+                              profileData?.lecturer?.courses || 
+                              userData?.courses || 
+                              [];
   const courses: Course[] = useMemo(() => {
     console.log('Raw course data:', courseIds);
     
@@ -204,8 +212,16 @@ const UpdateGrades: React.FC = () => {
     <div>
       {/* Development Helper - Remove in production */}
       {import.meta.env.DEV && (
-        <div className="alert alert-success mb-3">
-          <strong>🚀 Quick Setup for Testing:</strong>
+        <div className="alert alert-warning mb-3">
+          <strong>🔧 Debug Information:</strong>
+          <div className="mt-2">
+            <small className="d-block">
+              <strong>Profile Data:</strong> {profileData ? 'Found' : 'Missing'}<br/>
+              <strong>Raw Courses:</strong> {JSON.stringify(courseIds)}<br/>
+              <strong>Parsed Courses:</strong> {JSON.stringify(courses)}<br/>
+              <strong>Course Count:</strong> {courses.length}
+            </small>
+          </div>
           <div className="d-flex gap-2 mt-2">
             <button 
               className="btn btn-sm btn-success"
@@ -214,17 +230,21 @@ const UpdateGrades: React.FC = () => {
                 window.location.reload();
               }}
             >
-              ⚡ Setup Kwabena + BIT Course (Instant)
+              ⚡ Setup Test Data
             </button>
             <button 
               className="btn btn-sm btn-outline-info"
               onClick={() => {
-                const setup = checkCurrentSetup();
-                const courses = setup.profile?.data?.courses || [];
-                alert(`Current setup:\nCourses: ${courses.join(', ') || 'None'}\nReady for testing: ${courses.includes('BIT') ? 'YES ✅' : 'NO ❌'}`);
+                console.log('=== DEBUG INFO ===');
+                console.log('profileData:', profileData);
+                console.log('courseIds:', courseIds);
+                console.log('courses:', courses);
+                console.log('localStorage profile:', localStorage.getItem('profile'));
+                console.log('localStorage user_lecturer:', localStorage.getItem('user_lecturer'));
+                alert('Debug info logged to console. Check F12 > Console tab');
               }}
             >
-              Check Setup
+              Debug Console
             </button>
             <button 
               className="btn btn-sm btn-outline-secondary"
@@ -233,12 +253,9 @@ const UpdateGrades: React.FC = () => {
                 window.location.reload();
               }}
             >
-              Clear Setup
+              Clear Data
             </button>
           </div>
-          <small className="text-muted d-block mt-2">
-            💡 Click "Setup Kwabena + BIT Course" to instantly enable quiz creation testing
-          </small>
         </div>
       )}
 
