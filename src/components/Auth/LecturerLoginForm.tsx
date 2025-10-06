@@ -63,6 +63,24 @@ const LecturerLoginForm: React.FC = () => {
                 setActiveRole(role);
                 switchRole(role);
                 await refresh(role);
+                
+                // Fetch lecturer profile to get courses data
+                try {
+                    const { apiFetch } = await import('../../utils/api');
+                    const profileData = await apiFetch('/api/auth/lecturer/profile', { 
+                        method: 'GET', 
+                        role: 'lecturer' 
+                    });
+                    
+                    if (profileData?.success && profileData?.lecturer) {
+                        // Store profile data for components that need it
+                        localStorage.setItem('profile', JSON.stringify(profileData));
+                        console.log('Lecturer profile loaded:', profileData);
+                    }
+                } catch (profileError) {
+                    console.warn('Could not fetch lecturer profile:', profileError);
+                }
+                
                 console.log("Login successful:", user);
                 navigate("/lecturer/dashboard");
             } else {

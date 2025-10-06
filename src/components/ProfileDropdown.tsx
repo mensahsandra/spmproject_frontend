@@ -15,6 +15,10 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
   const userData = propUser || getUser() || {};
   const role = (userData.role || '').toLowerCase();
   
+  // Debug: Log user data to see what's available
+  console.log('ProfileDropdown userData:', userData);
+  console.log('ProfileDropdown role:', role);
+  
   // Construct display name
   const honor = (userData.honorific || '').trim();
   const full = (userData.name || '').trim();
@@ -27,7 +31,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
   const indexNo = userData.indexNo || (role === 'lecturer' ? '' : '9123456');
   const studentId = userData.studentId || userData.lecturerId || userData.staffId || '21058161';
   const programme = role === 'lecturer'
-    ? (userData.course || userData.programme || '—')
+    ? (userData.courses?.join(', ') || userData.course || userData.programme || '—')
     : (userData.programme || 'BSc. Information Technology IDL (TOP-UP)');
   const currentCenter = (localStorage.getItem('currentCenter') || localStorage.getItem('selectedCenter') || userData.center || (role === 'lecturer' ? '—' : 'IDL - Kumasi Center'));
 
