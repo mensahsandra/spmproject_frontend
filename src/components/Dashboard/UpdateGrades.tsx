@@ -23,22 +23,61 @@ const UpdateGrades: React.FC = () => {
   const courses: Course[] = useMemo(() => {
     console.log('Raw course data:', courseIds);
     
-    return courseIds.map((courseString: string) => {
+    // Sample specific courses for demonstration
+    const specificCourses = {
+      'BIT': [
+        { code: 'BIT364', name: 'Web Development', semester: '1' },
+        { code: 'BIT367', name: 'Network Security', semester: '2' },
+        { code: 'BIT301', name: 'Database Management', semester: '1' },
+        { code: 'ENT201', name: 'Entrepreneurship', semester: '2' },
+        { code: 'ACC101', name: 'Financial Accounting', semester: '1' },
+        { code: 'MGT205', name: 'Project Management', semester: '2' }
+      ],
+      'BCS': [
+        { code: 'CS301', name: 'Data Structures', semester: '1' },
+        { code: 'CS405', name: 'Software Engineering', semester: '2' },
+        { code: 'CS501', name: 'Artificial Intelligence', semester: '1' },
+        { code: 'CS403', name: 'Computer Networks', semester: '2' },
+        { code: 'MAT301', name: 'Discrete Mathematics', semester: '1' }
+      ]
+    };
+    
+    const allCourses: Course[] = [];
+    
+    courseIds.forEach((courseString: string) => {
       // Parse course string like "BSc. Information Technology (BIT)" or "BIT"
-      const match = courseString.match(/\(([^)]+)\)$/); // Extract code from parentheses
-      const code = match ? match[1] : courseString.split(' ')[0] || courseString;
-      const title = match ? courseString.replace(/\s*\([^)]+\)$/, '') : courseString;
+      const match = courseString.match(/\(([^)]+)\)$/);
+      const programCode = match ? match[1] : courseString.split(' ')[0] || courseString;
+      const programTitle = match ? courseString.replace(/\s*\([^)]+\)$/, '') : courseString;
       
-      const course = {
-        id: code,
-        code: code,
-        title: title,
-        semester: ''
-      };
+      console.log('Processing program:', programCode, programTitle);
       
-      console.log('Parsed course:', course);
-      return course;
+      // Get specific courses for this program
+      const programCourses = specificCourses[programCode as keyof typeof specificCourses] || [];
+      
+      if (programCourses.length > 0) {
+        // Add specific courses
+        programCourses.forEach(course => {
+          allCourses.push({
+            id: course.code,
+            code: course.code,
+            title: `${course.name} (${programTitle})`,
+            semester: course.semester
+          });
+        });
+      } else {
+        // Fallback to program-level course
+        allCourses.push({
+          id: programCode,
+          code: programCode,
+          title: programTitle,
+          semester: ''
+        });
+      }
     });
+    
+    console.log('Final courses:', allCourses);
+    return allCourses;
   }, [courseIds]);
 
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
@@ -213,13 +252,12 @@ const UpdateGrades: React.FC = () => {
       {/* Development Helper - Remove in production */}
       {import.meta.env.DEV && (
         <div className="alert alert-warning mb-3">
-          <strong>🔧 Debug Information:</strong>
+          <strong>🔧 Course Hierarchy Demo:</strong>
           <div className="mt-2">
             <small className="d-block">
-              <strong>Profile Data:</strong> {profileData ? 'Found' : 'Missing'}<br/>
-              <strong>Raw Courses:</strong> {JSON.stringify(courseIds)}<br/>
-              <strong>Parsed Courses:</strong> {JSON.stringify(courses)}<br/>
-              <strong>Course Count:</strong> {courses.length}
+              <strong>Programs:</strong> {JSON.stringify(courseIds)}<br/>
+              <strong>Specific Courses:</strong> {courses.length} courses available<br/>
+              <strong>Sample:</strong> {courses.slice(0, 2).map(c => c.code).join(', ')}...
             </small>
           </div>
           <div className="d-flex gap-2 mt-2">
