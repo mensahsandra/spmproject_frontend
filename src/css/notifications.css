@@ -89,14 +89,14 @@
     background: linear-gradient(to bottom, #B91C1C 0%, #B91C1C 50%, #EF4444 50%, #EF4444 100%);
 }
 
-/* Two-tone green for general notifications */
+/* Two-tone yellow for general notifications */
 .general-accent {
-    background: linear-gradient(to bottom, #2E7D32 0%, #2E7D32 50%, #66BB6A 50%, #66BB6A 100%);
+    background: linear-gradient(to bottom, #F59E0B 0%, #F59E0B 50%, #FDE047 50%, #FDE047 100%);
 }
 
-/* Completed accent (default gray). Swap `.gray` to `.blue` if desired */
+/* Completed accent - bright and dark green */
 .completed-accent.gray {
-    background: linear-gradient(to bottom, #636363 0%, #636363 50%, #898989 50%, #898989 100%);
+    background: linear-gradient(to bottom, #16A34A 0%, #16A34A 50%, #4ADE80 50%, #4ADE80 100%);
 }
 
 .completed-accent.blue {

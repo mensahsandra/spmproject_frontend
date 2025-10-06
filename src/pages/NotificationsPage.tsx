@@ -5,7 +5,7 @@ import '../css/notifications.css';
 
 interface NotificationItem {
     id: number;
-    type: 'IMPORTANT' | 'REMINDER';
+    type: 'IMPORTANT' | 'REMINDER' | 'INFO';
     message: string;
     timeAgo: string;
     category: 'deadline' | 'general' | 'completed';
@@ -139,6 +139,45 @@ const NotificationsPage: React.FC = () => {
                 text: 'More Info',
                 action: 'link',
                 url: '#' // Will be provided later
+            }
+        },
+        {
+            id: 9,
+            type: 'INFO',
+            message: 'Welcome to the new semester! Check out the updated features.',
+            timeAgo: '1 week ago',
+            category: 'general',
+            details: 'We have added new features to improve your learning experience including enhanced grade tracking, better notification system, and improved mobile interface.',
+            actionButton: {
+                text: 'Explore Features',
+                action: 'link',
+                url: '#'
+            }
+        },
+        {
+            id: 10,
+            type: 'INFO',
+            message: 'Library hours extended during exam period.',
+            timeAgo: '1 week ago',
+            category: 'general',
+            details: 'The university library will be open 24/7 during the examination period from December 1st to December 20th. Additional study spaces and resources are available.',
+            actionButton: {
+                text: 'Library Info',
+                action: 'link',
+                url: '#'
+            }
+        },
+        {
+            id: 11,
+            type: 'REMINDER',
+            message: 'Student counselling services are available. Book your session.',
+            timeAgo: '2 weeks ago',
+            category: 'general',
+            details: 'Free counselling services are available for all students. Whether you need academic guidance, personal support, or career advice, our qualified counsellors are here to help.',
+            actionButton: {
+                text: 'Book Session',
+                action: 'link',
+                url: 'https://kcc.knust.edu.gh/'
             }
         },
         {
