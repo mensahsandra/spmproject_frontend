@@ -3,7 +3,8 @@ import { apiFetch } from '../../utils/api';
 import CourseSelector from './CourseSelector';
 import StudentGradeTable from './StudentGradeTable';
 import GradeHistoryViewer from './GradeHistoryViewer';
-import { setupKwabenaProfile, clearTestProfile, getCurrentProfile } from '../../utils/testSetup';
+import { clearTestProfile } from '../../utils/testSetup';
+import { setupKwabenaWithBIT, checkCurrentSetup } from '../../utils/quickSetup';
 import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
 
 const UpdateGrades: React.FC = () => {
@@ -184,17 +185,27 @@ const UpdateGrades: React.FC = () => {
     <div>
       {/* Development Helper - Remove in production */}
       {import.meta.env.DEV && (
-        <div className="alert alert-info mb-3">
-          <strong>Development Helper:</strong>
+        <div className="alert alert-success mb-3">
+          <strong>🚀 Quick Setup for Testing:</strong>
           <div className="d-flex gap-2 mt-2">
             <button 
-              className="btn btn-sm btn-outline-primary"
+              className="btn btn-sm btn-success"
               onClick={() => {
-                setupKwabenaProfile();
+                setupKwabenaWithBIT();
                 window.location.reload();
               }}
             >
-              Setup Kwabena Profile (BIT Course)
+              ⚡ Setup Kwabena + BIT Course (Instant)
+            </button>
+            <button 
+              className="btn btn-sm btn-outline-info"
+              onClick={() => {
+                const setup = checkCurrentSetup();
+                const courses = setup.profile?.data?.courses || [];
+                alert(`Current setup:\nCourses: ${courses.join(', ') || 'None'}\nReady for testing: ${courses.includes('BIT') ? 'YES ✅' : 'NO ❌'}`);
+              }}
+            >
+              Check Setup
             </button>
             <button 
               className="btn btn-sm btn-outline-secondary"
@@ -203,19 +214,12 @@ const UpdateGrades: React.FC = () => {
                 window.location.reload();
               }}
             >
-              Clear Test Profile
-            </button>
-            <button 
-              className="btn btn-sm btn-outline-info"
-              onClick={() => {
-                const profile = getCurrentProfile();
-                console.log('Current profile:', profile);
-                alert(profile ? `Profile: ${profile.lecturer?.name}, Courses: ${profile.data?.courses?.join(', ')}` : 'No profile found');
-              }}
-            >
-              Check Profile
+              Clear Setup
             </button>
           </div>
+          <small className="text-muted d-block mt-2">
+            💡 Click "Setup Kwabena + BIT Course" to instantly enable quiz creation testing
+          </small>
         </div>
       )}
 
