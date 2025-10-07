@@ -67,140 +67,79 @@ const StudentAcademicHub: React.FC = () => {
           <p className="text-muted mb-0">Access your assessments and academic performance</p>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats - Clean Design */}
         <div className="row mb-4">
-          <div className="col-md-3 mb-3">
-            <div className="card border-primary h-100">
-              <div className="card-body text-center">
-                <i className="fas fa-clipboard-check fa-2x text-primary mb-2"></i>
-                <h4 className="text-primary mb-1">{stats.availableQuizzes}</h4>
-                <small className="text-muted">Available Quizzes</small>
+          <div className="col-md-4 mb-3">
+            <div className="card clean-stat-card">
+              <div className="card-body d-flex align-items-center">
+                <div className="green-accent-bar"></div>
+                <div className="ms-3 text-center flex-grow-1">
+                  <div className="stat-label text-muted mb-1">Available Quizzes</div>
+                  <div className="stat-value text-success">{stats.availableQuizzes}</div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="col-md-3 mb-3">
-            <div className="card border-warning h-100">
-              <div className="card-body text-center">
-                <i className="fas fa-tasks fa-2x text-warning mb-2"></i>
-                <h4 className="text-warning mb-1">{stats.pendingAssignments}</h4>
-                <small className="text-muted">Pending Tasks</small>
+          <div className="col-md-4 mb-3">
+            <div className="card clean-stat-card">
+              <div className="card-body d-flex align-items-center">
+                <div className="green-accent-bar"></div>
+                <div className="ms-3 text-center flex-grow-1">
+                  <div className="stat-label text-muted mb-1">Pending Tasks</div>
+                  <div className="stat-value text-success">{stats.pendingAssignments}</div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="col-md-3 mb-3">
-            <div className="card border-success h-100">
-              <div className="card-body text-center">
-                <i className="fas fa-chart-line fa-2x text-success mb-2"></i>
-                <h4 className="text-success mb-1">{stats.currentGPA}</h4>
-                <small className="text-muted">Current GPA</small>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3 mb-3">
-            <div className="card border-info h-100">
-              <div className="card-body text-center">
-                <i className="fas fa-graduation-cap fa-2x text-info mb-2"></i>
-                <h4 className="text-info mb-1">{stats.coursesEnrolled}</h4>
-                <small className="text-muted">Enrolled Courses</small>
+          <div className="col-md-4 mb-3">
+            <div className="card clean-stat-card">
+              <div className="card-body d-flex align-items-center">
+                <div className="green-accent-bar"></div>
+                <div className="ms-3 text-center flex-grow-1">
+                  <div className="stat-label text-muted mb-1">Current CWA</div>
+                  <div className="stat-value text-success">{stats.currentGPA}</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Main Action Cards */}
-        <div className="row justify-content-center">
-          <div className="col-lg-5 col-md-6 mb-4">
+        {/* Main Action Cards - Clean Design */}
+        <div className="row">
+          <div className="col-12 mb-4">
             <div 
-              className="card h-100 shadow-sm border-0 academic-card assessment-card"
+              className="card clean-action-card"
               onClick={() => navigate('/student/assessment')}
               style={{ cursor: 'pointer' }}
             >
-              <div className="card-body text-center p-5">
-                <div className="mb-4">
-                  <div className="icon-circle bg-primary bg-opacity-10 mx-auto mb-3">
-                    <i className="fas fa-clipboard-check fa-3x text-primary"></i>
-                  </div>
+              <div className="card-body d-flex align-items-center">
+                <div className="green-accent-bar-large"></div>
+                <div className="ms-4 flex-grow-1">
+                  <h4 className="card-title mb-2">Assessment Center</h4>
+                  <hr className="title-underline mb-3" />
+                  <p className="card-text text-muted mb-0">
+                    Take quizzes, submit assignments, and complete your academic assessments
+                  </p>
                 </div>
-                
-                <h4 className="card-title text-primary mb-3">Assessment Center</h4>
-                <p className="card-text text-muted mb-4">
-                  Take quizzes, submit assignments, and complete your academic assessments
-                </p>
-
-                {/* Assessment Stats */}
-                <div className="row text-center mb-4">
-                  <div className="col-6">
-                    <div className="border-end">
-                      <h5 className="text-primary mb-1">{stats.availableQuizzes}</h5>
-                      <small className="text-muted">Available</small>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <h5 className="text-success mb-1">{stats.completedAssessments}</h5>
-                    <small className="text-muted">Completed</small>
-                  </div>
-                </div>
-
-                {stats.unreadNotifications > 0 && (
-                  <div className="alert alert-info py-2 mb-3">
-                    <small>
-                      <i className="fas fa-bell me-1"></i>
-                      {stats.unreadNotifications} new notification{stats.unreadNotifications > 1 ? 's' : ''}
-                    </small>
-                  </div>
-                )}
-
-                <button className="btn btn-primary btn-lg w-100">
-                  <i className="fas fa-arrow-right me-2"></i>
-                  Enter Assessment Center
-                </button>
               </div>
             </div>
           </div>
 
-          <div className="col-lg-5 col-md-6 mb-4">
+          <div className="col-12 mb-4">
             <div 
-              className="card h-100 shadow-sm border-0 academic-card performance-card"
+              className="card clean-action-card"
               onClick={() => setShowPerformanceSection(true)}
               style={{ cursor: 'pointer' }}
             >
-              <div className="card-body text-center p-5">
-                <div className="mb-4">
-                  <div className="icon-circle bg-success bg-opacity-10 mx-auto mb-3">
-                    <i className="fas fa-chart-line fa-3x text-success"></i>
-                  </div>
+              <div className="card-body d-flex align-items-center">
+                <div className="green-accent-bar-large"></div>
+                <div className="ms-4 flex-grow-1">
+                  <h4 className="card-title mb-2">Check Performance</h4>
+                  <hr className="title-underline mb-3" />
+                  <p className="card-text text-muted mb-0">
+                    View your grades, academic results, and track your progress over time
+                  </p>
                 </div>
-                
-                <h4 className="card-title text-success mb-3">Check Performance</h4>
-                <p className="card-text text-muted mb-4">
-                  View your grades, academic results, and track your progress over time
-                </p>
-
-                {/* Performance Stats */}
-                <div className="row text-center mb-4">
-                  <div className="col-6">
-                    <div className="border-end">
-                      <h5 className="text-success mb-1">{stats.currentGPA}</h5>
-                      <small className="text-muted">Current GPA</small>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <h5 className="text-info mb-1">{stats.coursesEnrolled}</h5>
-                    <small className="text-muted">Courses</small>
-                  </div>
-                </div>
-
-                <div className="alert alert-success py-2 mb-3">
-                  <small>
-                    <i className="fas fa-trophy me-1"></i>
-                    Academic performance tracking available
-                  </small>
-                </div>
-
-                <button className="btn btn-success btn-lg w-100">
-                  <i className="fas fa-chart-line me-2"></i>
-                  Check Performance
-                </button>
               </div>
             </div>
           </div>

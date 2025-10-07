@@ -1,5 +1,86 @@
-/* Student Academic Hub Styles */
+/* Student Academic Hub Styles - Clean Design */
 
+/* Clean Stat Cards */
+.clean-stat-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.clean-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.green-accent-bar {
+  width: 4px;
+  height: 60px;
+  background: linear-gradient(to bottom, #22c55e, #16a34a);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+/* Clean Action Cards */
+.clean-action-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  background: white;
+  min-height: 120px;
+}
+
+.clean-action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #22c55e;
+}
+
+.green-accent-bar-large {
+  width: 8px;
+  height: 80px;
+  background: linear-gradient(to bottom, #22c55e, #16a34a);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.title-underline {
+  width: 60px;
+  height: 2px;
+  background: #22c55e;
+  border: none;
+  margin: 0;
+}
+
+.clean-action-card .card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.clean-action-card .card-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Keep existing styles for other elements */
 .academic-card {
   transition: all 0.3s ease;
   border-radius: 12px;
@@ -11,14 +92,6 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
 }
 
-.assessment-card:hover {
-  border: 2px solid #007bff;
-}
-
-.performance-card:hover {
-  border: 2px solid #28a745;
-}
-
 .icon-circle {
   width: 100px;
   height: 100px;
@@ -27,19 +100,6 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-}
-
-.academic-card .btn {
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.academic-card .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Stats Cards */
