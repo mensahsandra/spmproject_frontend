@@ -192,7 +192,7 @@ const DashboardPage: React.FC = () => {
               minHeight: '44px',
               transition: 'background-color 0.2s'
             }}
-            onClick={() => window.location.href = '/student/select-result'}
+            onClick={() => window.location.href = '/student/academic-hub'}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
             >
@@ -424,7 +424,7 @@ const DashboardPage: React.FC = () => {
               transition: 'all 0.2s ease',
               width: '100%'
             }}
-            onClick={() => window.location.href = '/student/select-result'}
+            onClick={() => window.location.href = '/student/academic-hub'}
             onMouseEnter={(e) => {
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
               e.currentTarget.style.transform = 'translateY(-1px)';
