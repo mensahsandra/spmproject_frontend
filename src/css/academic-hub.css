@@ -42,6 +42,19 @@ body {
   box-sizing: border-box;
 }
 
+/* Header styling */
+.academic-hub-title {
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .academic-hub-title {
+    font-size: 1.5rem !important;
+  }
+}
+
 /* Clean Stat Cards */
 .clean-stat-card {
   border: 1px solid #e5e7eb;

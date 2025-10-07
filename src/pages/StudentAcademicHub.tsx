@@ -14,7 +14,7 @@ interface AcademicStats {
 
 const StudentAcademicHub: React.FC = () => {
   const navigate = useNavigate();
-  // Updated for Academic Hub navigation - v4 (Fixed double scrollbars completely, centered content)
+  // Updated for Academic Hub navigation - v5 (Added header, direct navigation to select-result)
   const [stats, setStats] = useState<AcademicStats>({
     availableQuizzes: 0,
     pendingAssignments: 0,
@@ -24,10 +24,9 @@ const StudentAcademicHub: React.FC = () => {
     completedAssessments: 12
   });
   const [loading, setLoading] = useState(true);
-  const [showPerformanceSection, setShowPerformanceSection] = useState(false);
 
   useEffect(() => {
-    console.log('StudentAcademicHub v4 loaded - Fixed double scrollbars completely, centered content');
+    console.log('StudentAcademicHub v5 loaded - Added header, direct navigation to select-result');
     loadAcademicStats();
   }, []);
 
@@ -88,6 +87,26 @@ const StudentAcademicHub: React.FC = () => {
           padding: '0 2rem 2rem 2rem'
         }}>
 
+        {/* Page Header */}
+        <div className="row mb-4">
+          <div className="col-12 text-center">
+            <h2 className="academic-hub-title" style={{
+              fontSize: '2rem',
+              fontWeight: '600',
+              color: '#1f2937',
+              marginBottom: '0.5rem'
+            }}>
+              Access your assessments and academic performance
+            </h2>
+            <div style={{
+              width: '80px',
+              height: '3px',
+              background: 'linear-gradient(to right, #22c55e, #16a34a)',
+              margin: '0 auto',
+              borderRadius: '2px'
+            }}></div>
+          </div>
+        </div>
 
         {/* Quick Stats - Clean Design */}
         <div className="row mb-5">
@@ -150,7 +169,7 @@ const StudentAcademicHub: React.FC = () => {
           <div className="col-12 mb-4">
             <div 
               className="card clean-action-card"
-              onClick={() => setShowPerformanceSection(true)}
+              onClick={() => navigate('/student/select-result')}
               style={{ cursor: 'pointer' }}
             >
               <div className="card-body d-flex align-items-center">
@@ -167,75 +186,7 @@ const StudentAcademicHub: React.FC = () => {
           </div>
         </div>
 
-        {/* Performance Section */}
-        {showPerformanceSection && (
-          <div className="row mt-4">
-            <div className="col-12">
-              <div className="card shadow-sm border-0">
-                <div className="card-header bg-success text-white">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">
-                      <i className="fas fa-chart-line me-2"></i>
-                      Check Your Performance
-                    </h5>
-                    <button 
-                      className="btn btn-sm btn-outline-light"
-                      onClick={() => setShowPerformanceSection(false)}
-                    >
-                      <i className="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
-                <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-4 mb-3">
-                      <label className="form-label">Select Academic Year</label>
-                      <select className="form-select">
-                        <option value="">Select Academic Year</option>
-                        <option value="2024-2025">2024-2025</option>
-                        <option value="2023-2024">2023-2024</option>
-                        <option value="2022-2023">2022-2023</option>
-                      </select>
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label className="form-label">Select Semester</label>
-                      <select className="form-select">
-                        <option value="">Select Semester</option>
-                        <option value="First Semester">First Semester</option>
-                        <option value="Second Semester">Second Semester</option>
-                      </select>
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label className="form-label">Select Block</label>
-                      <select className="form-select">
-                        <option value="">Select Block</option>
-                        <option value="Block 1">Block 1</option>
-                        <option value="Block 2">Block 2</option>
-                        <option value="Block 3">Block 3</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="d-flex gap-2">
-                    <button 
-                      className="btn btn-success"
-                      onClick={() => navigate('/student/display-result')}
-                    >
-                      <i className="fas fa-chart-bar me-2"></i>
-                      Display Results
-                    </button>
-                    <button 
-                      className="btn btn-outline-success"
-                      onClick={() => navigate('/student/select-result')}
-                    >
-                      <i className="fas fa-search me-2"></i>
-                      Advanced Grade Search
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+
 
 
         </div>
