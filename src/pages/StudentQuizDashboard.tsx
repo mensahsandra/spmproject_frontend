@@ -263,11 +263,11 @@ const StudentQuizDashboard: React.FC = () => {
                       alignItems: 'flex-start',
                       gap: '1rem'
                     }}>
-                      {/* Green Accent Bar */}
+                      {/* Green Accent Bar with Two-Tone Gradient */}
                       <div style={{
                         width: '16px',
                         height: '120px',
-                        background: getGradientColors(quiz.status),
+                        background: 'linear-gradient(to bottom, #22c55e 0%, #22c55e 50%, #16a34a 50%, #16a34a 100%)',
                         borderRadius: '8px',
                         flexShrink: 0
                       }}></div>
@@ -408,40 +408,43 @@ const StudentQuizDashboard: React.FC = () => {
                       borderRadius: '12px',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                       overflow: 'hidden',
-                      border: '1px solid #fecaca'
+                      border: '1px solid #e5e7eb',
+                      padding: '1.5rem'
                     }}>
                       <div style={{
                         display: 'flex',
-                        alignItems: 'center',
-                        padding: '1.5rem',
+                        alignItems: 'flex-start',
                         gap: '1rem'
                       }}>
+                        {/* Red Accent Bar with Two-Tone Gradient */}
                         <div style={{
-                          width: '8px',
-                          height: '80px',
-                          background: getGradientColors(quiz.status),
-                          borderRadius: '4px',
+                          width: '16px',
+                          height: '120px',
+                          background: 'linear-gradient(to bottom, #ef4444 0%, #ef4444 50%, #dc2626 50%, #dc2626 100%)',
+                          borderRadius: '8px',
                           flexShrink: 0
                         }}></div>
 
                         <div style={{ flex: 1 }}>
                           <div style={{ marginBottom: '0.5rem' }}>
-                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lecturer: </span>
-                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.lecturerName}</span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Lecturer: </span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>{quiz.lecturerName}</span>
                           </div>
                           <div style={{ marginBottom: '0.5rem' }}>
-                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Course: </span>
-                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.courseCode} - {quiz.courseName}</span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>
+                              {quiz.courseName ? 'Course:' : 'Class:'} 
+                            </span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400', marginLeft: '0.5rem' }}>
+                              {quiz.courseCode} - {quiz.courseName}
+                            </span>
                           </div>
                           <div style={{ marginBottom: '1rem' }}>
-                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Time: </span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Time: </span>
                             <span style={{ 
-                              fontSize: '0.875rem', 
-                              color: '#dc2626', 
-                              fontWeight: '500',
-                              padding: '2px 8px',
-                              backgroundColor: '#fee2e2',
-                              borderRadius: '4px'
+                              fontSize: '1rem', 
+                              color: '#374151', 
+                              fontWeight: '400',
+                              marginLeft: '0.5rem'
                             }}>
                               Deadline passed
                             </span>
@@ -544,37 +547,42 @@ const StudentQuizDashboard: React.FC = () => {
                       borderRadius: '12px',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                       overflow: 'hidden',
-                      border: '1px solid #d1d5db'
+                      border: '1px solid #e5e7eb',
+                      padding: '1.5rem'
                     }}>
                       <div style={{
                         display: 'flex',
-                        alignItems: 'center',
-                        padding: '1.5rem',
+                        alignItems: 'flex-start',
                         gap: '1rem'
                       }}>
+                        {/* Gray Accent Bar with Two-Tone Gradient */}
                         <div style={{
-                          width: '8px',
-                          height: '80px',
-                          background: getGradientColors(quiz.status),
-                          borderRadius: '4px',
+                          width: '16px',
+                          height: '120px',
+                          background: 'linear-gradient(to bottom, #9ca3af 0%, #9ca3af 50%, #6b7280 50%, #6b7280 100%)',
+                          borderRadius: '8px',
                           flexShrink: 0
                         }}></div>
 
                         <div style={{ flex: 1 }}>
                           <div style={{ marginBottom: '0.5rem' }}>
-                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lecturer: </span>
-                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.lecturerName}</span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Lecturer: </span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>{quiz.lecturerName}</span>
                           </div>
                           <div style={{ marginBottom: '0.5rem' }}>
-                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Course: </span>
-                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.courseCode} - {quiz.courseName}</span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>
+                              {quiz.courseName ? 'Course:' : 'Class:'} 
+                            </span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400', marginLeft: '0.5rem' }}>
+                              {quiz.courseCode} - {quiz.courseName}
+                            </span>
                           </div>
                           <div style={{ marginBottom: '1rem' }}>
-                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Time: </span>
+                            <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Time: </span>
                             <span style={{ 
-                              fontSize: '0.875rem', 
+                              fontSize: '1rem', 
                               color: '#374151', 
-                              fontWeight: '500',
+                              fontWeight: '400',
                               padding: '2px 8px',
                               backgroundColor: '#f3f4f6',
                               borderRadius: '4px'
