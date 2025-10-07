@@ -14,7 +14,7 @@ interface AcademicStats {
 
 const StudentAcademicHub: React.FC = () => {
   const navigate = useNavigate();
-  // Updated for Academic Hub navigation - v3 (Fixed scrollbars and sidebar selection)
+  // Updated for Academic Hub navigation - v4 (Fixed double scrollbars completely, centered content)
   const [stats, setStats] = useState<AcademicStats>({
     availableQuizzes: 0,
     pendingAssignments: 0,
@@ -27,7 +27,7 @@ const StudentAcademicHub: React.FC = () => {
   const [showPerformanceSection, setShowPerformanceSection] = useState(false);
 
   useEffect(() => {
-    console.log('StudentAcademicHub v3 loaded - Fixed scrollbars and sidebar selection');
+    console.log('StudentAcademicHub v4 loaded - Fixed double scrollbars completely, centered content');
     loadAcademicStats();
   }, []);
 
@@ -51,12 +51,15 @@ const StudentAcademicHub: React.FC = () => {
     return (
       <DashboardLayout style={{ 
         overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
         padding: '0'
       }}>
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+        <div className="academic-hub-wrapper" style={{
+          width: '100%',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading academic hub...</span>
           </div>
@@ -68,21 +71,22 @@ const StudentAcademicHub: React.FC = () => {
   return (
     <DashboardLayout style={{ 
       overflow: 'hidden',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
       padding: '0'
     }}>
-      <div className="container academic-hub-container" style={{ 
-        maxWidth: '900px', 
-        margin: '0 auto', 
-        padding: '2rem 1rem',
+      <div className="academic-hub-wrapper" style={{
         width: '100%',
         height: '100vh',
         overflow: 'auto',
-        scrollbarWidth: 'thin',
-        scrollbarColor: '#888 #f1f1f1'
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        paddingTop: '2rem'
       }}>
+        <div className="container academic-hub-container" style={{ 
+          maxWidth: '900px', 
+          width: '100%',
+          padding: '0 2rem 2rem 2rem'
+        }}>
 
 
         {/* Quick Stats - Clean Design */}
@@ -234,6 +238,7 @@ const StudentAcademicHub: React.FC = () => {
         )}
 
 
+        </div>
       </div>
     </DashboardLayout>
   );

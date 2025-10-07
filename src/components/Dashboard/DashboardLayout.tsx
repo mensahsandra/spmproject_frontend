@@ -17,18 +17,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
       <main style={{
         flex: 1,
         marginLeft: '250px',
-        padding: '20px 40px 20px 20px',
+        padding: style?.overflow === 'hidden' ? '0' : '20px 40px 20px 20px',
         backgroundColor: '#f8fafc',
         minHeight: '100vh',
         maxHeight: '100vh',
         position: 'relative',
         overflow: style?.overflow || 'auto',
         overflowX: 'hidden',
-        scrollbarWidth: 'thin',
+        scrollbarWidth: style?.overflow === 'hidden' ? 'none' : 'thin',
         scrollbarColor: '#888 #f1f1f1',
         ...style
       }}
-      className="custom-scrollbar">
+      className={style?.overflow === 'hidden' ? '' : 'custom-scrollbar'}>
         <div style={{
           position: 'fixed',
           top: '24px',
@@ -37,16 +37,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
         }}>
           <ProfileDropdown />
         </div>
-        <div style={{ 
-          paddingTop: '40px',
-          width: '100%',
-          maxWidth: '1100px',
-          margin: '0 20px 0 0',
-          marginLeft: '0px',
-          paddingBottom: '40px'
-        }}>
-          {children}
-        </div>
+        {style?.overflow === 'hidden' ? (
+          children
+        ) : (
+          <div style={{ 
+            paddingTop: '40px',
+            width: '100%',
+            maxWidth: '1100px',
+            margin: '0 20px 0 0',
+            marginLeft: '0px',
+            paddingBottom: '40px'
+          }}>
+            {children}
+          </div>
+        )}
       </main>
     </div>
   );

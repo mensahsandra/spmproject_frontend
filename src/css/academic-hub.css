@@ -1,32 +1,45 @@
 /* Student Academic Hub Styles - Clean Design */
 
 /* Fix scrollbar issues */
-.academic-hub-container {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+.academic-hub-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
 }
 
-.academic-hub-container::-webkit-scrollbar {
+.academic-hub-wrapper::-webkit-scrollbar {
   width: 8px;
 }
 
-.academic-hub-container::-webkit-scrollbar-track {
+.academic-hub-wrapper::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-.academic-hub-container::-webkit-scrollbar-thumb {
+.academic-hub-wrapper::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
 
-.academic-hub-container::-webkit-scrollbar-thumb:hover {
+.academic-hub-wrapper::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.academic-hub-container {
+  overflow: visible !important;
 }
 
 /* Ensure single scrollbar */
 body {
   overflow-x: hidden;
+}
+
+/* Prevent any unwanted scrollbars on the academic hub page */
+.academic-hub-page {
+  overflow: hidden;
+}
+
+.academic-hub-page * {
+  box-sizing: border-box;
 }
 
 /* Clean Stat Cards */
