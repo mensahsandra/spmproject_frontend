@@ -156,10 +156,7 @@ const StudentQuizDashboard: React.FC = () => {
   const blockedQuizzes = quizzes.filter(q => q.status === 'blocked');
 
   return (
-    <DashboardLayout style={{ 
-      overflow: 'hidden',
-      padding: '0'
-    }}>
+    <DashboardLayout>
       {/* Back Button - Fixed Position at Top Left */}
       <div style={{ 
         position: 'fixed',
@@ -205,19 +202,11 @@ const StudentQuizDashboard: React.FC = () => {
         </button>
       </div>
 
-      <div style={{
+      <div style={{ 
+        maxWidth: '900px', 
         width: '100%',
-        height: '100vh',
-        overflow: 'auto',
-        paddingTop: '80px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-        paddingBottom: '20px'
+        paddingTop: '60px'
       }}>
-        <div style={{ 
-          maxWidth: '900px', 
-          width: '100%'
-        }}>
           {/* Page Header */}
           <div style={{ marginBottom: '2rem' }}>
             <h2 style={{
@@ -266,39 +255,44 @@ const StudentQuizDashboard: React.FC = () => {
                     borderRadius: '12px',
                     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                     overflow: 'hidden',
-                    border: '1px solid #e5e7eb'
+                    border: '1px solid #e5e7eb',
+                    padding: '1.5rem'
                   }}>
                     <div style={{
                       display: 'flex',
-                      alignItems: 'center',
-                      padding: '1.5rem',
+                      alignItems: 'flex-start',
                       gap: '1rem'
                     }}>
                       {/* Green Accent Bar */}
                       <div style={{
-                        width: '12px',
-                        height: '100px',
+                        width: '16px',
+                        height: '120px',
                         background: getGradientColors(quiz.status),
-                        borderRadius: '6px',
+                        borderRadius: '8px',
                         flexShrink: 0
                       }}></div>
 
                       {/* Quiz Info */}
                       <div style={{ flex: 1 }}>
-                        <div style={{ marginBottom: '0.75rem' }}>
+                        <div style={{ marginBottom: '0.5rem' }}>
                           <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Lecturer: </span>
                           <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>{quiz.lecturerName}</span>
                         </div>
-                        <div style={{ marginBottom: '0.75rem' }}>
-                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Course: </span>
-                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>{quiz.courseCode} - {quiz.courseName}</span>
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>
+                            {quiz.courseName ? 'Course:' : 'Class:'} 
+                          </span>
+                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400', marginLeft: '0.5rem' }}>
+                            {quiz.courseCode} - {quiz.courseName}
+                          </span>
                         </div>
                         <div style={{ marginBottom: '1rem' }}>
                           <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Time: </span>
                           <span style={{ 
                             fontSize: '1rem', 
                             color: '#374151', 
-                            fontWeight: '400'
+                            fontWeight: '400',
+                            marginLeft: '0.5rem'
                           }}>
                             {getTimeRemaining(quiz.deadline)}
                           </span>
@@ -315,7 +309,8 @@ const StudentQuizDashboard: React.FC = () => {
                             color: '#9ca3af',
                             fontSize: '0.875rem',
                             cursor: 'pointer',
-                            padding: '4px 0'
+                            padding: '0',
+                            marginTop: '0.5rem'
                           }}
                         >
                           Show More
@@ -332,16 +327,17 @@ const StudentQuizDashboard: React.FC = () => {
                       <button
                         onClick={() => handleTakeQuiz(quiz)}
                         style={{
-                          padding: '12px 24px',
+                          padding: '10px 20px',
                           backgroundColor: '#22c55e',
                           color: 'white',
                           border: 'none',
-                          borderRadius: '8px',
+                          borderRadius: '6px',
                           fontSize: '0.875rem',
                           fontWeight: '600',
                           cursor: 'pointer',
                           transition: 'all 0.2s ease',
-                          minWidth: '100px'
+                          alignSelf: 'flex-start',
+                          marginTop: '10px'
                         }}
                         onMouseOver={e => {
                           e.currentTarget.style.backgroundColor = '#16a34a';
@@ -359,11 +355,11 @@ const StudentQuizDashboard: React.FC = () => {
                     {/* Expanded Content */}
                     {expandedQuiz === quiz.id && (
                       <div style={{
-                        padding: '1.5rem',
-                        borderTop: '1px solid #e5e7eb',
-                        backgroundColor: '#f9fafb'
+                        marginTop: '1rem',
+                        paddingTop: '1rem',
+                        borderTop: '1px solid #e5e7eb'
                       }}>
-                        <div style={{ marginBottom: '1rem' }}>
+                        <div style={{ marginBottom: '0.75rem' }}>
                           <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Assessment Type: </span>
                           <span style={{ 
                             fontSize: '0.875rem', 
@@ -666,7 +662,6 @@ const StudentQuizDashboard: React.FC = () => {
             </>
           )}
         </div>
-      </div>
     </DashboardLayout>
   );
 };
