@@ -14,7 +14,7 @@ interface AcademicStats {
 
 const StudentAcademicHub: React.FC = () => {
   const navigate = useNavigate();
-  // Force deployment update
+  // Updated for Academic Hub navigation - v2
   const [stats, setStats] = useState<AcademicStats>({
     availableQuizzes: 0,
     pendingAssignments: 0,
