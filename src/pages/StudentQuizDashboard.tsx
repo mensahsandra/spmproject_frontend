@@ -160,65 +160,63 @@ const StudentQuizDashboard: React.FC = () => {
       overflow: 'hidden',
       padding: '0'
     }}>
+      {/* Back Button - Fixed Position at Top Left */}
+      <div style={{ 
+        position: 'fixed',
+        top: '20px',
+        left: '270px',
+        zIndex: 1000
+      }}>
+        <button
+          onClick={() => navigate('/student/academic-hub')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '12px 20px',
+            backgroundColor: '#f7fafc',
+            border: '2px solid #e2e8f0',
+            borderRadius: '10px',
+            color: '#4a5568',
+            fontSize: '14px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            textDecoration: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}
+          onMouseOver={e => {
+            e.currentTarget.style.backgroundColor = '#edf2f7';
+            e.currentTarget.style.borderColor = '#cbd5e0';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.backgroundColor = '#f7fafc';
+            e.currentTarget.style.borderColor = '#e2e8f0';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+          </svg>
+          Back to Academic Hub
+        </button>
+      </div>
+
       <div style={{
         width: '100%',
         height: '100vh',
         overflow: 'auto',
-        display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        paddingTop: '2rem',
-        paddingLeft: '3rem'
+        paddingTop: '80px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        paddingBottom: '20px'
       }}>
-        {/* Back Button - Top Left Corner */}
         <div style={{ 
-          position: 'absolute',
-          top: '20px',
-          left: '270px',
-          zIndex: 1000
-        }}>
-          <button
-            onClick={() => navigate('/student/academic-hub')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 20px',
-              backgroundColor: '#f7fafc',
-              border: '2px solid #e2e8f0',
-              borderRadius: '10px',
-              color: '#4a5568',
-              fontSize: '14px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              textDecoration: 'none',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}
-            onMouseOver={e => {
-              e.currentTarget.style.backgroundColor = '#edf2f7';
-              e.currentTarget.style.borderColor = '#cbd5e0';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            }}
-            onMouseOut={e => {
-              e.currentTarget.style.backgroundColor = '#f7fafc';
-              e.currentTarget.style.borderColor = '#e2e8f0';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-            </svg>
-            Back to Academic Hub
-          </button>
-        </div>
-
-        <div style={{ 
-          maxWidth: '1000px', 
-          width: '100%',
-          padding: '0 2rem 2rem 0'
+          maxWidth: '900px', 
+          width: '100%'
         }}>
           {/* Page Header */}
           <div style={{ marginBottom: '2rem' }}>
@@ -278,32 +276,29 @@ const StudentQuizDashboard: React.FC = () => {
                     }}>
                       {/* Green Accent Bar */}
                       <div style={{
-                        width: '8px',
-                        height: '80px',
+                        width: '12px',
+                        height: '100px',
                         background: getGradientColors(quiz.status),
-                        borderRadius: '4px',
+                        borderRadius: '6px',
                         flexShrink: 0
                       }}></div>
 
                       {/* Quiz Info */}
                       <div style={{ flex: 1 }}>
-                        <div style={{ marginBottom: '0.5rem' }}>
-                          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lecturer: </span>
-                          <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.lecturerName}</span>
+                        <div style={{ marginBottom: '0.75rem' }}>
+                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Lecturer: </span>
+                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>{quiz.lecturerName}</span>
                         </div>
-                        <div style={{ marginBottom: '0.5rem' }}>
-                          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Course: </span>
-                          <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.courseCode} - {quiz.courseName}</span>
+                        <div style={{ marginBottom: '0.75rem' }}>
+                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Course: </span>
+                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>{quiz.courseCode} - {quiz.courseName}</span>
                         </div>
                         <div style={{ marginBottom: '1rem' }}>
-                          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Time: </span>
+                          <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Time: </span>
                           <span style={{ 
-                            fontSize: '0.875rem', 
+                            fontSize: '1rem', 
                             color: '#374151', 
-                            fontWeight: '500',
-                            padding: '2px 8px',
-                            backgroundColor: '#dbeafe',
-                            borderRadius: '4px'
+                            fontWeight: '400'
                           }}>
                             {getTimeRemaining(quiz.deadline)}
                           </span>
@@ -317,7 +312,7 @@ const StudentQuizDashboard: React.FC = () => {
                             gap: '4px',
                             background: 'none',
                             border: 'none',
-                            color: '#6b7280',
+                            color: '#9ca3af',
                             fontSize: '0.875rem',
                             cursor: 'pointer',
                             padding: '4px 0'
@@ -345,7 +340,8 @@ const StudentQuizDashboard: React.FC = () => {
                           fontSize: '0.875rem',
                           fontWeight: '600',
                           cursor: 'pointer',
-                          transition: 'all 0.2s ease'
+                          transition: 'all 0.2s ease',
+                          minWidth: '100px'
                         }}
                         onMouseOver={e => {
                           e.currentTarget.style.backgroundColor = '#16a34a';
