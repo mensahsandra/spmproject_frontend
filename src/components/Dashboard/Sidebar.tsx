@@ -12,6 +12,10 @@ const Sidebar: React.FC = () => {
         return to.test(path);
     };
     
+    const isPerformanceActive = () => {
+        return path === '/student/select-result' || path === '/student/academic-hub' || path.includes('/student/display-result');
+    };
+    
     // lightweight unread count: prefer injected count in history.state, fallback to localStorage
     let unread = 0;
     try {
@@ -220,15 +224,15 @@ const Sidebar: React.FC = () => {
                                 </li>
                                 
                                 <li 
-                                    style={getNavItemStyle(isActive('/student/select-result'))}
-                                    onClick={() => navigate('/student/select-result', { state: { showCurrent: true } })}
+                                    style={getNavItemStyle(isPerformanceActive())}
+                                    onClick={() => navigate('/student/academic-hub')}
                                     onMouseEnter={(e) => {
-                                        if (!isActive('/student/select-result')) {
+                                        if (!isPerformanceActive()) {
                                             e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
                                         }
                                     }}
                                     onMouseLeave={(e) => {
-                                        if (!isActive('/student/select-result')) {
+                                        if (!isPerformanceActive()) {
                                             e.currentTarget.style.backgroundColor = 'transparent';
                                         }
                                     }}

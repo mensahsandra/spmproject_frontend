@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Dashboard/Sidebar';
-import ProfileDropdown from '../components/ProfileDropdown';
+import DashboardLayout from '../components/Dashboard/DashboardLayout';
 import '../css/academic-hub.css';
 
 interface AcademicStats {
@@ -15,7 +14,7 @@ interface AcademicStats {
 
 const StudentAcademicHub: React.FC = () => {
   const navigate = useNavigate();
-  // Updated for Academic Hub navigation - v2
+  // Updated for Academic Hub navigation - v3 (Fixed scrollbars and sidebar selection)
   const [stats, setStats] = useState<AcademicStats>({
     availableQuizzes: 0,
     pendingAssignments: 0,
@@ -28,6 +27,7 @@ const StudentAcademicHub: React.FC = () => {
   const [showPerformanceSection, setShowPerformanceSection] = useState(false);
 
   useEffect(() => {
+    console.log('StudentAcademicHub v3 loaded - Fixed scrollbars and sidebar selection');
     loadAcademicStats();
   }, []);
 
@@ -49,7 +49,13 @@ const StudentAcademicHub: React.FC = () => {
 
   if (loading) {
     return (
-      <DashboardLayout>
+      <DashboardLayout style={{ 
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0'
+      }}>
         <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading academic hub...</span>
@@ -60,35 +66,23 @@ const StudentAcademicHub: React.FC = () => {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <Sidebar />
-      <main style={{
-        flex: 1,
-        marginLeft: '250px',
-        padding: '0',
-        backgroundColor: '#f8fafc',
-        minHeight: '100vh',
-        position: 'relative',
-        overflow: 'hidden', // Remove scrollbar
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+    <DashboardLayout style={{ 
+      overflow: 'hidden',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '0'
+    }}>
+      <div className="container academic-hub-container" style={{ 
+        maxWidth: '900px', 
+        margin: '0 auto', 
+        padding: '2rem 1rem',
+        width: '100%',
+        height: '100vh',
+        overflow: 'auto',
+        scrollbarWidth: 'thin',
+        scrollbarColor: '#888 #f1f1f1'
       }}>
-        <div style={{
-          position: 'fixed',
-          top: '24px',
-          right: '40px',
-          zIndex: 1002
-        }}>
-          <ProfileDropdown />
-        </div>
-        
-        <div className="container" style={{ 
-          maxWidth: '900px', 
-          margin: '0 auto', 
-          padding: '2rem 1rem',
-          width: '100%'
-        }}>
 
 
         {/* Quick Stats - Clean Design */}
@@ -240,9 +234,8 @@ const StudentAcademicHub: React.FC = () => {
         )}
 
 
-        </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 };
 

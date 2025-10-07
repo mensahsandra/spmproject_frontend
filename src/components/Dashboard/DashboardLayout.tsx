@@ -22,7 +22,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
         minHeight: '100vh',
         maxHeight: '100vh',
         position: 'relative',
-        overflow: 'auto',
+        overflow: style?.overflow || 'auto',
         overflowX: 'hidden',
         scrollbarWidth: 'thin',
         scrollbarColor: '#888 #f1f1f1',
