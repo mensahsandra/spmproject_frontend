@@ -24,6 +24,7 @@ const StudentAcademicHub: React.FC = () => {
     completedAssessments: 12
   });
   const [loading, setLoading] = useState(true);
+  const [showPerformanceSection, setShowPerformanceSection] = useState(false);
 
   useEffect(() => {
     loadAcademicStats();
@@ -160,7 +161,7 @@ const StudentAcademicHub: React.FC = () => {
           <div className="col-lg-5 col-md-6 mb-4">
             <div 
               className="card h-100 shadow-sm border-0 academic-card performance-card"
-              onClick={() => navigate('/student/select-result')}
+              onClick={() => setShowPerformanceSection(true)}
               style={{ cursor: 'pointer' }}
             >
               <div className="card-body text-center p-5">
@@ -197,13 +198,83 @@ const StudentAcademicHub: React.FC = () => {
                 </div>
 
                 <button className="btn btn-success btn-lg w-100">
-                  <i className="fas fa-arrow-right me-2"></i>
-                  View Performance
+                  <i className="fas fa-chart-line me-2"></i>
+                  Check Performance
                 </button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Performance Section */}
+        {showPerformanceSection && (
+          <div className="row mt-4">
+            <div className="col-12">
+              <div className="card shadow-sm border-0">
+                <div className="card-header bg-success text-white">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <h5 className="mb-0">
+                      <i className="fas fa-chart-line me-2"></i>
+                      Check Your Performance
+                    </h5>
+                    <button 
+                      className="btn btn-sm btn-outline-light"
+                      onClick={() => setShowPerformanceSection(false)}
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-4 mb-3">
+                      <label className="form-label">Select Academic Year</label>
+                      <select className="form-select">
+                        <option value="">Select Academic Year</option>
+                        <option value="2024-2025">2024-2025</option>
+                        <option value="2023-2024">2023-2024</option>
+                        <option value="2022-2023">2022-2023</option>
+                      </select>
+                    </div>
+                    <div className="col-md-4 mb-3">
+                      <label className="form-label">Select Semester</label>
+                      <select className="form-select">
+                        <option value="">Select Semester</option>
+                        <option value="First Semester">First Semester</option>
+                        <option value="Second Semester">Second Semester</option>
+                      </select>
+                    </div>
+                    <div className="col-md-4 mb-3">
+                      <label className="form-label">Select Block</label>
+                      <select className="form-select">
+                        <option value="">Select Block</option>
+                        <option value="Block 1">Block 1</option>
+                        <option value="Block 2">Block 2</option>
+                        <option value="Block 3">Block 3</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="d-flex gap-2">
+                    <button 
+                      className="btn btn-success"
+                      onClick={() => navigate('/student/display-result')}
+                    >
+                      <i className="fas fa-chart-bar me-2"></i>
+                      Display Results
+                    </button>
+                    <button 
+                      className="btn btn-outline-success"
+                      onClick={() => navigate('/student/select-result')}
+                    >
+                      <i className="fas fa-search me-2"></i>
+                      Advanced Grade Search
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Quick Actions */}
         <div className="row mt-4">
@@ -233,6 +304,15 @@ const StudentAcademicHub: React.FC = () => {
                     <i className="fas fa-clock me-1"></i>
                     Upcoming Deadlines
                   </button>
+                  {!showPerformanceSection && (
+                    <button 
+                      className="btn btn-outline-success btn-sm"
+                      onClick={() => setShowPerformanceSection(true)}
+                    >
+                      <i className="fas fa-chart-line me-1"></i>
+                      Check Performance
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
