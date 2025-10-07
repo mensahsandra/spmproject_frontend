@@ -223,10 +223,12 @@ const NewSelectResultPage: React.FC = () => {
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%)',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '40px',
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        position: 'relative'
       }}>
         {/* Profile Dropdown - Fixed Position */}
         <div style={{ 
@@ -238,21 +240,12 @@ const NewSelectResultPage: React.FC = () => {
           <ProfileDropdown />
         </div>
 
-        {/* Centered Card */}
-        <div style={{
-          backgroundColor: 'white',
-          borderRadius: '20px',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-          padding: '60px 70px',
-          width: '100%',
-          maxWidth: '650px',
-          textAlign: 'center'
-        }}>
-        {/* Back Button */}
+        {/* Back Button - Top Left Corner */}
         <div style={{ 
-          display: 'flex', 
-          justifyContent: 'flex-start', 
-          marginBottom: '30px' 
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          zIndex: 1000
         }}>
           <button
             onClick={() => window.location.href = '/student/academic-hub'}
@@ -269,15 +262,20 @@ const NewSelectResultPage: React.FC = () => {
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s ease',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
             onMouseOver={e => {
               e.currentTarget.style.backgroundColor = '#edf2f7';
               e.currentTarget.style.borderColor = '#cbd5e0';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
             }}
             onMouseOut={e => {
               e.currentTarget.style.backgroundColor = '#f7fafc';
               e.currentTarget.style.borderColor = '#e2e8f0';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -286,6 +284,17 @@ const NewSelectResultPage: React.FC = () => {
             Back to Academic Hub
           </button>
         </div>
+
+        {/* Centered Card */}
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '20px',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+          padding: '60px 70px',
+          width: '100%',
+          maxWidth: '650px',
+          textAlign: 'center'
+        }}>
         
         {/* Title */}
         <h1 style={{
