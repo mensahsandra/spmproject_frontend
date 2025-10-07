@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/Dashboard/DashboardLayout';
-// import { getQuizNotifications } from '../utils/quizNotifications'; // Will be used when connecting to real backend
 import '../css/student-quiz.css';
 
 interface Quiz {
@@ -15,29 +14,20 @@ interface Quiz {
   attendanceRequired: boolean;
   studentAttended: boolean;
   description?: string;
-}
-
-interface NotificationBanner {
-  id: string;
-  type: 'success' | 'warning' | 'info' | 'danger';
-  message: string;
-  timestamp: Date;
+  assessmentType?: 'upload' | 'typing' | 'multiple-choice';
 }
 
 const StudentQuizDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const [notifications, setNotifications] = useState<NotificationBanner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedQuiz, setExpandedQuiz] = useState<string | null>(null);
 
   useEffect(() => {
     loadQuizzes();
-    loadNotifications();
   }, []);
 
   const loadQuizzes = () => {
-    // Simulate loading quizzes for the student's courses
-    // In real app, this would fetch from API based on student's enrolled courses
     const mockQuizzes: Quiz[] = [
       {
         id: 'quiz_1',
@@ -45,35 +35,38 @@ const StudentQuizDashboard: React.FC = () => {
         lecturerName: 'Dr. Kwabena Mensah',
         courseName: 'Web Development',
         courseCode: 'BIT364',
-        deadline: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+        deadline: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
         status: 'available',
         attendanceRequired: true,
         studentAttended: true,
-        description: 'Test your understanding of HTML, CSS, and JavaScript fundamentals'
+        description: 'Test your understanding of HTML, CSS, and JavaScript fundamentals.',
+        assessmentType: 'multiple-choice'
       },
       {
         id: 'quiz_2',
-        title: 'Database Design Quiz',
-        lecturerName: 'Prof. Sarah Johnson',
-        courseName: 'Database Management',
-        courseCode: 'BIT301',
-        deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 1 day from now
-        status: 'available',
-        attendanceRequired: true,
-        studentAttended: false, // Student missed attendance
-        description: 'Quiz on database normalization and ER diagrams'
-      },
-      {
-        id: 'quiz_3',
-        title: 'Network Security Assessment',
-        lecturerName: 'Dr. Michael Brown',
+        title: 'Network Security',
+        lecturerName: 'Dr. Abena Ayimadu',
         courseName: 'Network Security',
         courseCode: 'BIT367',
-        deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+        deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
         status: 'available',
         attendanceRequired: false,
         studentAttended: true,
-        description: 'Comprehensive assessment on network security principles'
+        description: 'Comprehensive assessment on network security principles',
+        assessmentType: 'typing'
+      },
+      {
+        id: 'quiz_3',
+        title: 'Database Design Quiz',
+        lecturerName: 'Prof. Sarah Opoku Agyeman',
+        courseName: 'Database Management',
+        courseCode: 'BIT301',
+        deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        status: 'blocked',
+        attendanceRequired: true,
+        studentAttended: false,
+        description: 'Quiz on database normalization and ER diagrams',
+        assessmentType: 'multiple-choice'
       },
       {
         id: 'quiz_4',
@@ -81,11 +74,12 @@ const StudentQuizDashboard: React.FC = () => {
         lecturerName: 'Dr. Kwabena Mensah',
         courseName: 'Web Development',
         courseCode: 'BIT364',
-        deadline: new Date(Date.now() - 60 * 60 * 1000).toISOString(), // 1 hour ago (missed)
+        deadline: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         status: 'missed',
         attendanceRequired: true,
         studentAttended: true,
-        description: 'Quiz on JavaScript basics and DOM manipulation'
+        description: 'Quiz on JavaScript basics and DOM manipulation',
+        assessmentType: 'upload'
       }
     ];
 
@@ -93,23 +87,8 @@ const StudentQuizDashboard: React.FC = () => {
     setLoading(false);
   };
 
-  const loadNotifications = () => {
-    const mockNotifications: NotificationBanner[] = [
-      {
-        id: 'notif_1',
-        type: 'info',
-        message: 'New quiz available for Web Development. Due in 2 hours.',
-        timestamp: new Date(Date.now() - 10 * 60 * 1000) // 10 minutes ago
-      },
-      {
-        id: 'notif_2',
-        type: 'warning',
-        message: 'Deadline approaching for Database Design Quiz. Due in 1 day.',
-        timestamp: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
-      }
-    ];
-
-    setNotifications(mockNotifications);
+  const toggleQuizExpansion = (quizId: string) => {
+    setExpandedQuiz(expandedQuiz === quizId ? null : quizId);
   };
 
   const getTimeRemaining = (deadline: string) => {
@@ -128,184 +107,568 @@ const StudentQuizDashboard: React.FC = () => {
     return `${minutes}m remaining`;
   };
 
-  const getQuizCardClass = (quiz: Quiz) => {
-    if (quiz.attendanceRequired && !quiz.studentAttended) {
-      return 'card quiz-card blocked-quiz';
-    }
-    if (quiz.status === 'missed') {
-      return 'card quiz-card missed-quiz';
-    }
-    if (quiz.status === 'submitted') {
-      return 'card quiz-card submitted-quiz';
-    }
-    return 'card quiz-card available-quiz';
-  };
-
   const handleTakeQuiz = (quiz: Quiz) => {
-    if (quiz.attendanceRequired && !quiz.studentAttended) {
-      alert("You can't access this quiz because you didn't check in for the session.");
+    if (quiz.status === 'blocked') {
       return;
     }
     if (quiz.status === 'missed') {
-      alert("This quiz deadline has passed.");
       return;
     }
     navigate(`/student/quiz/${quiz.id}`);
   };
 
-  const dismissNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+  const getGradientColors = (status: string) => {
+    switch (status) {
+      case 'available':
+        return 'linear-gradient(135deg, #22c55e, #16a34a)';
+      case 'missed':
+        return 'linear-gradient(135deg, #ef4444, #dc2626)';
+      case 'blocked':
+        return 'linear-gradient(135deg, #9ca3af, #6b7280)';
+      default:
+        return 'linear-gradient(135deg, #22c55e, #16a34a)';
+    }
   };
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+      <DashboardLayout style={{ 
+        overflow: 'hidden',
+        padding: '0'
+      }}>
+        <div style={{
+          width: '100%',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading quizzes...</span>
+            <span className="visually-hidden">Loading assessments...</span>
           </div>
         </div>
       </DashboardLayout>
     );
   }
 
+  const availableQuizzes = quizzes.filter(q => q.status === 'available');
+  const missedQuizzes = quizzes.filter(q => q.status === 'missed');
+  const blockedQuizzes = quizzes.filter(q => q.status === 'blocked');
+
   return (
-    <DashboardLayout>
-      <div className="container-fluid">
-        {/* Page Header */}
-        <div className="mb-4">
-          <h3 className="mb-1">Assessment Center</h3>
-          <p className="text-muted mb-0">Take quizzes and track your academic progress</p>
+    <DashboardLayout style={{ 
+      overflow: 'hidden',
+      padding: '0'
+    }}>
+      <div style={{
+        width: '100%',
+        height: '100vh',
+        overflow: 'auto',
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        paddingTop: '2rem',
+        paddingLeft: '3rem'
+      }}>
+        {/* Back Button - Top Left Corner */}
+        <div style={{ 
+          position: 'absolute',
+          top: '20px',
+          left: '270px',
+          zIndex: 1000
+        }}>
+          <button
+            onClick={() => navigate('/student/academic-hub')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 20px',
+              backgroundColor: '#f7fafc',
+              border: '2px solid #e2e8f0',
+              borderRadius: '10px',
+              color: '#4a5568',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              textDecoration: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+            onMouseOver={e => {
+              e.currentTarget.style.backgroundColor = '#edf2f7';
+              e.currentTarget.style.borderColor = '#cbd5e0';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.backgroundColor = '#f7fafc';
+              e.currentTarget.style.borderColor = '#e2e8f0';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            Back to Academic Hub
+          </button>
         </div>
 
-        {/* Notification Banners */}
-        {notifications.length > 0 && (
-          <div className="mb-4">
-            {notifications.map(notification => (
-              <div key={notification.id} className={`alert alert-${notification.type} alert-dismissible fade show`} role="alert">
-                <div className="d-flex justify-content-between align-items-center">
-                  <span>{notification.message}</span>
-                  <button 
-                    type="button" 
-                    className="btn-close" 
-                    onClick={() => dismissNotification(notification.id)}
-                    aria-label="Close"
-                  ></button>
-                </div>
-              </div>
-            ))}
+        <div style={{ 
+          maxWidth: '1000px', 
+          width: '100%',
+          padding: '0 2rem 2rem 0'
+        }}>
+          {/* Page Header */}
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{
+              fontSize: '2rem',
+              fontWeight: '600',
+              color: '#1f2937',
+              marginBottom: '0.5rem'
+            }}>
+              Take quizzes and track your academic progress
+            </h2>
+            <div style={{
+              width: '80px',
+              height: '3px',
+              background: 'linear-gradient(to right, #22c55e, #16a34a)',
+              borderRadius: '2px'
+            }}></div>
           </div>
-        )}
 
-        {/* Navigation Cards */}
-        <div className="row mb-4">
-          <div className="col-md-6 mb-3">
-            <div className="card h-100 nav-card" onClick={() => navigate('/student/academic-hub')} style={{ cursor: 'pointer' }}>
-              <div className="card-body text-center">
-                <div className="mb-3">
-                  <i className="fas fa-arrow-left fa-3x text-secondary"></i>
-                </div>
-                <h5 className="card-title">Back to Academic Hub</h5>
-                <p className="card-text text-muted">Return to main academic options</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6 mb-3">
-            <div className="card h-100 nav-card assessment-active" style={{ cursor: 'default' }}>
-              <div className="card-body text-center">
-                <div className="mb-3">
-                  <i className="fas fa-clipboard-check fa-3x text-success"></i>
-                </div>
-                <h5 className="card-title">Assessment Center</h5>
-                <p className="card-text text-muted">Take quizzes and submit assignments</p>
-                <span className="badge bg-success">Current Page</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quiz Cards */}
-        <div className="row">
-          <div className="col-12">
-            <h4 className="mb-3">Available Quizzes ({quizzes.filter(q => q.status === 'available').length})</h4>
-            {quizzes.length === 0 ? (
-              <div className="alert alert-info">
-                <i className="fas fa-info-circle me-2"></i>
+          {/* Available Quizzes Section */}
+          <div style={{ marginBottom: '3rem' }}>
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              color: '#1f2937',
+              marginBottom: '1.5rem'
+            }}>
+              Available Quizzes
+            </h3>
+            
+            {availableQuizzes.length === 0 ? (
+              <div style={{
+                padding: '2rem',
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bae6fd',
+                borderRadius: '12px',
+                textAlign: 'center',
+                color: '#0369a1'
+              }}>
                 No quizzes available at the moment. Check back later!
               </div>
             ) : (
-              <div className="row">
-                {quizzes.map(quiz => (
-                  <div key={quiz.id} className="col-lg-6 col-xl-4 mb-4">
-                    <div className={getQuizCardClass(quiz)}>
-                      <div className="card-body">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
-                          <h6 className="card-title mb-0">{quiz.title}</h6>
-                          <span className={`badge ${
-                            quiz.status === 'available' ? 'bg-success' :
-                            quiz.status === 'submitted' ? 'bg-primary' :
-                            quiz.status === 'missed' ? 'bg-danger' : 'bg-secondary'
-                          }`}>
-                            {quiz.status.charAt(0).toUpperCase() + quiz.status.slice(1)}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {availableQuizzes.map(quiz => (
+                  <div key={quiz.id} style={{
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    overflow: 'hidden',
+                    border: '1px solid #e5e7eb'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '1.5rem',
+                      gap: '1rem'
+                    }}>
+                      {/* Green Accent Bar */}
+                      <div style={{
+                        width: '8px',
+                        height: '80px',
+                        background: getGradientColors(quiz.status),
+                        borderRadius: '4px',
+                        flexShrink: 0
+                      }}></div>
+
+                      {/* Quiz Info */}
+                      <div style={{ flex: 1 }}>
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lecturer: </span>
+                          <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.lecturerName}</span>
+                        </div>
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Course: </span>
+                          <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.courseCode} - {quiz.courseName}</span>
+                        </div>
+                        <div style={{ marginBottom: '1rem' }}>
+                          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Time: </span>
+                          <span style={{ 
+                            fontSize: '0.875rem', 
+                            color: '#374151', 
+                            fontWeight: '500',
+                            padding: '2px 8px',
+                            backgroundColor: '#dbeafe',
+                            borderRadius: '4px'
+                          }}>
+                            {getTimeRemaining(quiz.deadline)}
                           </span>
                         </div>
                         
-                        <div className="mb-2">
-                          <small className="text-muted">
-                            <i className="fas fa-user me-1"></i>
-                            {quiz.lecturerName}
-                          </small>
-                        </div>
-                        
-                        <div className="mb-2">
-                          <small className="text-muted">
-                            <i className="fas fa-book me-1"></i>
-                            {quiz.courseCode} - {quiz.courseName}
-                          </small>
-                        </div>
-
-                        <div className="mb-3">
-                          <small className="text-muted">
-                            <i className="fas fa-clock me-1"></i>
-                            {getTimeRemaining(quiz.deadline)}
-                          </small>
-                        </div>
-
-                        {quiz.description && (
-                          <p className="card-text small text-muted mb-3">{quiz.description}</p>
-                        )}
-
-                        {quiz.attendanceRequired && !quiz.studentAttended ? (
-                          <div className="alert alert-warning py-2 px-3 mb-3">
-                            <small>
-                              <i className="fas fa-exclamation-triangle me-1"></i>
-                              You can't access this quiz because you didn't check in.
-                            </small>
-                          </div>
-                        ) : null}
-
-                        <button 
-                          className={`btn btn-sm w-100 ${
-                            quiz.attendanceRequired && !quiz.studentAttended ? 'btn-outline-secondary' :
-                            quiz.status === 'available' ? 'btn-primary' :
-                            quiz.status === 'submitted' ? 'btn-outline-success' :
-                            'btn-outline-danger'
-                          }`}
-                          onClick={() => handleTakeQuiz(quiz)}
-                          disabled={quiz.status === 'missed' || quiz.status === 'submitted' || (quiz.attendanceRequired && !quiz.studentAttended)}
+                        <button
+                          onClick={() => toggleQuizExpansion(quiz.id)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            background: 'none',
+                            border: 'none',
+                            color: '#6b7280',
+                            fontSize: '0.875rem',
+                            cursor: 'pointer',
+                            padding: '4px 0'
+                          }}
                         >
-                          {quiz.status === 'submitted' ? 'Submitted' :
-                           quiz.status === 'missed' ? 'Deadline Passed' :
-                           quiz.attendanceRequired && !quiz.studentAttended ? 'Access Blocked' :
-                           'Take Quiz'}
+                          Show More
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{
+                            transform: expandedQuiz === quiz.id ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.2s ease'
+                          }}>
+                            <path d="M7 10l5 5 5-5z"/>
+                          </svg>
                         </button>
                       </div>
+
+                      {/* Take Quiz Button */}
+                      <button
+                        onClick={() => handleTakeQuiz(quiz)}
+                        style={{
+                          padding: '12px 24px',
+                          backgroundColor: '#22c55e',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '8px',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseOver={e => {
+                          e.currentTarget.style.backgroundColor = '#16a34a';
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseOut={e => {
+                          e.currentTarget.style.backgroundColor = '#22c55e';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
+                        Take Quiz
+                      </button>
                     </div>
+
+                    {/* Expanded Content */}
+                    {expandedQuiz === quiz.id && (
+                      <div style={{
+                        padding: '1.5rem',
+                        borderTop: '1px solid #e5e7eb',
+                        backgroundColor: '#f9fafb'
+                      }}>
+                        <div style={{ marginBottom: '1rem' }}>
+                          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Assessment Type: </span>
+                          <span style={{ 
+                            fontSize: '0.875rem', 
+                            color: '#374151', 
+                            fontWeight: '500',
+                            textTransform: 'capitalize'
+                          }}>
+                            {quiz.assessmentType?.replace('-', ' ')}
+                          </span>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Description: </span>
+                          <span style={{ fontSize: '0.875rem', color: '#374151' }}>{quiz.description}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             )}
           </div>
+
+          {/* Missed Quizzes Section */}
+          {missedQuizzes.length > 0 && (
+            <>
+              <div style={{
+                height: '1px',
+                backgroundColor: '#e5e7eb',
+                margin: '2rem 0'
+              }}></div>
+              
+              <div style={{ marginBottom: '3rem' }}>
+                <h3 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: '#dc2626',
+                  marginBottom: '1.5rem'
+                }}>
+                  Missed
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {missedQuizzes.map(quiz => (
+                    <div key={quiz.id} style={{
+                      backgroundColor: 'white',
+                      borderRadius: '12px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      overflow: 'hidden',
+                      border: '1px solid #fecaca'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '1.5rem',
+                        gap: '1rem'
+                      }}>
+                        <div style={{
+                          width: '8px',
+                          height: '80px',
+                          background: getGradientColors(quiz.status),
+                          borderRadius: '4px',
+                          flexShrink: 0
+                        }}></div>
+
+                        <div style={{ flex: 1 }}>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lecturer: </span>
+                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.lecturerName}</span>
+                          </div>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Course: </span>
+                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.courseCode} - {quiz.courseName}</span>
+                          </div>
+                          <div style={{ marginBottom: '1rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Time: </span>
+                            <span style={{ 
+                              fontSize: '0.875rem', 
+                              color: '#dc2626', 
+                              fontWeight: '500',
+                              padding: '2px 8px',
+                              backgroundColor: '#fee2e2',
+                              borderRadius: '4px'
+                            }}>
+                              Deadline passed
+                            </span>
+                          </div>
+                          
+                          <button
+                            onClick={() => toggleQuizExpansion(quiz.id)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              background: 'none',
+                              border: 'none',
+                              color: '#6b7280',
+                              fontSize: '0.875rem',
+                              cursor: 'pointer',
+                              padding: '4px 0'
+                            }}
+                          >
+                            Show More
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{
+                              transform: expandedQuiz === quiz.id ? 'rotate(180deg)' : 'rotate(0deg)',
+                              transition: 'transform 0.2s ease'
+                            }}>
+                              <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                          </button>
+                        </div>
+
+                        <button
+                          disabled
+                          style={{
+                            padding: '12px 24px',
+                            backgroundColor: '#9ca3af',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            cursor: 'not-allowed'
+                          }}
+                        >
+                          Missed
+                        </button>
+                      </div>
+
+                      {expandedQuiz === quiz.id && (
+                        <div style={{
+                          padding: '1.5rem',
+                          borderTop: '1px solid #e5e7eb',
+                          backgroundColor: '#fef2f2'
+                        }}>
+                          <div style={{ marginBottom: '1rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Assessment Type: </span>
+                            <span style={{ 
+                              fontSize: '0.875rem', 
+                              color: '#374151', 
+                              fontWeight: '500',
+                              textTransform: 'capitalize'
+                            }}>
+                              {quiz.assessmentType?.replace('-', ' ')}
+                            </span>
+                          </div>
+                          <div>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Description: </span>
+                            <span style={{ fontSize: '0.875rem', color: '#374151' }}>{quiz.description}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Access Blocked Section */}
+          {blockedQuizzes.length > 0 && (
+            <>
+              <div style={{
+                height: '1px',
+                backgroundColor: '#e5e7eb',
+                margin: '2rem 0'
+              }}></div>
+              
+              <div style={{ marginBottom: '3rem' }}>
+                <h3 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  marginBottom: '1.5rem'
+                }}>
+                  Access Blocked
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {blockedQuizzes.map(quiz => (
+                    <div key={quiz.id} style={{
+                      backgroundColor: 'white',
+                      borderRadius: '12px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      overflow: 'hidden',
+                      border: '1px solid #d1d5db'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '1.5rem',
+                        gap: '1rem'
+                      }}>
+                        <div style={{
+                          width: '8px',
+                          height: '80px',
+                          background: getGradientColors(quiz.status),
+                          borderRadius: '4px',
+                          flexShrink: 0
+                        }}></div>
+
+                        <div style={{ flex: 1 }}>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Lecturer: </span>
+                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.lecturerName}</span>
+                          </div>
+                          <div style={{ marginBottom: '0.5rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Course: </span>
+                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>{quiz.courseCode} - {quiz.courseName}</span>
+                          </div>
+                          <div style={{ marginBottom: '1rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Time: </span>
+                            <span style={{ 
+                              fontSize: '0.875rem', 
+                              color: '#374151', 
+                              fontWeight: '500',
+                              padding: '2px 8px',
+                              backgroundColor: '#f3f4f6',
+                              borderRadius: '4px'
+                            }}>
+                              {getTimeRemaining(quiz.deadline)}
+                            </span>
+                          </div>
+                          
+                          <button
+                            onClick={() => toggleQuizExpansion(quiz.id)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              background: 'none',
+                              border: 'none',
+                              color: '#6b7280',
+                              fontSize: '0.875rem',
+                              cursor: 'pointer',
+                              padding: '4px 0'
+                            }}
+                          >
+                            More Info
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{
+                              transform: expandedQuiz === quiz.id ? 'rotate(180deg)' : 'rotate(0deg)',
+                              transition: 'transform 0.2s ease'
+                            }}>
+                              <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                          </button>
+                        </div>
+
+                        <button
+                          disabled
+                          style={{
+                            padding: '12px 24px',
+                            backgroundColor: '#9ca3af',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            cursor: 'not-allowed'
+                          }}
+                        >
+                          Blocked
+                        </button>
+                      </div>
+
+                      {expandedQuiz === quiz.id && (
+                        <div style={{
+                          padding: '1.5rem',
+                          borderTop: '1px solid #e5e7eb',
+                          backgroundColor: '#f9fafb'
+                        }}>
+                          <div style={{ marginBottom: '1rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Status: </span>
+                            <span style={{ fontSize: '0.875rem', color: '#374151', fontWeight: '500' }}>Available</span>
+                          </div>
+                          <div style={{ marginBottom: '1rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Description: </span>
+                            <span style={{ fontSize: '0.875rem', color: '#374151' }}>{quiz.description}</span>
+                          </div>
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#fef3c7',
+                            borderRadius: '8px',
+                            border: '1px solid #fbbf24'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="#f59e0b">
+                                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                              </svg>
+                              <span style={{ fontSize: '0.875rem', color: '#92400e', fontWeight: '500' }}>
+                                You can't access this quiz because you didn't check in.
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </DashboardLayout>

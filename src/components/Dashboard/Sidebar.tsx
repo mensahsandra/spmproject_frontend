@@ -13,7 +13,7 @@ const Sidebar: React.FC = () => {
     };
     
     const isPerformanceActive = () => {
-        return path === '/student/select-result' || path === '/student/academic-hub' || path.includes('/student/display-result');
+        return path === '/student/select-result' || path === '/student/academic-hub' || path.includes('/student/display-result') || path === '/student/assessment';
     };
     
     // lightweight unread count: prefer injected count in history.state, fallback to localStorage
