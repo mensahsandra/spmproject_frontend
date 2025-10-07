@@ -224,8 +224,8 @@ const NewSelectResultPage: React.FC = () => {
         background: 'linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: '40px',
+        justifyContent: 'flex-start',
+        padding: '40px 40px 40px 60px',
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
       }}>
         {/* Profile Dropdown - Fixed Position */}
@@ -238,7 +238,7 @@ const NewSelectResultPage: React.FC = () => {
           <ProfileDropdown />
         </div>
 
-        {/* Centered Card - Extended Width */}
+        {/* Left-aligned Card */}
         <div style={{
           backgroundColor: 'white',
           borderRadius: '20px',
@@ -246,8 +246,48 @@ const NewSelectResultPage: React.FC = () => {
           padding: '60px 70px',
           width: '100%',
           maxWidth: '650px',
-          textAlign: 'center'
+          textAlign: 'center',
+          marginRight: 'auto'
         }}>
+        {/* Back Button */}
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'flex-start', 
+          marginBottom: '30px' 
+        }}>
+          <button
+            onClick={() => window.location.href = '/student/academic-hub'}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 20px',
+              backgroundColor: '#f7fafc',
+              border: '2px solid #e2e8f0',
+              borderRadius: '10px',
+              color: '#4a5568',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              textDecoration: 'none'
+            }}
+            onMouseOver={e => {
+              e.currentTarget.style.backgroundColor = '#edf2f7';
+              e.currentTarget.style.borderColor = '#cbd5e0';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.backgroundColor = '#f7fafc';
+              e.currentTarget.style.borderColor = '#e2e8f0';
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            Back to Academic Hub
+          </button>
+        </div>
+        
         {/* Title */}
         <h1 style={{
           fontSize: '2.5rem',

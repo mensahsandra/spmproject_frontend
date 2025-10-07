@@ -14,7 +14,7 @@ interface AcademicStats {
 
 const StudentAcademicHub: React.FC = () => {
   const navigate = useNavigate();
-  // Updated for Academic Hub navigation - v5 (Added header, direct navigation to select-result)
+  // Updated for Academic Hub navigation - v6 (Added back button to select-result, left-aligned content)
   const [stats, setStats] = useState<AcademicStats>({
     availableQuizzes: 0,
     pendingAssignments: 0,
@@ -26,7 +26,7 @@ const StudentAcademicHub: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('StudentAcademicHub v5 loaded - Added header, direct navigation to select-result');
+    console.log('StudentAcademicHub v6 loaded - Added back button to select-result, left-aligned content');
     loadAcademicStats();
   }, []);
 
@@ -56,8 +56,9 @@ const StudentAcademicHub: React.FC = () => {
           width: '100%',
           height: '100vh',
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          paddingLeft: '3rem'
         }}>
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading academic hub...</span>
@@ -77,14 +78,15 @@ const StudentAcademicHub: React.FC = () => {
         height: '100vh',
         overflow: 'auto',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'flex-start',
-        paddingTop: '2rem'
+        paddingTop: '2rem',
+        paddingLeft: '3rem'
       }}>
         <div className="container academic-hub-container" style={{ 
           maxWidth: '900px', 
           width: '100%',
-          padding: '0 2rem 2rem 2rem'
+          padding: '0 2rem 2rem 0'
         }}>
 
         {/* Page Header */}
