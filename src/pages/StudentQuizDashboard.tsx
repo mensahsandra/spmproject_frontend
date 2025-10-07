@@ -205,7 +205,8 @@ const StudentQuizDashboard: React.FC = () => {
       <div style={{ 
         maxWidth: '900px', 
         width: '100%',
-        paddingTop: '60px'
+        margin: '0 auto',
+        paddingTop: '20px'
       }}>
           {/* Page Header */}
           <div style={{ marginBottom: '2rem' }}>
@@ -267,7 +268,7 @@ const StudentQuizDashboard: React.FC = () => {
                       <div style={{
                         width: '16px',
                         height: '120px',
-                        background: 'linear-gradient(to bottom, #22c55e 0%, #22c55e 50%, #16a34a 50%, #16a34a 100%)',
+                        background: 'linear-gradient(to bottom, #4ade80 0%, #4ade80 49%, #16a34a 51%, #16a34a 100%)',
                         borderRadius: '8px',
                         flexShrink: 0
                       }}></div>
@@ -420,7 +421,7 @@ const StudentQuizDashboard: React.FC = () => {
                         <div style={{
                           width: '16px',
                           height: '120px',
-                          background: 'linear-gradient(to bottom, #ef4444 0%, #ef4444 50%, #dc2626 50%, #dc2626 100%)',
+                          background: 'linear-gradient(to bottom, #f87171 0%, #f87171 49%, #dc2626 51%, #dc2626 100%)',
                           borderRadius: '8px',
                           flexShrink: 0
                         }}></div>
@@ -559,7 +560,7 @@ const StudentQuizDashboard: React.FC = () => {
                         <div style={{
                           width: '16px',
                           height: '120px',
-                          background: 'linear-gradient(to bottom, #9ca3af 0%, #9ca3af 50%, #6b7280 50%, #6b7280 100%)',
+                          background: 'linear-gradient(to bottom, #d1d5db 0%, #d1d5db 49%, #6b7280 51%, #6b7280 100%)',
                           borderRadius: '8px',
                           flexShrink: 0
                         }}></div>
