@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DashboardLayout from '../components/Dashboard/DashboardLayout';
+import Sidebar from '../components/Dashboard/Sidebar';
+import ProfileDropdown from '../components/ProfileDropdown';
 import '../css/academic-hub.css';
 
 interface AcademicStats {
@@ -59,16 +60,39 @@ const StudentAcademicHub: React.FC = () => {
   }
 
   return (
-    <DashboardLayout>
-      <div className="container-fluid">
-        {/* Page Header */}
-        <div className="mb-4">
-          <h3 className="mb-1">Academic Hub</h3>
-          <p className="text-muted mb-0">Access your assessments and academic performance</p>
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <Sidebar />
+      <main style={{
+        flex: 1,
+        marginLeft: '250px',
+        padding: '0',
+        backgroundColor: '#f8fafc',
+        minHeight: '100vh',
+        position: 'relative',
+        overflow: 'hidden', // Remove scrollbar
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          position: 'fixed',
+          top: '24px',
+          right: '40px',
+          zIndex: 1002
+        }}>
+          <ProfileDropdown />
         </div>
+        
+        <div className="container" style={{ 
+          maxWidth: '900px', 
+          margin: '0 auto', 
+          padding: '2rem 1rem',
+          width: '100%'
+        }}>
+
 
         {/* Quick Stats - Clean Design */}
-        <div className="row mb-4">
+        <div className="row mb-5">
           <div className="col-md-4 mb-3">
             <div className="card clean-stat-card">
               <div className="card-body d-flex align-items-center">
@@ -105,7 +129,7 @@ const StudentAcademicHub: React.FC = () => {
         </div>
 
         {/* Main Action Cards - Clean Design */}
-        <div className="row">
+        <div className="row mb-4">
           <div className="col-12 mb-4">
             <div 
               className="card clean-action-card"
@@ -215,50 +239,10 @@ const StudentAcademicHub: React.FC = () => {
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="row mt-4">
-          <div className="col-12">
-            <div className="card bg-light border-0">
-              <div className="card-body">
-                <h6 className="card-title mb-3">Quick Actions</h6>
-                <div className="d-flex flex-wrap gap-2">
-                  <button 
-                    className="btn btn-outline-primary btn-sm"
-                    onClick={() => navigate('/student/notifications')}
-                  >
-                    <i className="fas fa-bell me-1"></i>
-                    View All Notifications
-                  </button>
-                  <button 
-                    className="btn btn-outline-success btn-sm"
-                    onClick={() => navigate('/student/record-attendance')}
-                  >
-                    <i className="fas fa-user-check me-1"></i>
-                    Record Attendance
-                  </button>
-                  <button 
-                    className="btn btn-outline-info btn-sm"
-                    onClick={() => navigate('/student/deadlines')}
-                  >
-                    <i className="fas fa-clock me-1"></i>
-                    Upcoming Deadlines
-                  </button>
-                  {!showPerformanceSection && (
-                    <button 
-                      className="btn btn-outline-success btn-sm"
-                      onClick={() => setShowPerformanceSection(true)}
-                    >
-                      <i className="fas fa-chart-line me-1"></i>
-                      Check Performance
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
-      </div>
-    </DashboardLayout>
+      </main>
+    </div>
   );
 };
 
