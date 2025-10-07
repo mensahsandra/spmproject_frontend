@@ -98,7 +98,7 @@ export default function StudentDashboard({ user, data }: StudentDashboardProps) 
         {/* Check Performance Card */}
         <div
           className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E6E6E6] dark:border-[#333333] p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
-          onClick={() => navigate('/student/select-result')}
+          onClick={() => navigate('/student/academic-hub')}
         >
           <div className="flex items-start gap-4">
             {/* Status Bar */}
@@ -124,7 +124,7 @@ export default function StudentDashboard({ user, data }: StudentDashboardProps) 
         {/* Assessment Card */}
         <div
           className="bg-white dark:bg-[#1E1E1E] rounded-xl border border-[#E6E6E6] dark:border-[#333333] p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
-          onClick={() => navigate('/student/assessment')}
+          onClick={() => navigate('/student/academic-hub')}
         >
           <div className="flex items-start gap-4">
             {/* Status Bar */}

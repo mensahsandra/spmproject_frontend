@@ -1,0 +1,180 @@
+/* Student Academic Hub Styles */
+
+.academic-card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.academic-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.assessment-card:hover {
+  border: 2px solid #007bff;
+}
+
+.performance-card:hover {
+  border: 2px solid #28a745;
+}
+
+.icon-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.academic-card .btn {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.academic-card .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Stats Cards */
+.card.border-primary {
+  border-width: 2px !important;
+}
+
+.card.border-warning {
+  border-width: 2px !important;
+}
+
+.card.border-success {
+  border-width: 2px !important;
+}
+
+.card.border-info {
+  border-width: 2px !important;
+}
+
+/* Quick Actions */
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-info:hover {
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .academic-card .card-body {
+    padding: 2rem !important;
+  }
+  
+  .icon-circle {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .icon-circle i {
+    font-size: 2rem !important;
+  }
+  
+  .academic-card h4 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .academic-card .card-body {
+    padding: 1.5rem !important;
+  }
+  
+  .row.text-center .col-6 {
+    margin-bottom: 1rem;
+  }
+  
+  .d-flex.flex-wrap.gap-2 {
+    flex-direction: column;
+  }
+  
+  .btn-sm {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Loading Animation */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Alert Styling */
+.alert {
+  border-radius: 8px;
+  border: none;
+}
+
+.alert-info {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #1565c0;
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  color: #2e7d32;
+}
+
+/* Card Hover Effects */
+.academic-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+.academic-card:hover::before {
+  opacity: 1;
+}
+
+/* Button Animations */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+  }
+}
+
+.assessment-card .btn-primary:hover {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+.performance-card .btn-success:hover {
+  animation: pulse-green 2s infinite;
+}

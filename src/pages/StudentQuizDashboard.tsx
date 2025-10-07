@@ -200,13 +200,13 @@ const StudentQuizDashboard: React.FC = () => {
         {/* Navigation Cards */}
         <div className="row mb-4">
           <div className="col-md-6 mb-3">
-            <div className="card h-100 nav-card" onClick={() => navigate('/student/select-result')} style={{ cursor: 'pointer' }}>
+            <div className="card h-100 nav-card" onClick={() => navigate('/student/academic-hub')} style={{ cursor: 'pointer' }}>
               <div className="card-body text-center">
                 <div className="mb-3">
-                  <i className="fas fa-chart-line fa-3x text-primary"></i>
+                  <i className="fas fa-arrow-left fa-3x text-secondary"></i>
                 </div>
-                <h5 className="card-title">Check Performance</h5>
-                <p className="card-text text-muted">View your grades and academic performance</p>
+                <h5 className="card-title">Back to Academic Hub</h5>
+                <p className="card-text text-muted">Return to main academic options</p>
               </div>
             </div>
           </div>

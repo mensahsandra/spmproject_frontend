@@ -9,6 +9,7 @@ import RecordAttendance from '../components/Dashboard/RecordAttendance';
 import NotificationsPage from '../pages/NotificationsPage';
 import QuizPage from '../pages/QuizPage';
 import StudentQuizDashboard from '../pages/StudentQuizDashboard';
+import StudentAcademicHub from '../pages/StudentAcademicHub';
 // Old unified Sidebar removed in favor of role-specific layouts
 import StudentLoginPage from '../pages/StudentLoginPage';
 import LecturerLoginPage from '../pages/LecturerLoginPage';
@@ -92,6 +93,11 @@ const RoutePage = () => {
       <Route path="/student/quiz/:quizId" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<QuizPage />)}
+        </ProtectedRoute>
+      } />
+      <Route path="/student/academic-hub" element={
+        <ProtectedRoute requiredRole="student">
+          {withStudent(<StudentAcademicHub />)}
         </ProtectedRoute>
       } />
       <Route path="/student/assessment" element={
