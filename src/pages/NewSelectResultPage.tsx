@@ -224,8 +224,8 @@ const NewSelectResultPage: React.FC = () => {
         background: 'linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'flex-start',
-        padding: '40px 40px 40px 60px',
+        justifyContent: 'center',
+        padding: '40px',
         fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
       }}>
         {/* Profile Dropdown - Fixed Position */}
@@ -238,7 +238,7 @@ const NewSelectResultPage: React.FC = () => {
           <ProfileDropdown />
         </div>
 
-        {/* Left-aligned Card */}
+        {/* Centered Card */}
         <div style={{
           backgroundColor: 'white',
           borderRadius: '20px',
@@ -246,8 +246,7 @@ const NewSelectResultPage: React.FC = () => {
           padding: '60px 70px',
           width: '100%',
           maxWidth: '650px',
-          textAlign: 'center',
-          marginRight: 'auto'
+          textAlign: 'center'
         }}>
         {/* Back Button */}
         <div style={{ 

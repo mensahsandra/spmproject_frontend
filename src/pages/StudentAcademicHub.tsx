@@ -14,7 +14,7 @@ interface AcademicStats {
 
 const StudentAcademicHub: React.FC = () => {
   const navigate = useNavigate();
-  // Updated for Academic Hub navigation - v6 (Added back button to select-result, left-aligned content)
+  // Updated for Academic Hub navigation - v7 (Academic hub closer to sidebar, select-result centered)
   const [stats, setStats] = useState<AcademicStats>({
     availableQuizzes: 0,
     pendingAssignments: 0,
@@ -26,7 +26,7 @@ const StudentAcademicHub: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('StudentAcademicHub v6 loaded - Added back button to select-result, left-aligned content');
+    console.log('StudentAcademicHub v7 loaded - Academic hub closer to sidebar, select-result centered');
     loadAcademicStats();
   }, []);
 
