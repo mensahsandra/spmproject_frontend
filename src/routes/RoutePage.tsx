@@ -121,6 +121,10 @@ const RoutePage = () => {
         </ProtectedRoute>
       } />
 
+      {/* Fix for incorrect routes being generated */}
+      <Route path="/student/assessment-hub" element={<Navigate to="/student/assessment" replace />} />
+      <Route path="/student/notifications-tab-deadlines" element={<Navigate to="/student/notifications?tab=deadlines" replace />} />
+
       {/* Legacy student paths -> redirect to namespaced */}
       <Route path="/dashboard" element={<Navigate to="/student/dashboard" replace />} />
       <Route path="/record-attendance" element={<Navigate to="/student/record-attendance" replace />} />
