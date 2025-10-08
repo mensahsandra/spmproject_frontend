@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './context/AuthContext';
+import { SessionProvider } from './context/SessionContext';
 
 // Debug instrumentation: wrap fetch to log method & URL (dev only)
 if ((import.meta as any).env?.DEV && typeof window !== 'undefined') {
@@ -37,7 +38,9 @@ if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
       <AuthProvider>
-        <App />
+        <SessionProvider>
+          <App />
+        </SessionProvider>
       </AuthProvider>
     </StrictMode>,
   );
