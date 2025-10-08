@@ -117,18 +117,7 @@ const StudentQuizDashboard: React.FC = () => {
     navigate(`/student/quiz/${quiz.id}`);
   };
 
-  const getGradientColors = (status: string) => {
-    switch (status) {
-      case 'available':
-        return 'linear-gradient(135deg, #22c55e, #16a34a)';
-      case 'missed':
-        return 'linear-gradient(135deg, #ef4444, #dc2626)';
-      case 'blocked':
-        return 'linear-gradient(135deg, #9ca3af, #6b7280)';
-      default:
-        return 'linear-gradient(135deg, #22c55e, #16a34a)';
-    }
-  };
+
 
   if (loading) {
     return (
