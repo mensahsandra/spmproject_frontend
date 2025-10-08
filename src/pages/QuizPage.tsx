@@ -158,8 +158,17 @@ const QuizPage: React.FC = () => {
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
+      <DashboardLayout style={{ 
+        overflow: 'hidden',
+        padding: '0'
+      }}>
+        <div style={{
+          width: '100%',
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading quiz...</span>
           </div>
@@ -170,13 +179,23 @@ const QuizPage: React.FC = () => {
 
   if (error) {
     return (
-      <DashboardLayout>
-        <div className="alert alert-danger">
-          <h4>Error</h4>
-          <p>{error}</p>
-          <button className="btn btn-primary" onClick={() => navigate('/student/notifications')}>
-            Back to Notifications
-          </button>
+      <DashboardLayout style={{ 
+        overflow: 'hidden',
+        padding: '0'
+      }}>
+        <div style={{
+          width: '100%',
+          height: '100vh',
+          overflow: 'auto',
+          padding: '40px'
+        }}>
+          <div className="alert alert-danger">
+            <h4>Error</h4>
+            <p>{error}</p>
+            <button className="btn btn-primary" onClick={() => navigate('/student/notifications')}>
+              Back to Notifications
+            </button>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -184,13 +203,23 @@ const QuizPage: React.FC = () => {
 
   if (!quiz) {
     return (
-      <DashboardLayout>
-        <div className="alert alert-warning">
-          <h4>Quiz Not Found</h4>
-          <p>The requested quiz could not be found.</p>
-          <button className="btn btn-primary" onClick={() => navigate('/student/notifications')}>
-            Back to Notifications
-          </button>
+      <DashboardLayout style={{ 
+        overflow: 'hidden',
+        padding: '0'
+      }}>
+        <div style={{
+          width: '100%',
+          height: '100vh',
+          overflow: 'auto',
+          padding: '40px'
+        }}>
+          <div className="alert alert-warning">
+            <h4>Quiz Not Found</h4>
+            <p>The requested quiz could not be found.</p>
+            <button className="btn btn-primary" onClick={() => navigate('/student/notifications')}>
+              Back to Notifications
+            </button>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -201,8 +230,17 @@ const QuizPage: React.FC = () => {
   const canProceed = answers[currentQuestion.id] !== undefined;
 
   return (
-    <DashboardLayout>
-      <div className="container-fluid">
+    <DashboardLayout style={{ 
+      overflow: 'hidden',
+      padding: '0'
+    }}>
+      <div style={{
+        width: '100%',
+        height: '100vh',
+        overflow: 'auto',
+        padding: '40px'
+      }}>
+        <div style={{ width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
         {/* Quiz Header */}
         <div className="row mb-4">
           <div className="col-12">
@@ -389,6 +427,7 @@ const QuizPage: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </DashboardLayout>
