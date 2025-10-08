@@ -26,6 +26,7 @@ import LecturerAttendancePage from '../pages/LecturerAttendancePage';
 import LecturerAssessmentPage from '../pages/LecturerAssessmentPage';
 import LecturerExportPage from '../pages/LecturerExportPage';
 import LecturerNotificationsPage from '../pages/LecturerNotificationsPage';
+import ProfileSettingsPage from '../pages/ProfileSettingsPage';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import { normalizeRole } from '../utils/roles';
 import StudentLayout from '../layouts/StudentLayout';
@@ -118,6 +119,11 @@ const RoutePage = () => {
       <Route path="/student/deadlines" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<DeadlinesPage />)}
+        </ProtectedRoute>
+      } />
+      <Route path="/student/settings" element={
+        <ProtectedRoute requiredRole="student">
+          <ProfileSettingsPage />
         </ProtectedRoute>
       } />
 
