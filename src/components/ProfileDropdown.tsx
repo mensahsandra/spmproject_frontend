@@ -64,7 +64,12 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
   };
 
   const handleNotifications = () => {
-    navigate('/notifications?tab=notifications', { state: { from: 'notifications' } });
+    // Role-aware notification routing
+    if (active === 'lecturer') {
+      navigate('/lecturer/notifications');
+    } else {
+      navigate('/student/notifications?tab=notifications', { state: { from: 'notifications' } });
+    }
   };
 
   return (

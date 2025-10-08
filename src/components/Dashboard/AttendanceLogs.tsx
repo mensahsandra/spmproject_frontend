@@ -215,7 +215,14 @@ export default function AttendanceLogs() {
                 className="btn btn-outline-primary btn-sm mt-2"
                 disabled={loading}
               >
-                Refresh Data
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Refreshing...
+                  </>
+                ) : (
+                  'Refresh Data'
+                )}
               </button>
             </div>
           </div>
