@@ -1,317 +1,282 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Users, FileText, Settings, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import DashboardLayout from '../components/Dashboard/DashboardLayout';
+import '../css/notifications.css';
 
-interface Notification {
-  id: string;
-  type: 'attendance' | 'assessment' | 'system' | 'alert';
-  priority: 'high' | 'medium' | 'low';
-  title: string;
+interface NotificationItem {
+  id: number;
+  type: 'IMPORTANT' | 'REMINDER' | 'INFO';
   message: string;
-  timestamp: string;
-  read: boolean;
-  icon?: React.ReactNode;
+  timeAgo: string;
+  category: 'attendance' | 'assessment' | 'system' | 'alert';
+  details?: string;
+  actionButton?: {
+    text: string;
+    action: 'link' | 'page' | 'file';
+    url?: string;
+    route?: string;
+  };
 }
 
 const LecturerNotificationsPage: React.FC = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [filter, setFilter] = useState<'all' | 'attendance' | 'assessment' | 'system' | 'alert'>('all');
-  const [loading, setLoading] = useState(true);
+  const [expandedNotifications, setExpandedNotifications] = useState<Set<number>>(new Set());
+  const [activeTab, setActiveTab] = useState<'overview' | 'attendance' | 'assessment' | 'system' | 'alert'>('overview');
 
-  useEffect(() => {
-    loadNotifications();
-  }, []);
+  // Mock lecturer notifications data
+  const notifications: NotificationItem[] = [
+    {
+      id: 1,
+      type: 'IMPORTANT',
+      message: 'Low attendance alert: Only 8 out of 30 students present in Database Management class',
+      timeAgo: '5 mins ago',
+      category: 'alert',
+      details: 'The attendance rate for today\'s Database Management class is significantly below average (26.7%). Consider reaching out to absent students or reviewing the session content to ensure engagement.',
+      actionButton: {
+        text: 'View Attendance',
+        action: 'page',
+        route: '/lecturer/attendance'
+      }
+    },
+    {
+      id: 2,
+      type: 'REMINDER',
+      message: 'New student check-in: Ransford Student joined CS101 session (ABC123)',
+      timeAgo: '10 mins ago',
+      category: 'attendance',
+      details: 'Student ID: 1234567 checked in at 7:25 PM from Kumasi center. Total attendees for this session: 24 students.',
+      actionButton: {
+        text: 'View Session',
+        action: 'page',
+        route: '/lecturer/attendance'
+      }
+    },
+    {
+      id: 3,
+      type: 'INFO',
+      message: 'Quiz submission received: Jane Smith completed Web Development Basics quiz',
+      timeAgo: '15 mins ago',
+      category: 'assessment',
+      details: 'Student submitted quiz with 85% completion rate. Quiz duration: 45 minutes. Auto-graded questions scored 17/20. Manual review required for essay questions.',
+      actionButton: {
+        text: 'Review Submission',
+        action: 'page',
+        route: '/lecturer/assessment'
+      }
+    },
+    {
+      id: 4,
+      type: 'INFO',
+      message: 'Session code ABC123 generated successfully for CS101 - Introduction to Computer Science',
+      timeAgo: '30 mins ago',
+      category: 'system',
+      details: 'Session is active and ready for student check-ins. Session expires in 2 hours. QR code and session details have been generated for distribution.',
+      actionButton: {
+        text: 'Manage Session',
+        action: 'page',
+        route: '/lecturer/generatesession'
+      }
+    },
+    {
+      id: 5,
+      type: 'REMINDER',
+      message: 'Multiple quiz submissions: 5 students completed JavaScript Fundamentals assessment',
+      timeAgo: '1hr ago',
+      category: 'assessment',
+      details: 'Recent submissions from: Michael Johnson, Sarah Wilson, David Brown, Lisa Davis, and Kevin Miller. Average completion time: 38 minutes. Overall class performance: 78%.',
+      actionButton: {
+        text: 'View Results',
+        action: 'page',
+        route: '/lecturer/assessment'
+      }
+    },
+    {
+      id: 6,
+      type: 'INFO',
+      message: 'Session ended: CS101 session completed with 23 total attendees',
+      timeAgo: '2hrs ago',
+      category: 'attendance',
+      details: 'Session ABC123 has been closed. Final attendance: 23/30 students (76.7%). Session duration: 2 hours 15 minutes. Attendance data exported to records.',
+      actionButton: {
+        text: 'Export Data',
+        action: 'page',
+        route: '/lecturer/export'
+      }
+    }
+  ];
 
-  const loadNotifications = async () => {
-    setLoading(true);
-    try {
-      // Mock data - in real app, this would come from API
-      const mockNotifications: Notification[] = [
-        {
-          id: '1',
-          type: 'attendance',
-          priority: 'medium',
-          title: 'New Student Check-in',
-          message: 'Ransford Student checked in to CS101 session (ABC123)',
-          timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-          read: false,
-          icon: <Users size={16} className="text-success" />
-        },
-        {
-          id: '2',
-          type: 'assessment',
-          priority: 'medium',
-          title: 'Quiz Submission Received',
-          message: 'Jane Smith submitted Web Development Basics quiz',
-          timestamp: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-          read: false,
-          icon: <FileText size={16} className="text-primary" />
-        },
-        {
-          id: '3',
-          type: 'system',
-          priority: 'low',
-          title: 'Session Generated',
-          message: 'Session code ABC123 created successfully for CS101',
-          timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          read: true,
-          icon: <Settings size={16} className="text-info" />
-        },
-        {
-          id: '4',
-          type: 'alert',
-          priority: 'high',
-          title: 'Low Attendance Alert',
-          message: 'Only 8 out of 30 students present in Database Management class',
-          timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-          read: false,
-          icon: <AlertTriangle size={16} className="text-warning" />
-        },
-        {
-          id: '5',
-          type: 'assessment',
-          priority: 'medium',
-          title: 'Multiple Submissions',
-          message: '5 students completed JavaScript Fundamentals quiz',
-          timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-          read: true,
-          icon: <CheckCircle size={16} className="text-success" />
-        },
-        {
-          id: '6',
-          type: 'attendance',
-          priority: 'low',
-          title: 'Session Ended',
-          message: 'CS101 session ended with 23 total attendees',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          read: true,
-          icon: <Clock size={16} className="text-muted" />
+  // Filter notifications based on active tab
+  const filteredNotifications = (() => {
+    switch (activeTab) {
+      case 'attendance':
+        return notifications.filter(n => n.category === 'attendance');
+      case 'assessment':
+        return notifications.filter(n => n.category === 'assessment');
+      case 'system':
+        return notifications.filter(n => n.category === 'system');
+      case 'alert':
+        return notifications.filter(n => n.category === 'alert');
+      default:
+        return notifications;
+    }
+  })();
+
+  const handleDismiss = (id: number) => {
+    console.log('Dismissing notification:', id);
+  };
+
+  const toggleExpanded = (id: number) => {
+    const newExpanded = new Set(expandedNotifications);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedNotifications(newExpanded);
+  };
+
+  const handleActionClick = (actionButton: NotificationItem['actionButton']) => {
+    if (!actionButton) return;
+
+    switch (actionButton.action) {
+      case 'page':
+        if (actionButton.route) {
+          window.location.href = actionButton.route;
         }
-      ];
-
-      setNotifications(mockNotifications);
-    } catch (error) {
-      console.error('Error loading notifications:', error);
-    } finally {
-      setLoading(false);
+        break;
+      case 'link':
+        if (actionButton.url) {
+          window.open(actionButton.url, '_blank');
+        }
+        break;
     }
   };
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notif => 
-        notif.id === id ? { ...notif, read: true } : notif
-      )
-    );
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(prev => 
-      prev.map(notif => ({ ...notif, read: true }))
-    );
-  };
-
-  const filteredNotifications = notifications.filter(notif => 
-    filter === 'all' || notif.type === filter
-  );
-
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'border-danger';
-      case 'medium': return 'border-warning';
-      case 'low': return 'border-success';
-      default: return 'border-secondary';
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'IMPORTANT':
+        return '⚠️';
+      case 'REMINDER':
+        return '🔔';
+      default:
+        return '📋';
     }
   };
 
-  const formatTimeAgo = (timestamp: string) => {
-    const now = new Date().getTime();
-    const time = new Date(timestamp).getTime();
-    const diff = now - time;
-    
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    if (minutes > 0) return `${minutes}m ago`;
-    return 'Just now';
+  const getNotificationTitle = (message: string) => {
+    if (message.includes('attendance') || message.includes('check-in')) return 'Attendance Update';
+    if (message.includes('quiz') || message.includes('submission')) return 'Assessment Activity';
+    if (message.includes('session') || message.includes('generated')) return 'Session Management';
+    if (message.includes('alert') || message.includes('low')) return 'Alert';
+    return 'Notification';
   };
-
-  if (loading) {
-    return (
-      <div className="container py-4">
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
-          <div className="text-center">
-            <div className="spinner-border text-primary mb-3" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <p className="text-muted">Loading notifications...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="container py-4">
-      {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 className="mb-1 d-flex align-items-center gap-2">
-            <Bell size={24} className="text-primary" />
-            Notifications
-            {unreadCount > 0 && (
-              <span className="badge bg-danger rounded-pill">{unreadCount}</span>
-            )}
-          </h2>
-          <p className="text-muted mb-0">Stay updated with your classes and student activities</p>
-        </div>
-        {unreadCount > 0 && (
+    <DashboardLayout showGreeting={true}>
+      <div className="notifications-page">
+        <div className="notifications-tabs">
           <button 
-            className="btn btn-outline-primary btn-sm"
-            onClick={markAllAsRead}
+            className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
           >
-            Mark All Read
+            Overview
           </button>
-        )}
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="card shadow-sm border-0 mb-4">
-        <div className="card-body p-3">
-          <div className="btn-group w-100" role="group">
-            <input 
-              type="radio" 
-              className="btn-check" 
-              name="filter" 
-              id="all" 
-              checked={filter === 'all'}
-              onChange={() => setFilter('all')}
-            />
-            <label className="btn btn-outline-primary" htmlFor="all">
-              All ({notifications.length})
-            </label>
-
-            <input 
-              type="radio" 
-              className="btn-check" 
-              name="filter" 
-              id="attendance" 
-              checked={filter === 'attendance'}
-              onChange={() => setFilter('attendance')}
-            />
-            <label className="btn btn-outline-success" htmlFor="attendance">
-              <Users size={16} className="me-1" />
-              Attendance ({notifications.filter(n => n.type === 'attendance').length})
-            </label>
-
-            <input 
-              type="radio" 
-              className="btn-check" 
-              name="filter" 
-              id="assessment" 
-              checked={filter === 'assessment'}
-              onChange={() => setFilter('assessment')}
-            />
-            <label className="btn btn-outline-info" htmlFor="assessment">
-              <FileText size={16} className="me-1" />
-              Assessment ({notifications.filter(n => n.type === 'assessment').length})
-            </label>
-
-            <input 
-              type="radio" 
-              className="btn-check" 
-              name="filter" 
-              id="system" 
-              checked={filter === 'system'}
-              onChange={() => setFilter('system')}
-            />
-            <label className="btn btn-outline-secondary" htmlFor="system">
-              <Settings size={16} className="me-1" />
-              System ({notifications.filter(n => n.type === 'system').length})
-            </label>
-
-            <input 
-              type="radio" 
-              className="btn-check" 
-              name="filter" 
-              id="alert" 
-              checked={filter === 'alert'}
-              onChange={() => setFilter('alert')}
-            />
-            <label className="btn btn-outline-warning" htmlFor="alert">
-              <AlertTriangle size={16} className="me-1" />
-              Alerts ({notifications.filter(n => n.type === 'alert').length})
-            </label>
-          </div>
+          <button 
+            className={`tab ${activeTab === 'attendance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('attendance')}
+          >
+            Attendance
+          </button>
+          <button 
+            className={`tab ${activeTab === 'assessment' ? 'active' : ''}`}
+            onClick={() => setActiveTab('assessment')}
+          >
+            Assessment
+          </button>
+          <button 
+            className={`tab ${activeTab === 'system' ? 'active' : ''}`}
+            onClick={() => setActiveTab('system')}
+          >
+            System
+          </button>
+          <button 
+            className={`tab ${activeTab === 'alert' ? 'active' : ''}`}
+            onClick={() => setActiveTab('alert')}
+          >
+            Alerts
+          </button>
         </div>
-      </div>
 
-      {/* Notifications List */}
-      <div className="row">
-        <div className="col-12">
-          {filteredNotifications.length === 0 ? (
-            <div className="card shadow-sm border-0">
-              <div className="card-body text-center py-5">
-                <Bell size={48} className="text-muted mb-3" />
-                <h5 className="text-muted">No notifications</h5>
-                <p className="text-muted mb-0">
-                  {filter === 'all' 
-                    ? "You're all caught up! No new notifications."
-                    : `No ${filter} notifications at the moment.`
-                  }
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="list-group">
-              {filteredNotifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className={`list-group-item list-group-item-action border-start border-3 ${getPriorityColor(notification.priority)} ${
-                    !notification.read ? 'bg-light' : ''
-                  }`}
-                  onClick={() => markAsRead(notification.id)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div className="d-flex w-100 justify-content-between align-items-start">
-                    <div className="d-flex align-items-start gap-3">
-                      <div className="mt-1">
-                        {notification.icon}
-                      </div>
-                      <div>
-                        <h6 className={`mb-1 ${!notification.read ? 'fw-bold' : ''}`}>
-                          {notification.title}
-                          {!notification.read && (
-                            <span className="badge bg-primary ms-2">New</span>
-                          )}
-                        </h6>
-                        <p className="mb-1 text-muted">{notification.message}</p>
-                        <small className="text-muted">
-                          <Clock size={12} className="me-1" />
-                          {formatTimeAgo(notification.timestamp)}
-                        </small>
-                      </div>
+        <div className="notifications-container">
+          {filteredNotifications.map((notification) => {
+            const isExpanded = expandedNotifications.has(notification.id);
+            return (
+              <div 
+                key={notification.id} 
+                className={`notification-item ${isExpanded ? 'expanded' : ''}`}
+              >
+                <div className={`notification-accent ${
+                  notification.category === 'alert' ? 'deadline-accent' :
+                  notification.category === 'attendance' ? 'completed-accent gray' :
+                  notification.category === 'assessment' ? 'completed-accent gray' :
+                  'general-accent'
+                }`}></div>
+                <div className="notification-content">
+                  <div className="notification-header">
+                    <div className="notification-type">
+                      {getNotificationIcon(notification.type)}
                     </div>
-                    <div className="text-end">
-                      <span className={`badge ${
-                        notification.priority === 'high' ? 'bg-danger' :
-                        notification.priority === 'medium' ? 'bg-warning' : 'bg-success'
-                      }`}>
-                        {notification.priority}
-                      </span>
+                    <h3 className="notification-title">
+                      {notification.type}: {getNotificationTitle(notification.message)}
+                    </h3>
+                    <div className="notification-actions">
+                      <span className="notification-time">{notification.timeAgo}</span>
+                      <button 
+                        className="dismiss-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDismiss(notification.id);
+                        }}
+                      >
+                        ×
+                      </button>
                     </div>
                   </div>
+                  <div className="notification-divider"></div>
+                  <div 
+                    className="notification-main-content"
+                    onClick={() => toggleExpanded(notification.id)}
+                  >
+                    <p className="notification-message">{notification.message}</p>
+                    {notification.details && (
+                      <button className="expand-btn">
+                        {isExpanded ? 'Show Less' : 'Show More'} {isExpanded ? '▲' : '▼'}
+                      </button>
+                    )}
+                  </div>
+                  
+                  {isExpanded && notification.details && (
+                    <div className="notification-details">
+                      <div className="details-divider"></div>
+                      <p className="notification-details-text">{notification.details}</p>
+                      {notification.actionButton && (
+                        <button 
+                          className="action-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleActionClick(notification.actionButton);
+                          }}
+                        >
+                          {notification.actionButton.text}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            );
+          })}
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
