@@ -20,12 +20,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, style }) =>
         padding: style?.overflow === 'hidden' ? '0' : '20px 40px 20px 20px',
         backgroundColor: '#f8fafc',
         minHeight: '100vh',
-        maxHeight: '100vh',
         position: 'relative',
-        overflow: style?.overflow || 'auto',
-        overflowX: 'hidden',
-        scrollbarWidth: style?.overflow === 'hidden' ? 'none' : 'thin',
-        scrollbarColor: '#888 #f1f1f1',
         ...style
       }}
       className={style?.overflow === 'hidden' ? '' : 'custom-scrollbar'}>
