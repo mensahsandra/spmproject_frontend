@@ -153,11 +153,7 @@ const StudentQuizDashboard: React.FC = () => {
         width: '100%',
         height: '100vh',
         overflow: 'auto',
-        display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        paddingTop: '2rem',
-        paddingLeft: '3rem'
+        paddingTop: '2rem'
       }}>
         {/* Back Button - Fixed Position at Top Left */}
         <div style={{ 
@@ -205,10 +201,8 @@ const StudentQuizDashboard: React.FC = () => {
       </div>
 
       <div style={{ 
-        maxWidth: '900px', 
         width: '100%',
-        margin: '0 auto',
-        paddingTop: '20px'
+        padding: '20px 40px 40px 40px'
       }}>
           {/* Page Header */}
           <div style={{ marginBottom: '2rem' }}>
