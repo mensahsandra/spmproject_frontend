@@ -21,35 +21,35 @@ export function useDeadlineNotifications() {
     const fetchDeadlines = async () => {
       try {
         setLoading(true);
-        const data: any = await apiFetch('/api/deadlines', { 
-          method: 'GET', 
-          role: 'student' 
+        const data: any = await apiFetch('/api/deadlines', {
+          method: 'GET',
+          role: 'student'
         });
-        
+
         if (!active) return;
 
-        const deadlinesList = Array.isArray(data?.deadlines) 
-          ? data.deadlines 
+        const deadlinesList = Array.isArray(data?.deadlines)
+          ? data.deadlines
           : (Array.isArray(data) ? data : []);
 
         // Filter for pending/upcoming deadlines only
         const now = new Date();
         const pendingDeadlines = deadlinesList.filter((deadline: Deadline) => {
           const dueDate = new Date(deadline.due);
-          return !isNaN(dueDate.getTime()) && 
-                 dueDate > now && 
-                 deadline.status !== 'completed';
+          return !isNaN(dueDate.getTime()) &&
+            dueDate > now &&
+            deadline.status !== 'completed';
         });
 
         setDeadlines(pendingDeadlines);
         setDeadlineCount(pendingDeadlines.length);
-        
+
         // Store in localStorage for quick access
         localStorage.setItem('deadlineCount', pendingDeadlines.length.toString());
-        
+
       } catch (error) {
         console.warn('Failed to fetch deadlines:', error);
-        
+
         // Fallback to localStorage or default mock data
         const fallbackCount = localStorage.getItem('deadlineCount');
         if (fallbackCount) {
@@ -66,7 +66,7 @@ export function useDeadlineNotifications() {
               status: 'pending' as const
             },
             {
-              id: '2', 
+              id: '2',
               title: 'Mid Semester Project',
               due: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
               course: 'BIT 365',
@@ -74,7 +74,7 @@ export function useDeadlineNotifications() {
               status: 'pending' as const
             }
           ];
-          
+
           setDeadlines(mockDeadlines);
           setDeadlineCount(mockDeadlines.length);
           localStorage.setItem('deadlineCount', mockDeadlines.length.toString());

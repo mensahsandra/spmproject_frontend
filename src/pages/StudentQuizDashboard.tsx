@@ -121,7 +121,7 @@ const StudentQuizDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <DashboardLayout style={{ 
+      <DashboardLayout style={{
         overflow: 'hidden',
         padding: '0'
       }}>
@@ -145,7 +145,7 @@ const StudentQuizDashboard: React.FC = () => {
   const blockedQuizzes = quizzes.filter(q => q.status === 'blocked');
 
   return (
-    <DashboardLayout style={{ 
+    <DashboardLayout style={{
       overflow: 'hidden',
       padding: '0'
     }}>
@@ -156,54 +156,54 @@ const StudentQuizDashboard: React.FC = () => {
         paddingTop: '2rem'
       }}>
         {/* Back Button - Fixed Position at Top Left */}
-        <div style={{ 
+        <div style={{
           position: 'fixed',
           top: '20px',
           left: '270px',
           zIndex: 1000
         }}>
           <button
-          onClick={() => navigate('/student/academic-hub')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '12px 20px',
-            backgroundColor: '#f7fafc',
-            border: '2px solid #e2e8f0',
-            borderRadius: '10px',
-            color: '#4a5568',
-            fontSize: '14px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            textDecoration: 'none',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}
-          onMouseOver={e => {
-            e.currentTarget.style.backgroundColor = '#edf2f7';
-            e.currentTarget.style.borderColor = '#cbd5e0';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-          }}
-          onMouseOut={e => {
-            e.currentTarget.style.backgroundColor = '#f7fafc';
-            e.currentTarget.style.borderColor = '#e2e8f0';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-          </svg>
-          Back to Academic Hub
-        </button>
-      </div>
+            onClick={() => navigate('/student/academic-hub')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 20px',
+              backgroundColor: '#f7fafc',
+              border: '2px solid #e2e8f0',
+              borderRadius: '10px',
+              color: '#4a5568',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              textDecoration: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+            onMouseOver={e => {
+              e.currentTarget.style.backgroundColor = '#edf2f7';
+              e.currentTarget.style.borderColor = '#cbd5e0';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            }}
+            onMouseOut={e => {
+              e.currentTarget.style.backgroundColor = '#f7fafc';
+              e.currentTarget.style.borderColor = '#e2e8f0';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+            </svg>
+            Back to Academic Hub
+          </button>
+        </div>
 
-      <div style={{ 
-        width: '100%',
-        padding: '20px 40px 40px 40px'
-      }}>
+        <div style={{
+          width: '100%',
+          padding: '20px 40px 40px 40px'
+        }}>
           {/* Page Header */}
           <div style={{ marginBottom: '2rem' }}>
             <h2 style={{
@@ -232,7 +232,7 @@ const StudentQuizDashboard: React.FC = () => {
             }}>
               Available Quizzes
             </h3>
-            
+
             {availableQuizzes.length === 0 ? (
               <div style={{
                 padding: '2rem',
@@ -277,7 +277,7 @@ const StudentQuizDashboard: React.FC = () => {
                         </div>
                         <div style={{ marginBottom: '0.5rem' }}>
                           <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>
-                            {quiz.courseName ? 'Course:' : 'Class:'} 
+                            {quiz.courseName ? 'Course:' : 'Class:'}
                           </span>
                           <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400', marginLeft: '0.5rem' }}>
                             {quiz.courseCode} - {quiz.courseName}
@@ -285,16 +285,16 @@ const StudentQuizDashboard: React.FC = () => {
                         </div>
                         <div style={{ marginBottom: '1rem' }}>
                           <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Time: </span>
-                          <span style={{ 
-                            fontSize: '1rem', 
-                            color: '#374151', 
+                          <span style={{
+                            fontSize: '1rem',
+                            color: '#374151',
                             fontWeight: '400',
                             marginLeft: '0.5rem'
                           }}>
                             {getTimeRemaining(quiz.deadline)}
                           </span>
                         </div>
-                        
+
                         <button
                           onClick={() => toggleQuizExpansion(quiz.id)}
                           style={{
@@ -315,7 +315,7 @@ const StudentQuizDashboard: React.FC = () => {
                             transform: expandedQuiz === quiz.id ? 'rotate(180deg)' : 'rotate(0deg)',
                             transition: 'transform 0.2s ease'
                           }}>
-                            <path d="M7 10l5 5 5-5z"/>
+                            <path d="M7 10l5 5 5-5z" />
                           </svg>
                         </button>
                       </div>
@@ -358,9 +358,9 @@ const StudentQuizDashboard: React.FC = () => {
                       }}>
                         <div style={{ marginBottom: '0.75rem' }}>
                           <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Assessment Type: </span>
-                          <span style={{ 
-                            fontSize: '0.875rem', 
-                            color: '#374151', 
+                          <span style={{
+                            fontSize: '0.875rem',
+                            color: '#374151',
                             fontWeight: '500',
                             textTransform: 'capitalize'
                           }}>
@@ -387,7 +387,7 @@ const StudentQuizDashboard: React.FC = () => {
                 backgroundColor: '#e5e7eb',
                 margin: '2rem 0'
               }}></div>
-              
+
               <div style={{ marginBottom: '3rem' }}>
                 <h3 style={{
                   fontSize: '1.5rem',
@@ -397,7 +397,7 @@ const StudentQuizDashboard: React.FC = () => {
                 }}>
                   Missed
                 </h3>
-                
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {missedQuizzes.map(quiz => (
                     <div key={quiz.id} style={{
@@ -429,7 +429,7 @@ const StudentQuizDashboard: React.FC = () => {
                           </div>
                           <div style={{ marginBottom: '0.5rem' }}>
                             <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>
-                              {quiz.courseName ? 'Course:' : 'Class:'} 
+                              {quiz.courseName ? 'Course:' : 'Class:'}
                             </span>
                             <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400', marginLeft: '0.5rem' }}>
                               {quiz.courseCode} - {quiz.courseName}
@@ -437,16 +437,16 @@ const StudentQuizDashboard: React.FC = () => {
                           </div>
                           <div style={{ marginBottom: '1rem' }}>
                             <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Time: </span>
-                            <span style={{ 
-                              fontSize: '1rem', 
-                              color: '#374151', 
+                            <span style={{
+                              fontSize: '1rem',
+                              color: '#374151',
                               fontWeight: '400',
                               marginLeft: '0.5rem'
                             }}>
                               Deadline passed
                             </span>
                           </div>
-                          
+
                           <button
                             onClick={() => toggleQuizExpansion(quiz.id)}
                             style={{
@@ -466,7 +466,7 @@ const StudentQuizDashboard: React.FC = () => {
                               transform: expandedQuiz === quiz.id ? 'rotate(180deg)' : 'rotate(0deg)',
                               transition: 'transform 0.2s ease'
                             }}>
-                              <path d="M7 10l5 5 5-5z"/>
+                              <path d="M7 10l5 5 5-5z" />
                             </svg>
                           </button>
                         </div>
@@ -496,9 +496,9 @@ const StudentQuizDashboard: React.FC = () => {
                         }}>
                           <div style={{ marginBottom: '1rem' }}>
                             <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Assessment Type: </span>
-                            <span style={{ 
-                              fontSize: '0.875rem', 
-                              color: '#374151', 
+                            <span style={{
+                              fontSize: '0.875rem',
+                              color: '#374151',
                               fontWeight: '500',
                               textTransform: 'capitalize'
                             }}>
@@ -526,7 +526,7 @@ const StudentQuizDashboard: React.FC = () => {
                 backgroundColor: '#e5e7eb',
                 margin: '2rem 0'
               }}></div>
-              
+
               <div style={{ marginBottom: '3rem' }}>
                 <h3 style={{
                   fontSize: '1.5rem',
@@ -536,7 +536,7 @@ const StudentQuizDashboard: React.FC = () => {
                 }}>
                   Access Blocked
                 </h3>
-                
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {blockedQuizzes.map(quiz => (
                     <div key={quiz.id} style={{
@@ -568,7 +568,7 @@ const StudentQuizDashboard: React.FC = () => {
                           </div>
                           <div style={{ marginBottom: '0.5rem' }}>
                             <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>
-                              {quiz.courseName ? 'Course:' : 'Class:'} 
+                              {quiz.courseName ? 'Course:' : 'Class:'}
                             </span>
                             <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400', marginLeft: '0.5rem' }}>
                               {quiz.courseCode} - {quiz.courseName}
@@ -576,9 +576,9 @@ const StudentQuizDashboard: React.FC = () => {
                           </div>
                           <div style={{ marginBottom: '1rem' }}>
                             <span style={{ fontSize: '1rem', color: '#374151', fontWeight: '400' }}>Time: </span>
-                            <span style={{ 
-                              fontSize: '1rem', 
-                              color: '#374151', 
+                            <span style={{
+                              fontSize: '1rem',
+                              color: '#374151',
                               fontWeight: '400',
                               padding: '2px 8px',
                               backgroundColor: '#f3f4f6',
@@ -587,7 +587,7 @@ const StudentQuizDashboard: React.FC = () => {
                               {getTimeRemaining(quiz.deadline)}
                             </span>
                           </div>
-                          
+
                           <button
                             onClick={() => toggleQuizExpansion(quiz.id)}
                             style={{
@@ -607,7 +607,7 @@ const StudentQuizDashboard: React.FC = () => {
                               transform: expandedQuiz === quiz.id ? 'rotate(180deg)' : 'rotate(0deg)',
                               transition: 'transform 0.2s ease'
                             }}>
-                              <path d="M7 10l5 5 5-5z"/>
+                              <path d="M7 10l5 5 5-5z" />
                             </svg>
                           </button>
                         </div>
@@ -651,7 +651,7 @@ const StudentQuizDashboard: React.FC = () => {
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="#f59e0b">
-                                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
                               </svg>
                               <span style={{ fontSize: '0.875rem', color: '#92400e', fontWeight: '500' }}>
                                 You can't access this quiz because you didn't check in.

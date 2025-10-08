@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Users, FileText, Settings, AlertTriangle, CheckCircle, Clock, User } from 'lucide-react';
+import { Bell, Users, FileText, Settings, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 
 interface Notification {
   id: string;
