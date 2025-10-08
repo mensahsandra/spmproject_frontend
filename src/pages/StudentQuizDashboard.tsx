@@ -145,15 +145,28 @@ const StudentQuizDashboard: React.FC = () => {
   const blockedQuizzes = quizzes.filter(q => q.status === 'blocked');
 
   return (
-    <DashboardLayout>
-      {/* Back Button - Fixed Position at Top Left */}
-      <div style={{ 
-        position: 'fixed',
-        top: '20px',
-        left: '270px',
-        zIndex: 1000
+    <DashboardLayout style={{ 
+      overflow: 'hidden',
+      padding: '0'
+    }}>
+      <div style={{
+        width: '100%',
+        height: '100vh',
+        overflow: 'auto',
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        paddingTop: '2rem',
+        paddingLeft: '3rem'
       }}>
-        <button
+        {/* Back Button - Fixed Position at Top Left */}
+        <div style={{ 
+          position: 'fixed',
+          top: '20px',
+          left: '270px',
+          zIndex: 1000
+        }}>
+          <button
           onClick={() => navigate('/student/academic-hub')}
           style={{
             display: 'flex',
@@ -660,6 +673,7 @@ const StudentQuizDashboard: React.FC = () => {
             </>
           )}
         </div>
+      </div>
     </DashboardLayout>
   );
 };
