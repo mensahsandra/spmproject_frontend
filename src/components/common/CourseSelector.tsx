@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Course, courseUtils } from '../../utils/courseApi';
+import React, { useState } from 'react';
+import type { Course } from '../../utils/courseApi';
+import { courseUtils } from '../../utils/courseApi';
 import { Search, Filter, BookOpen, Users, Award } from 'lucide-react';
 
 interface CourseSelectorProps {

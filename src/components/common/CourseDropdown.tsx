@@ -1,6 +1,7 @@
 import React from 'react';
-import { Course, courseUtils } from '../../utils/courseApi';
-import { ChevronDown, BookOpen } from 'lucide-react';
+import type { Course } from '../../utils/courseApi';
+import { courseUtils } from '../../utils/courseApi';
+import { BookOpen } from 'lucide-react';
 
 interface CourseDropdownProps {
   courses: Course[];

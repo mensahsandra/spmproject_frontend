@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/Dashboard/DashboardLayout';
-import { courseApi, Course, UserCourse, courseUtils } from '../utils/courseApi';
+import type { Course, UserCourse } from '../utils/courseApi';
+import { courseApi, courseUtils, mockCourses } from '../utils/courseApi';
 import { getUser } from '../utils/auth';
-import { User, BookOpen, Save, RefreshCw, AlertCircle, CheckCircle, X } from 'lucide-react';
+import { User, BookOpen, Save, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface ProfileData {
   id: string;
@@ -60,7 +61,7 @@ const ProfileSettingsPage: React.FC = () => {
         setAvailableCourses(availableResponse.data);
       } else {
         // Fallback to mock data
-        setAvailableCourses(courseApi.mockCourses || []);
+        setAvailableCourses(mockCourses || []);
       }
 
       // Load enrolled courses
@@ -74,7 +75,7 @@ const ProfileSettingsPage: React.FC = () => {
       console.error('Error loading course data:', error);
       setMessage({ type: 'error', text: 'Failed to load course data' });
       // Fallback to mock data
-      setAvailableCourses(courseApi.mockCourses || []);
+      setAvailableCourses(mockCourses || []);
     } finally {
       setLoading(false);
     }

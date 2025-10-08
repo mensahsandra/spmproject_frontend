@@ -1,5 +1,6 @@
 import React from 'react';
-import { Course, UserCourse, courseUtils } from '../../utils/courseApi';
+import type { Course, UserCourse } from '../../utils/courseApi';
+import { courseUtils } from '../../utils/courseApi';
 import { BookOpen, User, Award, Users, Calendar, MapPin } from 'lucide-react';
 
 interface CourseDisplayProps {

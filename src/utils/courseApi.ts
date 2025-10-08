@@ -331,7 +331,7 @@ export const courseUtils = {
 
   // Check if course is full
   isCourseFullyEnrolled: (course: Course): boolean => {
-    return course.maxEnrollment ? course.enrollmentCount >= course.maxEnrollment : false;
+    return course.maxEnrollment ? (course.enrollmentCount || 0) >= course.maxEnrollment : false;
   },
 
   // Format course display name
