@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Users, Clock, MapPin, User, Book, UserCheck } from 'lucide-react';
 import { apiFetch } from '../../utils/api';
-import { getToken } from '../../utils/auth';
+import { getToken, getUser } from '../../utils/auth';
 import { jwtDecode } from 'jwt-decode';
 
 type DecodedToken = {
@@ -46,60 +46,70 @@ export default function AttendanceLogs() {
       const token = getToken('lecturer');
       if (!token) {
         setError('Please log in as a lecturer to view attendance.');
+        setLoading(false);
         return;
       }
 
       const decoded = jwtDecode<DecodedToken>(token);
       const lecturerId = decoded.id;
 
-      // Fetch lecturer profile for session info
-      const profileData = await apiFetch('/api/auth/lecturer/profile', { 
-        method: 'GET', 
-        role: 'lecturer' 
-      });
+      // Get current user data from auth utils for immediate display
+      const currentUser = getUser();
+      const lecturerName = currentUser?.name || 
+                          `${currentUser?.firstName || ''} ${currentUser?.lastName || ''}`.trim() ||
+                          'Current Lecturer';
 
-      if (profileData.success && profileData.lecturer) {
-        const lecturer = profileData.lecturer;
-        
-        // Fetch attendance records
-        const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
-          method: 'GET',
-          role: 'lecturer'
+      // Try to fetch real data from backend
+      try {
+        // Fetch lecturer profile for session info
+        const profileData = await apiFetch('/api/auth/lecturer/profile', { 
+          method: 'GET', 
+          role: 'lecturer' 
         });
 
-        if (attendanceData.success) {
-          const records = attendanceData.records || [];
-          setAttendanceRecords(records);
+        if (profileData.success && profileData.lecturer) {
+          const lecturer = profileData.lecturer;
           
-          // Set session info
-          setSessionInfo({
-            lecturer: lecturer.name || 'Unknown Lecturer',
-            courseCode: records.length > 0 ? records[0].courseCode : 'No Active Session',
-            classRepresentative: 'To be assigned', // This would come from backend
-            totalAttendees: records.length
+          // Fetch attendance records
+          const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
+            method: 'GET',
+            role: 'lecturer'
           });
-        } else {
-          setAttendanceRecords([]);
-          setSessionInfo({
-            lecturer: lecturer.name || 'Unknown Lecturer',
-            courseCode: 'No Active Session',
-            classRepresentative: 'N/A',
-            totalAttendees: 0
-          });
+
+          if (attendanceData.success && attendanceData.records) {
+            const records = attendanceData.records || [];
+            setAttendanceRecords(records);
+            
+            // Use real backend data
+            setSessionInfo({
+              lecturer: lecturer.name || lecturerName,
+              courseCode: attendanceData.currentSession?.courseCode || 
+                         (records.length > 0 ? `${records[0].courseCode} - ${records[0].courseName || 'Course'}` : 'No Active Session'),
+              classRepresentative: attendanceData.currentSession?.classRepresentative || 'To be assigned',
+              totalAttendees: records.length
+            });
+            
+            setError(null); // Clear any previous errors
+            return; // Successfully loaded real data
+          }
         }
+      } catch (apiError) {
+        console.warn('Backend API not available, using current user data:', apiError);
       }
-    } catch (err: any) {
-      console.error('Error fetching attendance data:', err);
-      setError('Failed to load attendance data. This feature requires backend support.');
+
+      // Fallback: Use current logged-in user data with sample attendance
+      console.log('Using fallback data with current user:', lecturerName);
       
-      // Mock data for demonstration
       setSessionInfo({
-        lecturer: 'Kwabena Lecturer',
-        courseCode: 'CS101 - Introduction to Computer Science',
-        classRepresentative: 'John Doe',
+        lecturer: lecturerName,
+        courseCode: currentUser?.department ? 
+                   `${currentUser.department.toUpperCase()}101 - Introduction to ${currentUser.department}` :
+                   'No Active Session',
+        classRepresentative: 'To be assigned',
         totalAttendees: 3
       });
       
+      // Sample attendance records with current user context
       setAttendanceRecords([
         {
           _id: '1',
@@ -108,7 +118,7 @@ export default function AttendanceLogs() {
           centre: 'Kumasi',
           timestamp: new Date().toISOString(),
           sessionCode: 'ABC123',
-          courseCode: 'CS101'
+          courseCode: currentUser?.department?.toUpperCase() + '101' || 'CS101'
         },
         {
           _id: '2',
@@ -117,7 +127,7 @@ export default function AttendanceLogs() {
           centre: 'Accra',
           timestamp: new Date(Date.now() - 300000).toISOString(),
           sessionCode: 'ABC123',
-          courseCode: 'CS101'
+          courseCode: currentUser?.department?.toUpperCase() + '101' || 'CS101'
         },
         {
           _id: '3',
@@ -126,9 +136,28 @@ export default function AttendanceLogs() {
           centre: 'Takoradi',
           timestamp: new Date(Date.now() - 600000).toISOString(),
           sessionCode: 'ABC123',
-          courseCode: 'CS101'
+          courseCode: currentUser?.department?.toUpperCase() + '101' || 'CS101'
         }
       ]);
+
+      setError('Using sample data. Backend integration required for real attendance data.');
+      
+    } catch (err: any) {
+      console.error('Error in fetchAttendanceData:', err);
+      setError('Failed to load attendance data. Please check your connection and try again.');
+      
+      // Emergency fallback with minimal data
+      const currentUser = getUser();
+      const lecturerName = currentUser?.name || 'Current Lecturer';
+      
+      setSessionInfo({
+        lecturer: lecturerName,
+        courseCode: 'No Active Session',
+        classRepresentative: 'N/A',
+        totalAttendees: 0
+      });
+      
+      setAttendanceRecords([]);
     } finally {
       setLoading(false);
     }

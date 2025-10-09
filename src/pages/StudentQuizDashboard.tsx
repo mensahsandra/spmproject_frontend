@@ -27,58 +27,87 @@ const StudentQuizDashboard: React.FC = () => {
     loadQuizzes();
   }, []);
 
-  const loadQuizzes = () => {
+  const loadQuizzes = async () => {
+    try {
+      // Try to fetch real quiz data from backend
+      const response = await fetch('/api/student/quizzes', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.quizzes) {
+          setQuizzes(data.quizzes);
+          setLoading(false);
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn('Backend API not available, using sample data:', error);
+    }
+
+    // Fallback to sample data with current user context
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const userDepartment = currentUser.department || 'Computer Science';
+    
     const mockQuizzes: Quiz[] = [
       {
         id: 'quiz_1',
-        title: 'Web Development Basics',
-        lecturerName: 'Dr. Kwabena Mensah',
-        courseName: 'Web Development',
-        courseCode: 'BIT364',
+        title: `${userDepartment} Fundamentals`,
+        lecturerName: 'Dr. Current Lecturer',
+        courseName: userDepartment,
+        courseCode: userDepartment === 'Computer Science' ? 'CS101' : 
+                   userDepartment === 'Information Technology' ? 'IT101' : 'DEPT101',
         deadline: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
         status: 'available',
         attendanceRequired: true,
         studentAttended: true,
-        description: 'Test your understanding of HTML, CSS, and JavaScript fundamentals.',
+        description: `Test your understanding of ${userDepartment.toLowerCase()} fundamentals.`,
         assessmentType: 'multiple-choice'
       },
       {
         id: 'quiz_2',
-        title: 'Network Security',
-        lecturerName: 'Dr. Abena Ayimadu',
-        courseName: 'Network Security',
-        courseCode: 'BIT367',
+        title: 'Advanced Topics',
+        lecturerName: 'Dr. Course Instructor',
+        courseName: 'Advanced Studies',
+        courseCode: userDepartment === 'Computer Science' ? 'CS201' : 
+                   userDepartment === 'Information Technology' ? 'IT201' : 'DEPT201',
         deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
         status: 'available',
         attendanceRequired: false,
         studentAttended: true,
-        description: 'Comprehensive assessment on network security principles',
+        description: 'Advanced concepts and practical applications',
         assessmentType: 'typing'
       },
       {
         id: 'quiz_3',
-        title: 'Database Design Quiz',
-        lecturerName: 'Prof. Sarah Opoku Agyeman',
-        courseName: 'Database Management',
-        courseCode: 'BIT301',
+        title: 'Practical Assessment',
+        lecturerName: 'Prof. Department Head',
+        courseName: 'Practical Applications',
+        courseCode: userDepartment === 'Computer Science' ? 'CS301' : 
+                   userDepartment === 'Information Technology' ? 'IT301' : 'DEPT301',
         deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         status: 'blocked',
         attendanceRequired: true,
         studentAttended: false,
-        description: 'Quiz on database normalization and ER diagrams',
+        description: 'Hands-on practical assessment',
         assessmentType: 'multiple-choice'
       },
       {
         id: 'quiz_4',
-        title: 'JavaScript Fundamentals',
-        lecturerName: 'Dr. Kwabena Mensah',
-        courseName: 'Web Development',
-        courseCode: 'BIT364',
+        title: 'Final Project',
+        lecturerName: 'Dr. Project Supervisor',
+        courseName: 'Capstone Project',
+        courseCode: userDepartment === 'Computer Science' ? 'CS401' : 
+                   userDepartment === 'Information Technology' ? 'IT401' : 'DEPT401',
         deadline: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         status: 'missed',
         attendanceRequired: true,
         studentAttended: true,
-        description: 'Quiz on JavaScript basics and DOM manipulation',
+        description: 'Final project submission and presentation',
         assessmentType: 'upload'
       }
     ];
