@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Users, Clock, MapPin, User, Book, UserCheck } from 'lucide-react';
 import { apiFetch } from '../../utils/api';
 import { getToken, getUser, getActiveRole } from '../../utils/auth';
+import { generateAttendanceReport } from '../../utils/attendanceDebug';
 
 
 
@@ -27,6 +28,7 @@ export default function AttendanceLogs() {
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastRecordCount, setLastRecordCount] = useState(0);
 
   useEffect(() => {
     fetchAttendanceData();
@@ -34,40 +36,57 @@ export default function AttendanceLogs() {
     // Set up polling to refresh data every 10 seconds
     const interval = setInterval(fetchAttendanceData, 10000);
 
-    // Set up real-time notifications for QR scans
-    const checkForNewScans = async () => {
+    // Set up more aggressive polling for real-time updates
+    const checkForUpdates = async () => {
       try {
         const userData = await apiFetch('/api/auth/me-enhanced', { method: 'GET', role: 'lecturer' });
         if (userData?.user?.id) {
-          const notifications = await apiFetch(`/api/attendance/notifications/${userData.user.id}`, {
+          const lecturerId = userData.user.id || userData.user._id || userData.user.staffId;
+          
+          // Fetch latest attendance data without showing loading state
+          const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
             method: 'GET',
             role: 'lecturer'
           });
 
-          if (notifications?.newScans?.length > 0) {
-            // Show notification for new scans
-            notifications.newScans.forEach((scan: any) => {
-              showScanNotification(scan.studentName, scan.timestamp);
-            });
-
-            // Refresh attendance data to show new records
-            fetchAttendanceData();
+          if (attendanceData.success) {
+            const newRecords = attendanceData.records || [];
+            
+            // Check if there are new records
+            if (newRecords.length > lastRecordCount) {
+              console.log(`🔔 New attendance records detected: ${newRecords.length - lastRecordCount} new students`);
+              
+              // Show notifications for new students (only the new ones)
+              const newStudents = newRecords.slice(lastRecordCount);
+              newStudents.forEach((record: AttendanceRecord) => {
+                showScanNotification(record.studentName, record.timestamp);
+              });
+              
+              // Update the records and session info
+              setAttendanceRecords(newRecords);
+              setSessionInfo(prev => prev ? {
+                ...prev,
+                totalAttendees: newRecords.length
+              } : null);
+              
+              setLastRecordCount(newRecords.length);
+            }
           }
         }
       } catch (error) {
-        // Silently fail - notifications are not critical
-        console.log('Notification check failed:', error);
+        // Silently fail but log for debugging
+        console.log('Real-time update check failed:', error);
       }
     };
 
-    // Check for notifications every 5 seconds
-    const notificationInterval = setInterval(checkForNewScans, 5000);
+    // Check for updates every 3 seconds for better real-time feel
+    const updateInterval = setInterval(checkForUpdates, 3000);
 
     return () => {
       clearInterval(interval);
-      clearInterval(notificationInterval);
+      clearInterval(updateInterval);
     };
-  }, []);
+  }, [lastRecordCount]); // Add dependency to track record count changes
 
   // Show browser notification for new QR scans
   const showScanNotification = (studentName: string, timestamp: string) => {
@@ -178,6 +197,10 @@ export default function AttendanceLogs() {
 
           setError(null);
           console.log('✅ Successfully loaded attendance data:', records.length, 'records');
+          
+          // Initialize the record count for real-time tracking
+          setLastRecordCount(records.length);
+          
           return;
         } else {
           throw new Error(attendanceData.message || 'Failed to fetch attendance data');
@@ -403,7 +426,7 @@ export default function AttendanceLogs() {
                       Test Backend
                     </button>
                     <button
-                      className="btn btn-sm btn-outline-secondary"
+                      className="btn btn-sm btn-outline-secondary me-2"
                       onClick={() => {
                         localStorage.clear();
                         sessionStorage.clear();
@@ -412,6 +435,37 @@ export default function AttendanceLogs() {
                       }}
                     >
                       Clear Cache
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-info"
+                      onClick={async () => {
+                        console.log('🧪 Running comprehensive attendance system diagnosis...');
+                        const report = await generateAttendanceReport();
+                        
+                        const summary = `
+ATTENDANCE SYSTEM DIAGNOSIS:
+
+Frontend Status:
+• Token: ${report.frontendStatus.tokenExists ? '✅' : '❌'}
+• User Data: ${report.frontendStatus.userDataLoaded ? '✅' : '❌'}  
+• Lecturer ID: ${report.frontendStatus.lecturerId || 'Not found'}
+
+Backend Status:
+• Auth Endpoint: ${report.backendStatus.authEndpointWorking ? '✅' : '❌'}
+• Attendance Endpoint: ${report.backendStatus.attendanceEndpointWorking ? '✅' : '❌'}
+• Records Found: ${report.backendStatus.recordCount}
+
+Current State:
+• Frontend Records: ${attendanceRecords.length}
+• Tracked Count: ${lastRecordCount}
+
+Check console for detailed report and recommendations.
+                        `;
+                        
+                        alert(summary);
+                      }}
+                    >
+                      Full Diagnosis
                     </button>
                   </div>
                 </div>
@@ -491,9 +545,32 @@ export default function AttendanceLogs() {
       <div className="text-center mt-3">
         <small className="text-muted">
           <Clock size={12} className="me-1" />
-          Auto-refreshing every 10 seconds
+          Auto-refreshing every 3 seconds • Real-time updates enabled
         </small>
       </div>
+      
+      {/* Real-time status indicator */}
+      <div className="position-fixed" style={{ bottom: '20px', right: '20px', zIndex: 1000 }}>
+        <div className="d-flex align-items-center gap-2 bg-success text-white px-3 py-2 rounded-pill shadow">
+          <div 
+            className="bg-white rounded-circle" 
+            style={{ 
+              width: '8px', 
+              height: '8px',
+              animation: 'pulse 2s infinite'
+            }}
+          ></div>
+          <small>Live Updates</small>
+        </div>
+      </div>
+      
+      <style>{`
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.5; }
+          100% { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
