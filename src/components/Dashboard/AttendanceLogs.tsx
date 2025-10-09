@@ -32,6 +32,14 @@ export default function AttendanceLogs() {
   const [isChecking, setIsChecking] = useState(false);
 
   useEffect(() => {
+    // Request notification permission on mount
+    if (Notification.permission === 'default') {
+      console.log('📱 Requesting notification permission on mount...');
+      Notification.requestPermission().then(permission => {
+        console.log('📱 Notification permission:', permission);
+      });
+    }
+
     fetchAttendanceData();
 
     // Set up polling to refresh data every 10 seconds
@@ -57,18 +65,16 @@ export default function AttendanceLogs() {
             role: 'lecturer'
           });
 
-          console.log('🔍 Real-time check - Backend response:', attendanceData);
-
           if (attendanceData.success) {
             const newRecords = attendanceData.records || [];
             console.log(`🔍 Real-time check - Records: ${newRecords.length}, Last count: ${lastRecordCount}`);
 
-            // Check if there are new records
-            if (newRecords.length > lastRecordCount) {
+            // Check if there are new records (skip initial load)
+            if (newRecords.length > lastRecordCount && lastRecordCount > 0) {
               console.log(`🔔 NEW ATTENDANCE DETECTED! ${newRecords.length - lastRecordCount} new students`);
 
-              // Show notifications for new students (only the new ones)
-              const newStudents = newRecords.slice(lastRecordCount);
+              // Show notifications for new students (only the new ones at the beginning of array)
+              const newStudents = newRecords.slice(0, newRecords.length - lastRecordCount);
               newStudents.forEach((record: AttendanceRecord) => {
                 console.log(`📢 Showing notification for: ${record.studentName}`);
                 showScanNotification(record.studentName, record.timestamp);
