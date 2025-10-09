@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Users, Clock, MapPin, User, Book, UserCheck } from 'lucide-react';
 import { apiFetch } from '../../utils/api';
 import { getToken, getUser, getActiveRole } from '../../utils/auth';
-import { jwtDecode } from 'jwt-decode';
 
 
 
@@ -31,117 +30,189 @@ export default function AttendanceLogs() {
 
   useEffect(() => {
     fetchAttendanceData();
-    
+
     // Set up polling to refresh data every 10 seconds
     const interval = setInterval(fetchAttendanceData, 10000);
-    return () => clearInterval(interval);
+    
+    // Set up real-time notifications for QR scans
+    const checkForNewScans = async () => {
+      try {
+        const userData = await apiFetch('/api/auth/me-enhanced', { method: 'GET', role: 'lecturer' });
+        if (userData?.user?.id) {
+          const notifications = await apiFetch(`/api/attendance/notifications/${userData.user.id}`, {
+            method: 'GET',
+            role: 'lecturer'
+          });
+          
+          if (notifications?.newScans?.length > 0) {
+            // Show notification for new scans
+            notifications.newScans.forEach((scan: any) => {
+              showScanNotification(scan.studentName, scan.timestamp);
+            });
+            
+            // Refresh attendance data to show new records
+            fetchAttendanceData();
+          }
+        }
+      } catch (error) {
+        // Silently fail - notifications are not critical
+        console.log('Notification check failed:', error);
+      }
+    };
+
+    // Check for notifications every 5 seconds
+    const notificationInterval = setInterval(checkForNewScans, 5000);
+    
+    return () => {
+      clearInterval(interval);
+      clearInterval(notificationInterval);
+    };
   }, []);
 
-  const fetchAttendanceData = async () => {
-    setLoading(true); // Set loading to true at the start
+  // Show browser notification for new QR scans
+  const showScanNotification = (studentName: string, timestamp: string) => {
+    // Request notification permission if not granted
+    if (Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
     
+    if (Notification.permission === 'granted') {
+      new Notification('New Student Check-in', {
+        body: `${studentName} just checked in at ${new Date(timestamp).toLocaleTimeString()}`,
+        icon: '/favicon.ico',
+        tag: 'attendance-scan'
+      });
+    }
+    
+    // Also show in-app notification
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+      <strong>New Check-in!</strong> ${studentName} just scanned the QR code.
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        alertDiv.parentNode.removeChild(alertDiv);
+      }
+    }, 5000);
+  };
+
+  const fetchAttendanceData = async () => {
+    setLoading(true);
+
     try {
       const token = getToken('lecturer');
       console.log('🔍 Debug - Token retrieved:', token ? 'Token exists' : 'No token found');
-      console.log('🔍 Debug - Active role:', getActiveRole());
-      console.log('🔍 Debug - All localStorage keys:', Object.keys(localStorage));
-      
+
       if (!token) {
         setError('Please log in as a lecturer to view attendance.');
         setLoading(false);
         return;
       }
 
-      const decoded = jwtDecode<any>(token); // Use 'any' to access all fields
-      console.log('🔍 Debug - Decoded token:', decoded);
-      
-      // Try multiple possible field names for lecturer ID
-      const lecturerId = decoded.id || decoded.sub || decoded.lecturerId || decoded.userId || decoded.user_id;
-      console.log('🔍 Debug - Lecturer ID extracted:', lecturerId);
-      
-      if (!lecturerId) {
-        setError('Invalid token: No lecturer ID found. Please log in again.');
+      // First, get current user data using the enhanced endpoint
+      const userData = await apiFetch('/api/auth/me-enhanced', {
+        method: 'GET',
+        role: 'lecturer'
+      });
+
+      console.log('🔍 Debug - User data from enhanced endpoint:', userData);
+
+      if (!userData?.user) {
+        setError('Failed to get user information. Please log in again.');
         setLoading(false);
         return;
       }
 
-      // Get current user data from auth utils for immediate display
-      const currentUser = getUser();
-      console.log('🔍 Debug - Current user data:', currentUser);
-      const lecturerName = currentUser?.name || 
-                          `${currentUser?.firstName || ''} ${currentUser?.lastName || ''}`.trim() ||
-                          'Current Lecturer';
-      console.log('🔍 Debug - Lecturer name resolved:', lecturerName);
+      const user = userData.user;
+      
+      // Extract lecturer ID - try multiple field names as backend suggested
+      const lecturerId = user.id || user._id || user.lecturerId || user.staffId;
+      console.log('🔍 Debug - Lecturer ID extracted:', lecturerId);
 
-      // Try to fetch real data from backend
-      try {
-        // Fetch lecturer profile for session info
-        const profileData = await apiFetch('/api/auth/lecturer/profile', { 
-          method: 'GET', 
-          role: 'lecturer' 
-        });
-
-        if (profileData.success && profileData.lecturer) {
-          const lecturer = profileData.lecturer;
-          
-          // Fetch attendance records
-          const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
-            method: 'GET',
-            role: 'lecturer'
-          });
-
-          if (attendanceData.success && attendanceData.records) {
-            const records = attendanceData.records || [];
-            setAttendanceRecords(records);
-            
-            // Use real backend data
-            setSessionInfo({
-              lecturer: lecturer.name || lecturerName,
-              courseCode: attendanceData.currentSession?.courseCode || 
-                         (records.length > 0 ? `${records[0].courseCode} - ${records[0].courseName || 'Course'}` : 'No Active Session'),
-              classRepresentative: attendanceData.currentSession?.classRepresentative || 'To be assigned',
-              totalAttendees: records.length
-            });
-            
-            setError(null); // Clear any previous errors
-            return; // Successfully loaded real data
-          }
-        }
-      } catch (apiError) {
-        console.warn('Backend API not available, using current user data:', apiError);
+      if (!lecturerId) {
+        setError('Invalid user data: No lecturer ID found. Please contact support.');
+        setLoading(false);
+        return;
       }
 
-      // No active session - show empty state
-      console.log('No backend data available, showing empty state for:', lecturerName);
+      // Get lecturer name with honorific if available
+      const lecturerName = user.fullName || 
+                          (user.honorific ? `${user.honorific} ${user.name}` : user.name) ||
+                          'Current Lecturer';
       
-      setSessionInfo({
-        lecturer: lecturerName,
-        courseCode: 'No Active Session',
-        classRepresentative: 'To be assigned',
-        totalAttendees: 0
-      });
-      
-      // Empty attendance records - will show real data when students scan
-      setAttendanceRecords([]);
+      // Get course information
+      const courseInfo = user.courses && user.courses.length > 0 
+        ? `${user.courses[0].code || user.courses[0]} - ${user.courses[0].name || 'Course'}`
+        : user.course || 'No Active Course';
 
-      setError('No active session. Generate a session code for students to scan and check in.');
-      
+      console.log('🔍 Debug - Lecturer name:', lecturerName);
+      console.log('🔍 Debug - Course info:', courseInfo);
+
+      // Fetch attendance records from backend
+      try {
+        const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
+          method: 'GET',
+          role: 'lecturer'
+        });
+
+        console.log('🔍 Debug - Attendance data received:', attendanceData);
+
+        if (attendanceData.success) {
+          const records = attendanceData.records || [];
+          setAttendanceRecords(records);
+
+          // Use backend session info if available, otherwise use user data
+          setSessionInfo({
+            lecturer: attendanceData.lecturerName || lecturerName,
+            courseCode: attendanceData.course || courseInfo,
+            classRepresentative: attendanceData.classRep || 'To be assigned',
+            totalAttendees: attendanceData.totalAttendees || records.length
+          });
+
+          setError(null);
+          console.log('✅ Successfully loaded attendance data:', records.length, 'records');
+          return;
+        } else {
+          throw new Error(attendanceData.message || 'Failed to fetch attendance data');
+        }
+      } catch (apiError: any) {
+        console.warn('⚠️ Attendance API error:', apiError);
+        
+        // Show user info but indicate no attendance data
+        setSessionInfo({
+          lecturer: lecturerName,
+          courseCode: courseInfo,
+          classRepresentative: 'To be assigned',
+          totalAttendees: 0
+        });
+
+        setAttendanceRecords([]);
+        setError(`No attendance session active. ${apiError.message || 'Generate a session code for students to scan.'}`);
+      }
+
     } catch (err: any) {
-      console.error('Error in fetchAttendanceData:', err);
-      setError('Failed to load attendance data. Please check your connection and try again.');
+      console.error('❌ Critical error in fetchAttendanceData:', err);
       
-      // Emergency fallback with minimal data
+      // Try to get basic user info as fallback
       const currentUser = getUser();
-      const lecturerName = currentUser?.name || 'Current Lecturer';
-      
+      const fallbackName = currentUser?.name || 'Current Lecturer';
+
       setSessionInfo({
-        lecturer: lecturerName,
-        courseCode: 'No Active Session',
+        lecturer: fallbackName,
+        courseCode: 'Unable to load course info',
         classRepresentative: 'N/A',
         totalAttendees: 0
       });
-      
+
       setAttendanceRecords([]);
+      setError(`Connection error: ${err.message || 'Please check your internet connection and try again.'}`);
     } finally {
       setLoading(false);
     }
@@ -223,7 +294,7 @@ export default function AttendanceLogs() {
               <div className="text-muted">
                 <small>Last updated: {new Date().toLocaleTimeString()}</small>
               </div>
-              <button 
+              <button
                 onClick={fetchAttendanceData}
                 className={`btn ${loading ? 'btn-primary' : 'btn-outline-primary'} btn-sm mt-2`}
                 disabled={loading}
@@ -237,7 +308,7 @@ export default function AttendanceLogs() {
                 ) : (
                   <>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="me-1">
-                      <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+                      <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
                     </svg>
                     Refresh Data
                   </>
@@ -252,6 +323,101 @@ export default function AttendanceLogs() {
       {error && (
         <div className="alert alert-info mb-4">
           <strong>Status:</strong> {error}
+        </div>
+      )}
+
+      {/* Debug Panel - Only show in development */}
+      {import.meta.env.DEV && (
+        <div className="card border-warning mb-4">
+          <div className="card-body">
+            <details>
+              <summary className="fw-bold text-warning" style={{ cursor: 'pointer' }}>
+                🔧 Debug Information
+              </summary>
+              <div className="mt-3">
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <h6>Authentication Status:</h6>
+                    <ul className="list-unstyled small">
+                      <li>✅ Token exists: {getToken('lecturer') ? 'Yes' : 'No'}</li>
+                      <li>✅ Active role: {getActiveRole() || 'None'}</li>
+                      <li>✅ User data: {getUser()?.name || 'Not loaded'}</li>
+                    </ul>
+                  </div>
+                  <div className="col-md-6">
+                    <h6>Backend Connection:</h6>
+                    <button 
+                      className="btn btn-sm btn-outline-primary me-2"
+                      onClick={async () => {
+                        console.log('🧪 Starting comprehensive backend test...');
+                        
+                        try {
+                          // Test 1: Check if we can reach the backend
+                          console.log('Test 1: Basic connectivity...');
+                          const response = await fetch('https://spmproject-backend.vercel.app/api/auth/me-enhanced', {
+                            method: 'GET',
+                            headers: {
+                              'Authorization': `Bearer ${getToken('lecturer')}`,
+                              'Content-Type': 'application/json'
+                            }
+                          });
+                          
+                          console.log('Response status:', response.status);
+                          console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+                          
+                          const data = await response.json();
+                          console.log('Response data:', data);
+                          
+                          if (response.ok && data.user) {
+                            console.log('✅ Backend connection successful!');
+                            console.log('User data:', data.user);
+                            
+                            // Test 2: Try attendance endpoint
+                            const lecturerId = data.user.id || data.user._id || data.user.staffId;
+                            if (lecturerId) {
+                              console.log('Test 2: Attendance endpoint...');
+                              const attendanceResponse = await fetch(`https://spmproject-backend.vercel.app/api/attendance/lecturer/${lecturerId}`, {
+                                method: 'GET',
+                                headers: {
+                                  'Authorization': `Bearer ${getToken('lecturer')}`,
+                                  'Content-Type': 'application/json'
+                                }
+                              });
+                              
+                              const attendanceData = await attendanceResponse.json();
+                              console.log('Attendance response:', attendanceData);
+                              
+                              alert(`✅ Backend tests successful!\n\nUser: ${data.user.name}\nLecturer ID: ${lecturerId}\nAttendance records: ${attendanceData.records?.length || 0}`);
+                            } else {
+                              alert('⚠️ User data received but no lecturer ID found');
+                            }
+                          } else {
+                            throw new Error(`Backend returned error: ${data.message || 'Unknown error'}`);
+                          }
+                        } catch (error: any) {
+                          console.error('❌ Backend test failed:', error);
+                          alert(`❌ Backend test failed!\n\nError: ${error.message}\n\nCheck console for full details.`);
+                        }
+                      }}
+                    >
+                      Test Backend
+                    </button>
+                    <button 
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => {
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        alert('Cache cleared! Please log in again.');
+                        window.location.href = '/lecturer-login';
+                      }}
+                    >
+                      Clear Cache
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
         </div>
       )}
 
