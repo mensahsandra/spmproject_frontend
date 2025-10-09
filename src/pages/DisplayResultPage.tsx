@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { fetchEnhancedStudentResults, getMockResultsData } from "../utils/resultsApi";
+import type { StudentResultsData } from "../utils/resultsApi";
+
+// Using interfaces from resultsApi utility
 
 const DisplayResultPage: React.FC = () => {
     const navigate = useNavigate();
@@ -43,8 +47,11 @@ const DisplayResultPage: React.FC = () => {
     const now = new Date();
     const dateString = now.toLocaleDateString() + " " + now.toLocaleTimeString();
 
-    // State for collapsible insight cards
+    // State management
     const [expandedInsights, setExpandedInsights] = useState<Record<string, boolean>>({});
+    const [courseData, setCourseData] = useState<StudentResultsData>({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string>('');
 
     const toggleInsight = (courseKey: string) => {
         setExpandedInsights(prev => ({
@@ -53,69 +60,39 @@ const DisplayResultPage: React.FC = () => {
         }));
     };
 
-    // Block-specific course data with updated assessment types and options
-    const courseData: Record<string, any[]> = {
-        "Block 1": [
-            {
-                code: "BIT 364",
-                name: "ENTREPRENEURSHIP",
-                rows: [
-                    { type: "Assignment", option: "Pending", marks: "-" },
-                    { type: "Mid Semester", option: "Graded", marks: 15 },
-                    { type: "Group Work", option: "Graded", marks: 60 },
-                ],
-            },
-            {
-                code: "BIT 364",
-                name: "COMPUTER GRAPHICS & IMAGE PROCESSING",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 5 },
-                    { type: "Mid Semester", option: "Graded", marks: 10 },
-                    { type: "Group Work", option: "Pending", marks: "-" },
-                ],
-            },
-        ],
-        "Block 2": [
-            {
-                code: "BIT 365",
-                name: "WEB DEVELOPMENT",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 8 },
-                    { type: "Mid Semester", option: "Graded", marks: 12 },
-                    { type: "Group Work", option: "Graded", marks: 55 },
-                ],
-            },
-        ],
-        "Block 3": [
-            {
-                code: "BIT 366",
-                name: "DATABASE MANAGEMENT",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 10 },
-                    { type: "Mid Semester", option: "Graded", marks: 14 },
-                    { type: "Group Work", option: "Graded", marks: 58 },
-                ],
-            },
-            {
-                code: "BIT 367",
-                name: "NETWORK SECURITY",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 7 },
-                    { type: "Mid Semester", option: "Pending", marks: 11 },
-                    { type: "Group Work", option: "Graded", marks: 52 },
-                ],
-            },
-            {
-                code: "BIT 368",
-                name: "MOBILE APP DEVELOPMENT",
-                rows: [
-                    { type: "Assignment", option: "Graded", marks: 9 },
-                    { type: "Mid Semester", option: "Graded", marks: 13 },
-                    { type: "Group Work", option: "Pending", marks: 60 },
-                ],
-            },
-        ],
-    };
+    // Fetch student results data
+    useEffect(() => {
+        const loadStudentResults = async () => {
+            setLoading(true);
+            setError('');
+            
+            try {
+                // Get student ID from user data for enhanced results
+                const studentId = studentInfo.studentId !== 'Pending' ? studentInfo.studentId : undefined;
+                
+                // Fetch enhanced results (includes quiz data when available)
+                const results = await fetchEnhancedStudentResults(
+                    selectedYear, 
+                    selectedSemester, 
+                    selectedBlock,
+                    studentId
+                );
+                
+                setCourseData(results);
+            } catch (error: any) {
+                console.warn('Failed to load results:', error);
+                setError(error.message || 'Failed to load student results');
+                // Still set mock data as fallback
+                setCourseData(getMockResultsData());
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadStudentResults();
+    }, [selectedYear, selectedSemester, selectedBlock, studentInfo.studentId]);
+
+
 
     const blocks = courseData[selectedBlock] || [];
 
@@ -165,6 +142,11 @@ const DisplayResultPage: React.FC = () => {
                     @keyframes fadeIn {
                         from { opacity: 0; transform: translateY(-10px); }
                         to { opacity: 1; transform: translateY(0); }
+                    }
+                    
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
                     }
                     
                     @media (max-width: 768px) {
@@ -263,8 +245,108 @@ const DisplayResultPage: React.FC = () => {
                                 </tbody>
                             </table>
                         </div>
-                        {/* Block/Course Tables with AI Insights */}
-                        {blocks.map((block, blockIndex) => {
+
+                        {/* Loading State */}
+                        {loading && (
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: '60px 20px',
+                                background: 'white',
+                                borderRadius: '16px',
+                                boxShadow: '0 4px 16px rgba(0,0,0,0.05)',
+                                marginBottom: '40px'
+                            }}>
+                                <div style={{ textAlign: 'center' }}>
+                                    <div style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        border: '4px solid #e5e7eb',
+                                        borderTop: '4px solid #3b82f6',
+                                        borderRadius: '50%',
+                                        animation: 'spin 1s linear infinite',
+                                        margin: '0 auto 16px'
+                                    }}></div>
+                                    <p style={{ color: '#6b7280', margin: 0 }}>Loading your results...</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Error State */}
+                        {error && !loading && (
+                            <div style={{
+                                background: '#fef2f2',
+                                border: '1px solid #fecaca',
+                                borderRadius: '16px',
+                                padding: '24px',
+                                marginBottom: '40px',
+                                textAlign: 'center'
+                            }}>
+                                <div style={{ color: '#dc2626', fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>
+                                    Unable to Load Results
+                                </div>
+                                <p style={{ color: '#7f1d1d', margin: '0 0 16px 0' }}>
+                                    {error}
+                                </p>
+                                <button
+                                    style={{
+                                        background: '#dc2626',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        padding: '8px 16px',
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={() => window.location.reload()}
+                                >
+                                    Try Again
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Development Integration Test */}
+                        {import.meta.env.DEV && !loading && (
+                            <div style={{
+                                background: '#f0f9ff',
+                                border: '1px solid #0ea5e9',
+                                borderRadius: '12px',
+                                padding: '16px',
+                                marginBottom: '24px'
+                            }}>
+                                <details>
+                                    <summary style={{ cursor: 'pointer', fontWeight: 600, color: '#0369a1' }}>
+                                        🔗 Quiz Integration Status
+                                    </summary>
+                                    <div style={{ marginTop: '12px', fontSize: '14px', color: '#0c4a6e' }}>
+                                        <p><strong>Current Status:</strong> Frontend ready for dynamic data</p>
+                                        <p><strong>Assessment Mapping:</strong> Quiz → Assessment, Assignment → Assignment, etc.</p>
+                                        <p><strong>Data Source:</strong> {error ? 'Mock Data (Backend unavailable)' : 'Attempting Real Data'}</p>
+                                        <button
+                                            style={{
+                                                background: '#0ea5e9',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                padding: '6px 12px',
+                                                fontSize: '12px',
+                                                cursor: 'pointer',
+                                                marginTop: '8px'
+                                            }}
+                                            onClick={async () => {
+                                                const { simulateQuizToResultsFlow } = await import('../utils/resultsIntegration');
+                                                simulateQuizToResultsFlow();
+                                            }}
+                                        >
+                                            Show Integration Flow
+                                        </button>
+                                    </div>
+                                </details>
+                            </div>
+                        )}
+
+                        {/* Results Content */}
+                        {!loading && !error && blocks.map((block, blockIndex) => {
                             const insight = generateInsight(block);
                             const courseKey = `${block.code}-${blockIndex}`;
                             const isExpanded = expandedInsights[courseKey];
