@@ -33,7 +33,7 @@ export default function AttendanceLogs() {
 
     // Set up polling to refresh data every 10 seconds
     const interval = setInterval(fetchAttendanceData, 10000);
-    
+
     // Set up real-time notifications for QR scans
     const checkForNewScans = async () => {
       try {
@@ -43,13 +43,13 @@ export default function AttendanceLogs() {
             method: 'GET',
             role: 'lecturer'
           });
-          
+
           if (notifications?.newScans?.length > 0) {
             // Show notification for new scans
             notifications.newScans.forEach((scan: any) => {
               showScanNotification(scan.studentName, scan.timestamp);
             });
-            
+
             // Refresh attendance data to show new records
             fetchAttendanceData();
           }
@@ -62,7 +62,7 @@ export default function AttendanceLogs() {
 
     // Check for notifications every 5 seconds
     const notificationInterval = setInterval(checkForNewScans, 5000);
-    
+
     return () => {
       clearInterval(interval);
       clearInterval(notificationInterval);
@@ -75,7 +75,7 @@ export default function AttendanceLogs() {
     if (Notification.permission === 'default') {
       Notification.requestPermission();
     }
-    
+
     if (Notification.permission === 'granted') {
       new Notification('New Student Check-in', {
         body: `${studentName} just checked in at ${new Date(timestamp).toLocaleTimeString()}`,
@@ -83,7 +83,7 @@ export default function AttendanceLogs() {
         tag: 'attendance-scan'
       });
     }
-    
+
     // Also show in-app notification
     const alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
@@ -92,9 +92,9 @@ export default function AttendanceLogs() {
       <strong>New Check-in!</strong> ${studentName} just scanned the QR code.
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    
+
     document.body.appendChild(alertDiv);
-    
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
       if (alertDiv.parentNode) {
@@ -131,7 +131,7 @@ export default function AttendanceLogs() {
       }
 
       const user = userData.user;
-      
+
       // Extract lecturer ID - try multiple field names as backend suggested
       const lecturerId = user.id || user._id || user.lecturerId || user.staffId;
       console.log('🔍 Debug - Lecturer ID extracted:', lecturerId);
@@ -143,12 +143,12 @@ export default function AttendanceLogs() {
       }
 
       // Get lecturer name with honorific if available
-      const lecturerName = user.fullName || 
-                          (user.honorific ? `${user.honorific} ${user.name}` : user.name) ||
-                          'Current Lecturer';
-      
+      const lecturerName = user.fullName ||
+        (user.honorific ? `${user.honorific} ${user.name}` : user.name) ||
+        'Current Lecturer';
+
       // Get course information
-      const courseInfo = user.courses && user.courses.length > 0 
+      const courseInfo = user.courses && user.courses.length > 0
         ? `${user.courses[0].code || user.courses[0]} - ${user.courses[0].name || 'Course'}`
         : user.course || 'No Active Course';
 
@@ -184,7 +184,7 @@ export default function AttendanceLogs() {
         }
       } catch (apiError: any) {
         console.warn('⚠️ Attendance API error:', apiError);
-        
+
         // Show user info but indicate no attendance data
         setSessionInfo({
           lecturer: lecturerName,
@@ -199,7 +199,7 @@ export default function AttendanceLogs() {
 
     } catch (err: any) {
       console.error('❌ Critical error in fetchAttendanceData:', err);
-      
+
       // Try to get basic user info as fallback
       const currentUser = getUser();
       const fallbackName = currentUser?.name || 'Current Lecturer';
@@ -346,11 +346,11 @@ export default function AttendanceLogs() {
                   </div>
                   <div className="col-md-6">
                     <h6>Backend Connection:</h6>
-                    <button 
+                    <button
                       className="btn btn-sm btn-outline-primary me-2"
                       onClick={async () => {
                         console.log('🧪 Starting comprehensive backend test...');
-                        
+
                         try {
                           // Test 1: Check if we can reach the backend
                           console.log('Test 1: Basic connectivity...');
@@ -361,17 +361,17 @@ export default function AttendanceLogs() {
                               'Content-Type': 'application/json'
                             }
                           });
-                          
+
                           console.log('Response status:', response.status);
                           console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-                          
+
                           const data = await response.json();
                           console.log('Response data:', data);
-                          
+
                           if (response.ok && data.user) {
                             console.log('✅ Backend connection successful!');
                             console.log('User data:', data.user);
-                            
+
                             // Test 2: Try attendance endpoint
                             const lecturerId = data.user.id || data.user._id || data.user.staffId;
                             if (lecturerId) {
@@ -383,10 +383,10 @@ export default function AttendanceLogs() {
                                   'Content-Type': 'application/json'
                                 }
                               });
-                              
+
                               const attendanceData = await attendanceResponse.json();
                               console.log('Attendance response:', attendanceData);
-                              
+
                               alert(`✅ Backend tests successful!\n\nUser: ${data.user.name}\nLecturer ID: ${lecturerId}\nAttendance records: ${attendanceData.records?.length || 0}`);
                             } else {
                               alert('⚠️ User data received but no lecturer ID found');
@@ -402,7 +402,7 @@ export default function AttendanceLogs() {
                     >
                       Test Backend
                     </button>
-                    <button 
+                    <button
                       className="btn btn-sm btn-outline-secondary"
                       onClick={() => {
                         localStorage.clear();

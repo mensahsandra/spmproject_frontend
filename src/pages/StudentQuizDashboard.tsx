@@ -52,15 +52,15 @@ const StudentQuizDashboard: React.FC = () => {
     // Fallback to sample data with current user context
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const userDepartment = currentUser.department || 'Computer Science';
-    
+
     const mockQuizzes: Quiz[] = [
       {
         id: 'quiz_1',
         title: `${userDepartment} Fundamentals`,
         lecturerName: 'Dr. Current Lecturer',
         courseName: userDepartment,
-        courseCode: userDepartment === 'Computer Science' ? 'CS101' : 
-                   userDepartment === 'Information Technology' ? 'IT101' : 'DEPT101',
+        courseCode: userDepartment === 'Computer Science' ? 'CS101' :
+          userDepartment === 'Information Technology' ? 'IT101' : 'DEPT101',
         deadline: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
         status: 'available',
         attendanceRequired: true,
@@ -73,8 +73,8 @@ const StudentQuizDashboard: React.FC = () => {
         title: 'Advanced Topics',
         lecturerName: 'Dr. Course Instructor',
         courseName: 'Advanced Studies',
-        courseCode: userDepartment === 'Computer Science' ? 'CS201' : 
-                   userDepartment === 'Information Technology' ? 'IT201' : 'DEPT201',
+        courseCode: userDepartment === 'Computer Science' ? 'CS201' :
+          userDepartment === 'Information Technology' ? 'IT201' : 'DEPT201',
         deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
         status: 'available',
         attendanceRequired: false,
@@ -87,8 +87,8 @@ const StudentQuizDashboard: React.FC = () => {
         title: 'Practical Assessment',
         lecturerName: 'Prof. Department Head',
         courseName: 'Practical Applications',
-        courseCode: userDepartment === 'Computer Science' ? 'CS301' : 
-                   userDepartment === 'Information Technology' ? 'IT301' : 'DEPT301',
+        courseCode: userDepartment === 'Computer Science' ? 'CS301' :
+          userDepartment === 'Information Technology' ? 'IT301' : 'DEPT301',
         deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         status: 'blocked',
         attendanceRequired: true,
@@ -101,8 +101,8 @@ const StudentQuizDashboard: React.FC = () => {
         title: 'Final Project',
         lecturerName: 'Dr. Project Supervisor',
         courseName: 'Capstone Project',
-        courseCode: userDepartment === 'Computer Science' ? 'CS401' : 
-                   userDepartment === 'Information Technology' ? 'IT401' : 'DEPT401',
+        courseCode: userDepartment === 'Computer Science' ? 'CS401' :
+          userDepartment === 'Information Technology' ? 'IT401' : 'DEPT401',
         deadline: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
         status: 'missed',
         attendanceRequired: true,
