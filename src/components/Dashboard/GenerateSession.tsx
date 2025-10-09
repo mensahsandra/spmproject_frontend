@@ -146,7 +146,9 @@ export default function GenerateSessionCode() {
       expiresAt: new Date(Date.now() + expiryInMs).toISOString(),
     };
     
-    console.log('Creating session with payload:', payload);
+    console.log('🔍 [SESSION-GEN] Creating session with payload:', payload);
+    console.log('🔍 [SESSION-GEN] Lecturer ID:', lecturer._id);
+    console.log('🔍 [SESSION-GEN] Lecturer details:', lecturer);
     
     try {
       setLoading(true);
@@ -159,7 +161,8 @@ export default function GenerateSessionCode() {
         }
       });
       
-      console.log('Session created successfully:', data);
+      console.log('✅ [SESSION-GEN] Session created successfully:', data);
+      console.log('✅ [SESSION-GEN] Session code:', data.session?.sessionCode || data.sessionCode);
       const session = data.session || data.data || data;
       
       // Create session data for global state

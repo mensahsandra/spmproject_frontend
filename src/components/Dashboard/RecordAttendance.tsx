@@ -147,18 +147,26 @@ const RecordAttendance: React.FC = () => {
         setSuccess("");
 
         try {
+            const checkInData = {
+                qrCode: scannedCode || sessionCode,
+                sessionCode: scannedCode || sessionCode,
+                studentId,
+                centre,
+                timestamp,
+                location: coords ? { latitude: coords.latitude, longitude: coords.longitude } : null
+            };
+            
+            console.log('🔍 [CHECK-IN] Sending attendance data:', checkInData);
+            console.log('🔍 [CHECK-IN] API endpoint:', '/api/attendance/check-in');
+            
             const result: any = await apiFetch('/api/attendance/check-in', {
                 method: 'POST',
                 role: 'student',
-                body: JSON.stringify({
-                    qrCode: scannedCode || sessionCode,
-                    sessionCode: scannedCode || sessionCode,
-                    studentId,
-                    centre,
-                    timestamp,
-                    location: coords ? { latitude: coords.latitude, longitude: coords.longitude } : null
-                })
+                body: JSON.stringify(checkInData)
             });
+            
+            console.log('✅ [CHECK-IN] Backend response:', result);
+            
             if (!result || result.error) throw new Error(result.message || 'Failed to record attendance');
 
             setSuccess("✅ Attendance recorded successfully!");

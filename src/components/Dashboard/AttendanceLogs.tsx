@@ -210,12 +210,16 @@ export default function AttendanceLogs() {
 
       // Fetch attendance records from backend
       try {
+        console.log('🔍 [ATTENDANCE-LOGS] Fetching attendance for lecturer ID:', lecturerId);
+        console.log('🔍 [ATTENDANCE-LOGS] API endpoint:', `/api/attendance/lecturer/${lecturerId}`);
+        
         const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
           method: 'GET',
           role: 'lecturer'
         });
 
-        console.log('🔍 Debug - Attendance data received:', attendanceData);
+        console.log('✅ [ATTENDANCE-LOGS] Backend response:', attendanceData);
+        console.log('✅ [ATTENDANCE-LOGS] Number of records:', attendanceData.records?.length || 0);
 
         if (attendanceData.success) {
           const records = attendanceData.records || [];
