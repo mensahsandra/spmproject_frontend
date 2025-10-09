@@ -42,6 +42,7 @@ export default function AttendanceLogs() {
   }, []);
 
   const fetchAttendanceData = async () => {
+    setLoading(true); // Set loading to true at the start
     try {
       const token = getToken('lecturer');
       if (!token) {
