@@ -4,11 +4,7 @@ import { apiFetch } from '../../utils/api';
 import { getToken, getUser, getActiveRole } from '../../utils/auth';
 import { jwtDecode } from 'jwt-decode';
 
-type DecodedToken = {
-  id: string;
-  exp: number;
-  iat: number;
-};
+
 
 type AttendanceRecord = {
   _id: string;
