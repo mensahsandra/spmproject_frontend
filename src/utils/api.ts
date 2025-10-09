@@ -4,7 +4,7 @@ import { logout, getToken, getRefreshToken, storeToken, storeRefreshToken, getAc
 // - Access token stored in localStorage as 'token'
 // - Refresh token (if provided) stored as 'refreshToken'
 // - Backend endpoints: POST /api/auth/refresh { refreshToken } -> { token, refreshToken? }
-// - Optional user info endpoint: GET /api/auth/me -> { user }
+// - Enhanced user info endpoint: GET /api/auth/me-enhanced -> { user } (includes honorific, courses, department)
 
 const { getApiBase } = await import('./endpoint');
 
@@ -80,7 +80,7 @@ export async function apiFetch<T = any>(path: string, options: ApiOptions = {}):
 
 export async function fetchUser(role?: string): Promise<any | null> {
   try {
-  const data = await apiFetch('/api/auth/me', { method: 'GET', role });
+  const data = await apiFetch('/api/auth/me-enhanced', { method: 'GET', role });
     if (data?.user) return data.user;
     return null;
   } catch {
