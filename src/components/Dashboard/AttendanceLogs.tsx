@@ -44,10 +44,6 @@ export default function AttendanceLogs() {
   const fetchAttendanceData = async () => {
     setLoading(true); // Set loading to true at the start
     
-    // Add minimum loading duration for better UX
-    const startTime = Date.now();
-    const minLoadingTime = 800; // 800ms minimum loading time
-    
     try {
       const token = getToken('lecturer');
       console.log('🔍 Debug - Token retrieved:', token ? 'Token exists' : 'No token found');
@@ -60,10 +56,18 @@ export default function AttendanceLogs() {
         return;
       }
 
-      const decoded = jwtDecode<DecodedToken>(token);
+      const decoded = jwtDecode<any>(token); // Use 'any' to access all fields
       console.log('🔍 Debug - Decoded token:', decoded);
-      const lecturerId = decoded.id;
+      
+      // Try multiple possible field names for lecturer ID
+      const lecturerId = decoded.id || decoded.sub || decoded.lecturerId || decoded.userId || decoded.user_id;
       console.log('🔍 Debug - Lecturer ID extracted:', lecturerId);
+      
+      if (!lecturerId) {
+        setError('Invalid token: No lecturer ID found. Please log in again.');
+        setLoading(false);
+        return;
+      }
 
       // Get current user data from auth utils for immediate display
       const currentUser = getUser();
@@ -143,13 +147,7 @@ export default function AttendanceLogs() {
       
       setAttendanceRecords([]);
     } finally {
-      // Ensure minimum loading time for better visual feedback
-      const elapsedTime = Date.now() - startTime;
-      const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
-      
-      setTimeout(() => {
-        setLoading(false);
-      }, remainingTime);
+      setLoading(false);
     }
   };
 
