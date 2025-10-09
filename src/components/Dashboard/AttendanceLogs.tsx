@@ -98,50 +98,20 @@ export default function AttendanceLogs() {
         console.warn('Backend API not available, using current user data:', apiError);
       }
 
-      // Fallback: Use current logged-in user data with sample attendance
-      console.log('Using fallback data with current user:', lecturerName);
+      // No active session - show empty state
+      console.log('No backend data available, showing empty state for:', lecturerName);
       
       setSessionInfo({
         lecturer: lecturerName,
-        courseCode: currentUser?.department ? 
-                   `${currentUser.department.toUpperCase()}101 - Introduction to ${currentUser.department}` :
-                   'No Active Session',
+        courseCode: 'No Active Session',
         classRepresentative: 'To be assigned',
-        totalAttendees: 3
+        totalAttendees: 0
       });
       
-      // Sample attendance records with current user context
-      setAttendanceRecords([
-        {
-          _id: '1',
-          studentId: '1234567',
-          studentName: 'Ransford Student',
-          centre: 'Kumasi',
-          timestamp: new Date().toISOString(),
-          sessionCode: 'ABC123',
-          courseCode: currentUser?.department?.toUpperCase() + '101' || 'CS101'
-        },
-        {
-          _id: '2',
-          studentId: '2345678',
-          studentName: 'Jane Smith',
-          centre: 'Accra',
-          timestamp: new Date(Date.now() - 300000).toISOString(),
-          sessionCode: 'ABC123',
-          courseCode: currentUser?.department?.toUpperCase() + '101' || 'CS101'
-        },
-        {
-          _id: '3',
-          studentId: '3456789',
-          studentName: 'Michael Johnson',
-          centre: 'Takoradi',
-          timestamp: new Date(Date.now() - 600000).toISOString(),
-          sessionCode: 'ABC123',
-          courseCode: currentUser?.department?.toUpperCase() + '101' || 'CS101'
-        }
-      ]);
+      // Empty attendance records - will show real data when students scan
+      setAttendanceRecords([]);
 
-      setError('Using sample data. Backend integration required for real attendance data.');
+      setError('No active session. Generate a session code for students to scan and check in.');
       
     } catch (err: any) {
       console.error('Error in fetchAttendanceData:', err);
@@ -259,12 +229,10 @@ export default function AttendanceLogs() {
         </div>
       </div>
 
-      {/* Error Message */}
+      {/* Status Message */}
       {error && (
-        <div className="alert alert-warning mb-4">
-          <strong>Note:</strong> {error}
-          <br />
-          <small>Showing sample data for demonstration purposes.</small>
+        <div className="alert alert-info mb-4">
+          <strong>Status:</strong> {error}
         </div>
       )}
 
