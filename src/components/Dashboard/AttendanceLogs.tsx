@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Users, Clock, MapPin, User, Book, UserCheck } from 'lucide-react';
 import { apiFetch } from '../../utils/api';
-import { getToken, getUser } from '../../utils/auth';
+import { getToken, getUser, getActiveRole } from '../../utils/auth';
 import { jwtDecode } from 'jwt-decode';
 
 type DecodedToken = {
@@ -50,6 +50,10 @@ export default function AttendanceLogs() {
     
     try {
       const token = getToken('lecturer');
+      console.log('🔍 Debug - Token retrieved:', token ? 'Token exists' : 'No token found');
+      console.log('🔍 Debug - Active role:', getActiveRole());
+      console.log('🔍 Debug - All localStorage keys:', Object.keys(localStorage));
+      
       if (!token) {
         setError('Please log in as a lecturer to view attendance.');
         setLoading(false);
@@ -57,13 +61,17 @@ export default function AttendanceLogs() {
       }
 
       const decoded = jwtDecode<DecodedToken>(token);
+      console.log('🔍 Debug - Decoded token:', decoded);
       const lecturerId = decoded.id;
+      console.log('🔍 Debug - Lecturer ID extracted:', lecturerId);
 
       // Get current user data from auth utils for immediate display
       const currentUser = getUser();
+      console.log('🔍 Debug - Current user data:', currentUser);
       const lecturerName = currentUser?.name || 
                           `${currentUser?.firstName || ''} ${currentUser?.lastName || ''}`.trim() ||
                           'Current Lecturer';
+      console.log('🔍 Debug - Lecturer name resolved:', lecturerName);
 
       // Try to fetch real data from backend
       try {
