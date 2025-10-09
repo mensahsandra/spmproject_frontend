@@ -29,6 +29,7 @@ export default function AttendanceLogs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRecordCount, setLastRecordCount] = useState(0);
+  const [isChecking, setIsChecking] = useState(false);
 
   useEffect(() => {
     fetchAttendanceData();
@@ -36,90 +37,117 @@ export default function AttendanceLogs() {
     // Set up polling to refresh data every 10 seconds
     const interval = setInterval(fetchAttendanceData, 10000);
 
-    // Set up more aggressive polling for real-time updates
+    return () => {
+      clearInterval(interval);
+    };
+  }, []); // Remove dependency to prevent infinite re-renders
+
+  // Separate useEffect for real-time updates
+  useEffect(() => {
     const checkForUpdates = async () => {
+      setIsChecking(true);
       try {
         const userData = await apiFetch('/api/auth/me-enhanced', { method: 'GET', role: 'lecturer' });
         if (userData?.user?.id) {
           const lecturerId = userData.user.id || userData.user._id || userData.user.staffId;
-          
+
           // Fetch latest attendance data without showing loading state
           const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
             method: 'GET',
             role: 'lecturer'
           });
 
+          console.log('🔍 Real-time check - Backend response:', attendanceData);
+
           if (attendanceData.success) {
             const newRecords = attendanceData.records || [];
-            
+            console.log(`🔍 Real-time check - Records: ${newRecords.length}, Last count: ${lastRecordCount}`);
+
             // Check if there are new records
             if (newRecords.length > lastRecordCount) {
-              console.log(`🔔 New attendance records detected: ${newRecords.length - lastRecordCount} new students`);
-              
+              console.log(`🔔 NEW ATTENDANCE DETECTED! ${newRecords.length - lastRecordCount} new students`);
+
               // Show notifications for new students (only the new ones)
               const newStudents = newRecords.slice(lastRecordCount);
               newStudents.forEach((record: AttendanceRecord) => {
+                console.log(`📢 Showing notification for: ${record.studentName}`);
                 showScanNotification(record.studentName, record.timestamp);
               });
-              
+
               // Update the records and session info
               setAttendanceRecords(newRecords);
               setSessionInfo(prev => prev ? {
                 ...prev,
                 totalAttendees: newRecords.length
               } : null);
-              
+
+              setLastRecordCount(newRecords.length);
+            } else if (newRecords.length < lastRecordCount) {
+              // Handle case where records might have been reset
+              console.log('🔄 Record count decreased, updating...');
+              setAttendanceRecords(newRecords);
               setLastRecordCount(newRecords.length);
             }
           }
         }
       } catch (error) {
-        // Silently fail but log for debugging
-        console.log('Real-time update check failed:', error);
+        console.error('❌ Real-time update check failed:', error);
+      } finally {
+        setIsChecking(false);
       }
     };
 
-    // Check for updates every 3 seconds for better real-time feel
-    const updateInterval = setInterval(checkForUpdates, 3000);
+    // Start checking for updates every 2 seconds
+    const updateInterval = setInterval(checkForUpdates, 2000);
 
     return () => {
-      clearInterval(interval);
       clearInterval(updateInterval);
     };
-  }, [lastRecordCount]); // Add dependency to track record count changes
+  }, [lastRecordCount]); // This dependency is needed for the comparison
 
   // Show browser notification for new QR scans
   const showScanNotification = (studentName: string, timestamp: string) => {
+    console.log(`🔔 SHOWING NOTIFICATION FOR: ${studentName} at ${timestamp}`);
+    
     // Request notification permission if not granted
     if (Notification.permission === 'default') {
-      Notification.requestPermission();
+      console.log('📱 Requesting notification permission...');
+      Notification.requestPermission().then(permission => {
+        console.log('📱 Notification permission:', permission);
+      });
     }
 
     if (Notification.permission === 'granted') {
-      new Notification('New Student Check-in', {
+      console.log('📱 Showing browser notification...');
+      new Notification('🎓 New Student Check-in', {
         body: `${studentName} just checked in at ${new Date(timestamp).toLocaleTimeString()}`,
         icon: '/favicon.ico',
         tag: 'attendance-scan'
       });
+    } else {
+      console.log('📱 Browser notifications not permitted, showing in-app only');
     }
 
     // Also show in-app notification
+    console.log('📢 Creating in-app notification...');
     const alertDiv = document.createElement('div');
     alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
     alertDiv.innerHTML = `
-      <strong>New Check-in!</strong> ${studentName} just scanned the QR code.
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <strong>🎓 New Check-in!</strong> ${studentName} just scanned the QR code at ${new Date(timestamp).toLocaleTimeString()}.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
 
     document.body.appendChild(alertDiv);
+    console.log('📢 In-app notification added to DOM');
 
-    // Auto-remove after 5 seconds
+    // Auto-remove after 8 seconds
     setTimeout(() => {
       if (alertDiv.parentNode) {
         alertDiv.parentNode.removeChild(alertDiv);
+        console.log('📢 In-app notification removed');
       }
-    }, 5000);
+    }, 8000);
   };
 
   const fetchAttendanceData = async () => {
@@ -197,10 +225,10 @@ export default function AttendanceLogs() {
 
           setError(null);
           console.log('✅ Successfully loaded attendance data:', records.length, 'records');
-          
+
           // Initialize the record count for real-time tracking
           setLastRecordCount(records.length);
-          
+
           return;
         } else {
           throw new Error(attendanceData.message || 'Failed to fetch attendance data');
@@ -437,11 +465,11 @@ export default function AttendanceLogs() {
                       Clear Cache
                     </button>
                     <button
-                      className="btn btn-sm btn-outline-info"
+                      className="btn btn-sm btn-outline-info me-2"
                       onClick={async () => {
                         console.log('🧪 Running comprehensive attendance system diagnosis...');
                         const report = await generateAttendanceReport();
-                        
+
                         const summary = `
 ATTENDANCE SYSTEM DIAGNOSIS:
 
@@ -461,11 +489,58 @@ Current State:
 
 Check console for detailed report and recommendations.
                         `;
-                        
+
                         alert(summary);
                       }}
                     >
                       Full Diagnosis
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-warning"
+                      onClick={async () => {
+                        console.log('🔍 MANUAL ATTENDANCE CHECK - Forcing immediate update...');
+                        
+                        try {
+                          const userData = await apiFetch('/api/auth/me-enhanced', { method: 'GET', role: 'lecturer' });
+                          if (userData?.user?.id) {
+                            const lecturerId = userData.user.id || userData.user._id || userData.user.staffId;
+                            console.log('Lecturer ID for manual check:', lecturerId);
+                            
+                            const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
+                              method: 'GET',
+                              role: 'lecturer'
+                            });
+                            
+                            console.log('🔍 MANUAL CHECK RESULT:', attendanceData);
+                            
+                            if (attendanceData.success) {
+                              const backendRecords = attendanceData.records || [];
+                              console.log(`Backend has ${backendRecords.length} records`);
+                              console.log(`Frontend has ${attendanceRecords.length} records`);
+                              console.log(`Last tracked count: ${lastRecordCount}`);
+                              
+                              // Force update regardless
+                              setAttendanceRecords(backendRecords);
+                              setLastRecordCount(backendRecords.length);
+                              
+                              alert(`MANUAL CHECK COMPLETE:
+                              
+Backend Records: ${backendRecords.length}
+Frontend Records: ${attendanceRecords.length}
+Last Tracked: ${lastRecordCount}
+
+${backendRecords.length > 0 ? 'Records found! Check console for details.' : 'No records found in backend.'}`);
+                            } else {
+                              alert(`Backend Error: ${attendanceData.message || 'Unknown error'}`);
+                            }
+                          }
+                        } catch (error: any) {
+                          console.error('Manual check failed:', error);
+                          alert(`Manual check failed: ${error.message}`);
+                        }
+                      }}
+                    >
+                      Force Check
                     </button>
                   </div>
                 </div>
@@ -548,22 +623,22 @@ Check console for detailed report and recommendations.
           Auto-refreshing every 3 seconds • Real-time updates enabled
         </small>
       </div>
-      
+
       {/* Real-time status indicator */}
       <div className="position-fixed" style={{ bottom: '20px', right: '20px', zIndex: 1000 }}>
-        <div className="d-flex align-items-center gap-2 bg-success text-white px-3 py-2 rounded-pill shadow">
-          <div 
-            className="bg-white rounded-circle" 
-            style={{ 
-              width: '8px', 
+        <div className={`d-flex align-items-center gap-2 text-white px-3 py-2 rounded-pill shadow ${isChecking ? 'bg-warning' : 'bg-success'}`}>
+          <div
+            className="bg-white rounded-circle"
+            style={{
+              width: '8px',
               height: '8px',
-              animation: 'pulse 2s infinite'
+              animation: isChecking ? 'pulse 0.5s infinite' : 'pulse 2s infinite'
             }}
           ></div>
-          <small>Live Updates</small>
+          <small>{isChecking ? 'Checking...' : 'Live Updates'}</small>
         </div>
       </div>
-      
+
       <style>{`
         @keyframes pulse {
           0% { opacity: 1; }
