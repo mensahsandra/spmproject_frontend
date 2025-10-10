@@ -6,7 +6,7 @@ import NewSelectResultPage from '../pages/NewSelectResultPage';
 import SimpleTestPage from '../pages/SimpleTestPage';
 import RecordAttendance from '../components/Dashboard/RecordAttendance';
 // SelectResult import removed - not used in current routes
-import NotificationsPage from '../pages/NotificationsPage';
+// import NotificationsPage from '../pages/NotificationsPage'; // Replaced with EnhancedNotificationsPage
 import QuizPage from '../pages/QuizPage';
 import StudentQuizDashboard from '../pages/StudentQuizDashboard';
 import StudentAcademicHub from '../pages/StudentAcademicHub';
@@ -25,7 +25,8 @@ import LecturerGeneratePage from '../pages/LecturerGeneratePage';
 import LecturerAttendancePage from '../pages/LecturerAttendancePage';
 import LecturerAssessmentPage from '../pages/LecturerAssessmentPage';
 import LecturerExportPage from '../pages/LecturerExportPage';
-import LecturerNotificationsPage from '../pages/LecturerNotificationsPage';
+// import LecturerNotificationsPage from '../pages/LecturerNotificationsPage'; // Replaced with EnhancedNotificationsPage
+import EnhancedNotificationsPage from '../pages/EnhancedNotificationsPage';
 import ProfileSettingsPage from '../pages/ProfileSettingsPage';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import { normalizeRole } from '../utils/roles';
@@ -88,7 +89,7 @@ const RoutePage = () => {
       } />
       <Route path="/student/notifications" element={
         <ProtectedRoute requiredRole="student">
-          {withStudent(<NotificationsPage />)}
+          {withStudent(<EnhancedNotificationsPage />)}
         </ProtectedRoute>
       } />
       <Route path="/student/quiz/:quizId" element={
@@ -167,7 +168,7 @@ const RoutePage = () => {
       } />
       <Route path="/lecturer/notifications" element={
         <ProtectedRoute requiredRole="lecturer">
-          {withLecturer(<LecturerNotificationsPage />)}
+          {withLecturer(<EnhancedNotificationsPage />)}
         </ProtectedRoute>
       } />
       {/* Alias route for generate session */}
