@@ -7,10 +7,12 @@ import QuizCreator from './QuizCreator';
 import { clearTestProfile } from '../../utils/testSetup';
 import { setupKwabenaWithBIT } from '../../utils/quickSetup';
 import { simulateStudentQuizNotifications } from '../../utils/quizNotifications';
+import { useAssessmentNotifications } from '../../hooks/useAssessmentNotifications';
 import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
 import '../../css/assessment.css';
 
 const UpdateGrades: React.FC = () => {
+  const { notifyBulkGradesSubmitted, notifyGradeError } = useAssessmentNotifications();
   // Courses from lecturer profile
   const profileDataRaw = localStorage.getItem('profile');
   const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : null;
@@ -176,12 +178,19 @@ const UpdateGrades: React.FC = () => {
         body: JSON.stringify({ courseCode: selectedCourseId, updates })
       });
       if (!data?.ok) throw new Error(data?.message || 'Save failed');
+      
+      // Show notification for successful grade submission
+      const courseName = courses.find(c => c.id === selectedCourseId)?.title || selectedCourseId;
+      notifyBulkGradesSubmitted(updates.length, courseName);
+      
       // refresh students list to reflect current grades
       setEditedGrades({});
       const refreshed: any = await apiFetch(`/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
       setStudents(refreshed?.students || []);
     } catch (e: any) {
-      setError(e?.message || 'Failed to save grades');
+      const errorMsg = e?.message || 'Failed to save grades';
+      setError(errorMsg);
+      notifyGradeError('multiple students', errorMsg);
     } finally { setSaving(false); }
   };
 
@@ -215,7 +224,13 @@ const UpdateGrades: React.FC = () => {
       const targetText = bulkTarget === 'all' ? 'all students' : 
                         bulkTarget === 'attendees' ? 'attendees only' : 
                         'quiz submitters only';
-      setBulkSuccess(`Score ${bulkScore} assigned to ${targetText}. ${data.updated || 0} students updated.`);
+      const updatedCount = data.updated || 0;
+      setBulkSuccess(`Score ${bulkScore} assigned to ${targetText}. ${updatedCount} students updated.`);
+      
+      // Show notification for bulk assignment
+      const courseName = courses.find(c => c.id === selectedCourseId)?.title || selectedCourseId;
+      notifyBulkGradesSubmitted(updatedCount, courseName);
+      
       setShowBulkModal(false);
       setBulkScore('');
       setBulkTarget('all');
@@ -226,7 +241,9 @@ const UpdateGrades: React.FC = () => {
       
       setTimeout(() => setBulkSuccess(''), 5000);
     } catch (e: any) {
-      setError(e?.message || 'Failed to assign bulk scores');
+      const errorMsg = e?.message || 'Failed to assign bulk scores';
+      setError(errorMsg);
+      notifyGradeError('bulk assignment', errorMsg);
     }
   };
 

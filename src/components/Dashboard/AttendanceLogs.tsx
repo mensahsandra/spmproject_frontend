@@ -58,50 +58,61 @@ export default function AttendanceLogs() {
       setIsChecking(true);
       try {
         const userData = await apiFetch('/api/auth/me-enhanced', { method: 'GET', role: 'lecturer' });
-        if (userData?.user?.id) {
-          const lecturerId = userData.user.id || userData.user._id || userData.user.staffId;
+        
+        if (!userData?.user) {
+          console.warn('⚠️ No user data available for real-time check');
+          return;
+        }
+        
+        const lecturerId = userData.user.id || userData.user._id || userData.user.lecturerId || userData.user.staffId;
+        
+        if (!lecturerId) {
+          console.warn('⚠️ No lecturer ID found for real-time check');
+          return;
+        }
 
-          // Fetch latest attendance data without showing loading state
-          const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
-            method: 'GET',
-            role: 'lecturer'
-          });
+        console.log('🔍 Real-time check - Lecturer ID:', lecturerId);
 
-          if (attendanceData.success) {
-            const newRecords = attendanceData.records || [];
-            console.log(`🔍 Real-time check - Records: ${newRecords.length}, Last count: ${lastRecordCount}`);
+        // Fetch latest attendance data without showing loading state
+        const attendanceData = await apiFetch(`/api/attendance/lecturer/${lecturerId}`, {
+          method: 'GET',
+          role: 'lecturer'
+        });
 
-            // Check if there are new records (skip initial load)
-            if (newRecords.length > lastRecordCount && lastRecordCount > 0) {
-              console.log(`🔔 NEW ATTENDANCE DETECTED! ${newRecords.length - lastRecordCount} new students`);
+        if (attendanceData.success) {
+          const newRecords = attendanceData.records || [];
+          console.log(`🔍 Real-time check - Records: ${newRecords.length}, Last count: ${lastRecordCount}`);
 
-              // Show notifications for new students (only the new ones at the beginning of array)
-              const newStudents = newRecords.slice(0, newRecords.length - lastRecordCount);
-              newStudents.forEach((record: AttendanceRecord) => {
-                console.log(`📢 Showing notification for: ${record.studentName}`);
-                // Use the notification context instead of the old function
-                addNotification({
-                  type: 'attendance',
-                  title: '🎓 New Student Check-in',
-                  message: `${record.studentName} just checked in at ${new Date(record.timestamp).toLocaleTimeString()}`,
-                  data: record
-                });
+          // Check if there are new records (skip initial load)
+          if (newRecords.length > lastRecordCount && lastRecordCount > 0) {
+            console.log(`🔔 NEW ATTENDANCE DETECTED! ${newRecords.length - lastRecordCount} new students`);
+
+            // Show notifications for new students (only the new ones at the beginning of array)
+            const newStudents = newRecords.slice(0, newRecords.length - lastRecordCount);
+            newStudents.forEach((record: AttendanceRecord) => {
+              console.log(`📢 Showing notification for: ${record.studentName}`);
+              // Use the notification context instead of the old function
+              addNotification({
+                type: 'attendance',
+                title: '🎓 New Student Check-in',
+                message: `${record.studentName} just checked in at ${new Date(record.timestamp).toLocaleTimeString()}`,
+                data: record
               });
+            });
 
-              // Update the records and session info
-              setAttendanceRecords(newRecords);
-              setSessionInfo(prev => prev ? {
-                ...prev,
-                totalAttendees: newRecords.length
-              } : null);
+            // Update the records and session info
+            setAttendanceRecords(newRecords);
+            setSessionInfo(prev => prev ? {
+              ...prev,
+              totalAttendees: newRecords.length
+            } : null);
 
-              setLastRecordCount(newRecords.length);
-            } else if (newRecords.length < lastRecordCount) {
-              // Handle case where records might have been reset
-              console.log('🔄 Record count decreased, updating...');
-              setAttendanceRecords(newRecords);
-              setLastRecordCount(newRecords.length);
-            }
+            setLastRecordCount(newRecords.length);
+          } else if (newRecords.length < lastRecordCount) {
+            // Handle case where records might have been reset
+            console.log('🔄 Record count decreased, updating...');
+            setAttendanceRecords(newRecords);
+            setLastRecordCount(newRecords.length);
           }
         }
       } catch (error) {
