@@ -4,7 +4,7 @@
  */
 
 import { apiFetch } from './api';
-import { getToken } from './auth';
+// import { getToken } from './auth'; // Unused for now
 
 export async function testAttendanceFlow() {
   console.log('🧪 ===== ATTENDANCE FLOW TEST =====');

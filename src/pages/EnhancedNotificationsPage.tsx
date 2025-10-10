@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useNotifications, NotificationType } from '../context/NotificationContext';
+import { useNotifications } from '../context/NotificationContext';
+import type { NotificationType } from '../context/NotificationContext';
 import { Bell, Check, CheckCheck, Trash2, GraduationCap, FileText, BookOpen, Clock, AlertCircle } from 'lucide-react';
 
 const EnhancedNotificationsPage: React.FC = () => {
