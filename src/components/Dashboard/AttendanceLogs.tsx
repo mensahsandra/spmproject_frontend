@@ -57,6 +57,12 @@ export default function AttendanceLogs() {
     const checkForUpdates = async () => {
       setIsChecking(true);
       try {
+        // Skip check if we don't have initial data yet
+        if (lastRecordCount === 0 && attendanceRecords.length === 0) {
+          console.log('⏭️ Skipping real-time check - waiting for initial data');
+          return;
+        }
+
         const userData = await apiFetch('/api/auth/me-enhanced', { method: 'GET', role: 'lecturer' });
         
         if (!userData?.user) {
@@ -115,8 +121,14 @@ export default function AttendanceLogs() {
             setLastRecordCount(newRecords.length);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Real-time update check failed:', error);
+        console.error('❌ Error details:', {
+          message: error?.message,
+          name: error?.name,
+          stack: error?.stack
+        });
+        // Don't stop polling on error, just log it
       } finally {
         setIsChecking(false);
       }
@@ -128,7 +140,7 @@ export default function AttendanceLogs() {
     return () => {
       clearInterval(updateInterval);
     };
-  }, [lastRecordCount, addNotification]); // This dependency is needed for the comparison
+  }, [lastRecordCount, attendanceRecords.length, addNotification]); // Dependencies for comparison
 
   const fetchAttendanceData = async () => {
     setLoading(true);
