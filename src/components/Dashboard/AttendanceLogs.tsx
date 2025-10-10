@@ -3,6 +3,7 @@ import { Users, Clock, MapPin, User, Book, UserCheck } from 'lucide-react';
 import { apiFetch } from '../../utils/api';
 import { getToken, getUser, getActiveRole } from '../../utils/auth';
 import { generateAttendanceReport } from '../../utils/attendanceDebug';
+import { useNotifications } from '../../context/NotificationContext';
 
 
 
@@ -24,6 +25,7 @@ type SessionInfo = {
 };
 
 export default function AttendanceLogs() {
+  const { addNotification } = useNotifications();
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +79,13 @@ export default function AttendanceLogs() {
               const newStudents = newRecords.slice(0, newRecords.length - lastRecordCount);
               newStudents.forEach((record: AttendanceRecord) => {
                 console.log(`📢 Showing notification for: ${record.studentName}`);
-                showScanNotification(record.studentName, record.timestamp);
+                // Use the notification context instead of the old function
+                addNotification({
+                  type: 'attendance',
+                  title: '🎓 New Student Check-in',
+                  message: `${record.studentName} just checked in at ${new Date(record.timestamp).toLocaleTimeString()}`,
+                  data: record
+                });
               });
 
               // Update the records and session info
@@ -109,52 +117,7 @@ export default function AttendanceLogs() {
     return () => {
       clearInterval(updateInterval);
     };
-  }, [lastRecordCount]); // This dependency is needed for the comparison
-
-  // Show browser notification for new QR scans
-  const showScanNotification = (studentName: string, timestamp: string) => {
-    console.log(`🔔 SHOWING NOTIFICATION FOR: ${studentName} at ${timestamp}`);
-    
-    // Request notification permission if not granted
-    if (Notification.permission === 'default') {
-      console.log('📱 Requesting notification permission...');
-      Notification.requestPermission().then(permission => {
-        console.log('📱 Notification permission:', permission);
-      });
-    }
-
-    if (Notification.permission === 'granted') {
-      console.log('📱 Showing browser notification...');
-      new Notification('🎓 New Student Check-in', {
-        body: `${studentName} just checked in at ${new Date(timestamp).toLocaleTimeString()}`,
-        icon: '/favicon.ico',
-        tag: 'attendance-scan'
-      });
-    } else {
-      console.log('📱 Browser notifications not permitted, showing in-app only');
-    }
-
-    // Also show in-app notification
-    console.log('📢 Creating in-app notification...');
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);';
-    alertDiv.innerHTML = `
-      <strong>🎓 New Check-in!</strong> ${studentName} just scanned the QR code at ${new Date(timestamp).toLocaleTimeString()}.
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-
-    document.body.appendChild(alertDiv);
-    console.log('📢 In-app notification added to DOM');
-
-    // Auto-remove after 8 seconds
-    setTimeout(() => {
-      if (alertDiv.parentNode) {
-        alertDiv.parentNode.removeChild(alertDiv);
-        console.log('📢 In-app notification removed');
-      }
-    }, 8000);
-  };
+  }, [lastRecordCount, addNotification]); // This dependency is needed for the comparison
 
   const fetchAttendanceData = async () => {
     setLoading(true);

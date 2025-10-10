@@ -5,11 +5,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
 import './styles/dashboard.css'
 import RoutePage from './routes/RoutePage';
+import { NotificationProvider } from './context/NotificationContext';
 
 function App() {
   return (
     <Router>
-      <RoutePage />
+      <NotificationProvider>
+        <RoutePage />
+      </NotificationProvider>
     </Router>
   );
 }

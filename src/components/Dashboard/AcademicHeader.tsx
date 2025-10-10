@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Bell, ChevronDown, Menu } from "lucide-react";
+import { useNotifications } from "../../context/NotificationContext";
 
 interface AcademicHeaderProps {
   onMenuClick?: () => void;
@@ -18,11 +19,15 @@ interface AcademicHeaderProps {
 export default function AcademicHeader({ 
   onMenuClick, 
   user, 
-  notificationCount = 0, 
+  notificationCount: propNotificationCount, 
   onNotificationClick, 
   onLogout 
 }: AcademicHeaderProps) {
+  const { unreadCount } = useNotifications();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  // Use context notification count if available, otherwise use prop
+  const notificationCount = unreadCount || propNotificationCount || 0;
 
   const formatDate = (dateStr: Date) => {
     const date = new Date(dateStr);
