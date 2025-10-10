@@ -60,6 +60,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   }, [notifications]);
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+    console.log('🔔 [NotificationContext] addNotification called:', notification);
+    
     const newNotification: Notification = {
       ...notification,
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -67,21 +69,31 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       read: false,
     };
 
-    setNotifications(prev => [newNotification, ...prev]);
+    console.log('🔔 [NotificationContext] New notification created:', newNotification);
+    setNotifications(prev => {
+      const updated = [newNotification, ...prev];
+      console.log('🔔 [NotificationContext] Notifications updated. Total:', updated.length);
+      return updated;
+    });
 
     // Show browser notification if permission granted
+    console.log('🔔 [NotificationContext] Browser notification permission:', Notification.permission);
     if (Notification.permission === 'granted') {
+      console.log('🔔 [NotificationContext] Showing browser notification');
       new Notification(notification.title, {
         body: notification.message,
         icon: '/favicon.ico',
         tag: `notification-${newNotification.id}`,
       });
+    } else {
+      console.log('⚠️ [NotificationContext] Browser notifications not granted');
     }
 
     // Show in-app toast notification
+    console.log('🔔 [NotificationContext] Showing toast notification');
     showToast(notification.title, notification.message, notification.type);
 
-    console.log(`🔔 Notification added: [${notification.type}] ${notification.title}`);
+    console.log(`✅ [NotificationContext] Notification added: [${notification.type}] ${notification.title}`);
   };
 
   const showToast = (title: string, message: string, type: NotificationType) => {

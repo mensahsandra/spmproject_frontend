@@ -28,6 +28,12 @@ export default function AcademicHeader({
   
   // Use context notification count if available, otherwise use prop
   const notificationCount = unreadCount || propNotificationCount || 0;
+  
+  console.log('🔔 [AcademicHeader] Notification counts:', {
+    unreadCount,
+    propNotificationCount,
+    finalCount: notificationCount
+  });
 
   const formatDate = (dateStr: Date) => {
     const date = new Date(dateStr);
