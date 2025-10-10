@@ -4,8 +4,18 @@ import type { NotificationType } from '../context/NotificationContext';
 import { Bell, Check, CheckCheck, Trash2, GraduationCap, FileText, BookOpen, Clock, AlertCircle } from 'lucide-react';
 
 const EnhancedNotificationsPage: React.FC = () => {
-  const { notifications, unreadCount, unreadByType, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
+  const { notifications, unreadCount, unreadByType, markAsRead, markAllAsRead, clearNotifications, addNotification } = useNotifications();
   const [activeTab, setActiveTab] = useState<'all' | NotificationType>('all');
+  
+  // Test function to manually add a notification
+  const testNotification = () => {
+    addNotification({
+      type: 'attendance',
+      title: '🧪 Test Notification',
+      message: 'This is a test notification to verify the system works',
+      data: { test: true }
+    });
+  };
 
   const filteredNotifications = activeTab === 'all' 
     ? notifications 
@@ -63,6 +73,12 @@ const EnhancedNotificationsPage: React.FC = () => {
               </div>
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={testNotification}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+              >
+                🧪 Test
+              </button>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
