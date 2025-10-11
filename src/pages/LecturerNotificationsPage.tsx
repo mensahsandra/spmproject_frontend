@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../components/Dashboard/DashboardLayout';
+import { getStoredNotifications } from '../utils/notificationService';
+import { useNotifications } from '../context/NotificationContext';
 import '../css/notifications.css';
 
 interface NotificationItem {
-  id: number;
+  id: string | number;
   type: 'IMPORTANT' | 'REMINDER' | 'INFO';
   message: string;
-  timeAgo: string;
-  category: 'attendance' | 'assessment' | 'system' | 'alert';
+  timeAgo?: string;
+  timestamp?: string;
+  category: 'attendance' | 'assessment' | 'system' | 'alert' | 'quiz';
   details?: string;
+  read?: boolean;
   actionButton?: {
     text: string;
     action: 'link' | 'page' | 'file';
@@ -17,12 +21,48 @@ interface NotificationItem {
   };
 }
 
-const LecturerNotificationsPage: React.FC = () => {
-  const [expandedNotifications, setExpandedNotifications] = useState<Set<number>>(new Set());
-  const [activeTab, setActiveTab] = useState<'overview' | 'attendance' | 'assessment' | 'system' | 'alert'>('overview');
+// Helper function to calculate time ago
+const getTimeAgo = (timestamp: string): string => {
+  const now = new Date();
+  const past = new Date(timestamp);
+  const diffMs = now.getTime() - past.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
 
-  // Mock lecturer notifications data
-  const notifications: NotificationItem[] = [
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+  if (diffHours < 24) return `${diffHours} hr${diffHours > 1 ? 's' : ''} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  return past.toLocaleDateString();
+};
+
+const LecturerNotificationsPage: React.FC = () => {
+  const [expandedNotifications, setExpandedNotifications] = useState<Set<string | number>>(new Set());
+  const [activeTab, setActiveTab] = useState<'overview' | 'attendance' | 'assessment' | 'system' | 'alert'>('overview');
+  const { notifications: contextNotifications, markAsRead } = useNotifications();
+  const [allNotifications, setAllNotifications] = useState<NotificationItem[]>([]);
+
+  // Load notifications on mount and when context updates
+  useEffect(() => {
+    // Get role-based notifications from localStorage
+    const storedNotifs = getStoredNotifications('lecturer');
+    
+    // Convert context notifications to NotificationItem format
+    const contextNotifs: NotificationItem[] = contextNotifications.map(notif => ({
+      id: notif.id,
+      type: notif.type === 'attendance' ? 'REMINDER' : 
+            notif.type === 'assessment' || notif.type === 'quiz' ? 'INFO' : 'REMINDER',
+      message: notif.message,
+      timestamp: notif.timestamp,
+      timeAgo: getTimeAgo(notif.timestamp),
+      category: notif.type === 'quiz' ? 'assessment' : notif.type as any,
+      details: notif.data ? JSON.stringify(notif.data, null, 2) : undefined,
+      read: notif.read
+    }));
+
+    // Combine with mock data (for demo purposes)
+    const mockNotifications: NotificationItem[] = [
     {
       id: 1,
       type: 'IMPORTANT',
@@ -103,27 +143,36 @@ const LecturerNotificationsPage: React.FC = () => {
     }
   ];
 
+    // Merge real notifications with mock data (real ones first)
+    const merged = [...contextNotifs, ...mockNotifications];
+    setAllNotifications(merged);
+    console.log(`📱 [LecturerNotifications] Loaded ${merged.length} total notifications (${contextNotifs.length} real, ${mockNotifications.length} mock)`);
+  }, [contextNotifications]);
+
   // Filter notifications based on active tab
   const filteredNotifications = (() => {
     switch (activeTab) {
       case 'attendance':
-        return notifications.filter(n => n.category === 'attendance');
+        return allNotifications.filter(n => n.category === 'attendance');
       case 'assessment':
-        return notifications.filter(n => n.category === 'assessment');
+        return allNotifications.filter(n => n.category === 'assessment' || n.category === 'quiz');
       case 'system':
-        return notifications.filter(n => n.category === 'system');
+        return allNotifications.filter(n => n.category === 'system');
       case 'alert':
-        return notifications.filter(n => n.category === 'alert');
+        return allNotifications.filter(n => n.category === 'alert');
       default:
-        return notifications;
+        return allNotifications;
     }
   })();
 
-  const handleDismiss = (id: number) => {
+  const handleDismiss = (id: string | number) => {
     console.log('Dismissing notification:', id);
+    if (typeof id === 'string') {
+      markAsRead(id);
+    }
   };
 
-  const toggleExpanded = (id: number) => {
+  const toggleExpanded = (id: string | number) => {
     const newExpanded = new Set(expandedNotifications);
     if (newExpanded.has(id)) {
       newExpanded.delete(id);

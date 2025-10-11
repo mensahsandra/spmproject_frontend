@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { addQuizNotification } from '../../utils/quizNotifications';
+import { notifyQuizCreated } from '../../utils/notificationService';
 import '../../css/assessment.css';
 
 interface QuizQuestion {
@@ -126,8 +127,18 @@ const QuizCreator: React.FC<QuizCreatorProps> = ({
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       if (mockResponse.ok) {
-        // Add notification for students
+        // Add notification for students and lecturer
         const courseInfo = getCourseInfo(selectedCourseId);
+        
+        // Use the new notification service (sends to both roles)
+        notifyQuizCreated(
+          quizData.title,
+          selectedCourseId,
+          courseInfo.name,
+          quizData.endTime
+        );
+        
+        // Also use the old method for backward compatibility
         addQuizNotification(
           quizData.title,
           selectedCourseId,
@@ -138,7 +149,7 @@ const QuizCreator: React.FC<QuizCreatorProps> = ({
         );
 
         const studentCount = quizData.restrictToAttendees ? 'attendees' : 'all enrolled students';
-        onSuccess(`Quiz "${quizData.title}" created successfully! Notifications sent to ${studentCount}.`);
+        onSuccess(`Quiz "${quizData.title}" created successfully! Notifications sent to ${studentCount} and saved to your notifications.`);
         // Reset form
         setQuizData({
           title: '',

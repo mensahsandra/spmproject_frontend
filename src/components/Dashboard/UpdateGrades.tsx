@@ -8,6 +8,8 @@ import { clearTestProfile } from '../../utils/testSetup';
 import { setupKwabenaWithBIT } from '../../utils/quickSetup';
 import { simulateStudentQuizNotifications } from '../../utils/quizNotifications';
 import { useAssessmentNotifications } from '../../hooks/useAssessmentNotifications';
+import { notifyQuizGraded, notifyBulkGrading } from '../../utils/notificationService';
+import { getUser } from '../../utils/auth';
 import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
 import '../../css/assessment.css';
 
@@ -204,6 +206,30 @@ const UpdateGrades: React.FC = () => {
       // Show notification for successful grade submission
       const courseName = courses.find(c => c.id === selectedCourseId)?.title || selectedCourseId;
       notifyBulkGradesSubmitted(updates.length, courseName);
+      
+      // Send role-based grading notifications to students
+      const lecturer = getUser('lecturer');
+      const lecturerName = lecturer?.name || lecturer?.username || 'Lecturer';
+      const studentNames = updates.map(u => {
+        const student = students.find(s => s.studentId === u.studentId);
+        return student?.name || u.studentId;
+      });
+      
+      // Send bulk grading notification
+      notifyBulkGrading(lecturerName, courseName, updates.length, studentNames);
+      
+      // Send individual notifications to each student
+      updates.forEach(update => {
+        const student = students.find(s => s.studentId === update.studentId);
+        if (student) {
+          // Parse grade as score (assuming format like "85" or "85/100")
+          const gradeStr = update.grade.toString();
+          const score = parseFloat(gradeStr.split('/')[0]) || 0;
+          const maxScore = gradeStr.includes('/') ? parseFloat(gradeStr.split('/')[1]) : 100;
+          
+          notifyQuizGraded(student.name, courseName, score, maxScore);
+        }
+      });
       
       // refresh students list to reflect current grades
       setEditedGrades({});

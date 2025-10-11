@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { getToken } from '../../utils/auth';
 import { apiFetch } from '../../utils/api';
 import { useSession } from '../../context/SessionContext';
+import TokenDebug from '../Debug/TokenDebug';
 
 type DecodedToken = {
   id: string;
@@ -148,6 +149,15 @@ export default function GenerateSessionCode() {
 
   const handleGenerate = async () => {
     setError(null);
+    
+    // Verify token exists before proceeding
+    const token = getToken('lecturer');
+    if (!token) {
+      setError('Authentication token missing. Please log in again.');
+      console.error('❌ [SESSION-GEN] No token found for lecturer');
+      return;
+    }
+    
     if (!lecturer) { 
       setError('Lecturer profile not loaded. Please refresh the page.'); 
       return; 
@@ -168,16 +178,15 @@ export default function GenerateSessionCode() {
     console.log('🔍 [SESSION-GEN] Creating session with payload:', payload);
     console.log('🔍 [SESSION-GEN] Lecturer ID:', lecturer._id);
     console.log('🔍 [SESSION-GEN] Lecturer details:', lecturer);
+    console.log('🔍 [SESSION-GEN] Token present:', !!token);
+    console.log('🔍 [SESSION-GEN] Token preview:', token.substring(0, 20) + '...');
     
     try {
       setLoading(true);
       const data: any = await apiFetch('/api/attendance-sessions', { 
         method: 'POST', 
         role: 'lecturer', 
-        body: JSON.stringify(payload),
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        body: JSON.stringify(payload)
       });
       
       console.log('✅ [SESSION-GEN] Session created successfully:', data);
@@ -195,16 +204,26 @@ export default function GenerateSessionCode() {
       
       setSession(sessionInfo);
     } catch (err: any) {
-      console.error("Error creating session:", err);
-      setError(err?.message || 'Failed to create session. Please try again.');
+      console.error("❌ [SESSION-GEN] Error creating session:", err);
+      
+      // Provide more specific error messages
+      if (err?.message?.includes('Unauthorized') || err?.message?.includes('401')) {
+        setError('Session expired. Please log in again.');
+      } else if (err?.message?.includes('token')) {
+        setError('Authentication error. Please log in again.');
+      } else {
+        setError(err?.message || 'Failed to create session. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container py-4" style={{ paddingLeft: 0, paddingRight: 0 }}>
-      <div className="row g-4">
+    <>
+      <TokenDebug />
+      <div className="container py-4" style={{ paddingLeft: 0, paddingRight: 0 }}>
+        <div className="row g-4">
         <div className="col-lg-6">
           <div className="card shadow-sm border-0">
             <div className="card-body p-4">
@@ -391,6 +410,7 @@ export default function GenerateSessionCode() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -1,15 +1,19 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/Dashboard/DashboardLayout';
+import { getStoredNotifications } from '../utils/notificationService';
+import { useNotifications } from '../context/NotificationContext';
 import '../css/notifications.css';
 
 interface NotificationItem {
-    id: number;
+    id: string | number;
     type: 'IMPORTANT' | 'REMINDER' | 'INFO';
     message: string;
-    timeAgo: string;
-    category: 'deadline' | 'general' | 'completed';
+    timeAgo?: string;
+    timestamp?: string;
+    category: 'deadline' | 'general' | 'completed' | 'quiz' | 'attendance' | 'assessment';
     details?: string;
+    read?: boolean;
     actionButton?: {
         text: string;
         action: 'link' | 'page' | 'file';
@@ -18,10 +22,28 @@ interface NotificationItem {
     };
 }
 
+// Helper function to calculate time ago
+const getTimeAgo = (timestamp: string): string => {
+  const now = new Date();
+  const past = new Date(timestamp);
+  const diffMs = now.getTime() - past.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+  if (diffHours < 24) return `${diffHours} hr${diffHours > 1 ? 's' : ''} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  return past.toLocaleDateString();
+};
+
 const NotificationsPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [expandedNotifications, setExpandedNotifications] = React.useState<Set<number>>(new Set());
+    const [expandedNotifications, setExpandedNotifications] = React.useState<Set<string | number>>(new Set());
+    const { notifications: contextNotifications, markAsRead } = useNotifications();
+    const [allNotifications, setAllNotifications] = React.useState<NotificationItem[]>([]);
     // Clear unread badge when visiting notifications
     React.useEffect(() => {
         try {
@@ -30,26 +52,29 @@ const NotificationsPage: React.FC = () => {
             history.replaceState({ ...prev, unreadCount: 0 }, '');
         } catch {}
     }, []);
-    
-    // Check if we came from deadlines (will show only deadline notifications)
-    const isDeadlineView = location.state?.from === 'deadlines';
-    const isNotificationsView = location.state?.from === 'notifications';
-    const params = new URLSearchParams(location.search);
-    const tabParam = params.get('tab');
-    // Prefer completed tab when we come from injected attendance state
-    const fromTabState = (history.state as any)?.fromTab;
-    const [activeTab, setActiveTab] = React.useState<'overview' | 'deadlines' | 'notifications' | 'completed'>(() => {
-        if (tabParam === 'deadlines') return 'deadlines';
-        if (tabParam === 'notifications') return 'notifications';
-        if (tabParam === 'completed') return 'completed';
-        if (isDeadlineView) return 'deadlines';
-        if (fromTabState === 'completed') return 'completed';
-        if (isNotificationsView) return 'notifications';
-        return 'overview';
-    });
-    
-    // Defaults
-    let notifications: NotificationItem[] = [
+
+    // Load student notifications
+    React.useEffect(() => {
+        // Get role-based notifications from localStorage
+        const storedNotifs = getStoredNotifications('student');
+        
+        // Convert context notifications to NotificationItem format
+        const contextNotifs: NotificationItem[] = contextNotifications.map(notif => ({
+            id: notif.id,
+            type: notif.type === 'quiz' || notif.type === 'assessment' ? 'INFO' : 
+                  notif.type === 'attendance' ? 'REMINDER' : 'REMINDER',
+            message: notif.message,
+            timestamp: notif.timestamp,
+            timeAgo: getTimeAgo(notif.timestamp),
+            category: notif.type === 'quiz' ? 'quiz' : 
+                     notif.type === 'assessment' ? 'assessment' :
+                     notif.type === 'attendance' ? 'completed' : 'general',
+            details: notif.data ? JSON.stringify(notif.data, null, 2) : undefined,
+            read: notif.read
+        }));
+
+        // Mock notifications for students
+        const mockNotifications: NotificationItem[] = [
         {
             id: 1,
             type: 'IMPORTANT',
@@ -190,43 +215,58 @@ const NotificationsPage: React.FC = () => {
         }
     ];
 
-    // Load persisted notifications from localStorage
-    try {
-        const raw = localStorage.getItem('notifications');
-        const saved = raw ? JSON.parse(raw) as NotificationItem[] : [];
-        if (Array.isArray(saved) && saved.length) {
-            // Prepend saved to show most recent first
-            notifications = [...saved, ...notifications];
-        }
-    } catch {}
-    // Include injected notification from attendance (if present)
-    const injected = (history.state as any)?.injectedNotification;
-    if (injected) {
-        notifications = [injected as NotificationItem, ...notifications];
-    }
+        // Include injected notification from attendance (if present)
+        const injected = (history.state as any)?.injectedNotification;
+        const injectedNotifs = injected ? [injected as NotificationItem] : [];
+
+        // Merge all notifications (real ones first, then mock)
+        const merged = [...contextNotifs, ...injectedNotifs, ...mockNotifications];
+        setAllNotifications(merged);
+        console.log(`📱 [StudentNotifications] Loaded ${merged.length} total notifications (${contextNotifs.length} real, ${mockNotifications.length} mock)`);
+    }, [contextNotifications]);
+    
+    // Check if we came from deadlines (will show only deadline notifications)
+    const isDeadlineView = location.state?.from === 'deadlines';
+    const isNotificationsView = location.state?.from === 'notifications';
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab');
+    // Prefer completed tab when we come from injected attendance state
+    const fromTabState = (history.state as any)?.fromTab;
+    const [activeTab, setActiveTab] = React.useState<'overview' | 'deadlines' | 'notifications' | 'completed'>(() => {
+        if (tabParam === 'deadlines') return 'deadlines';
+        if (tabParam === 'notifications') return 'notifications';
+        if (tabParam === 'completed') return 'completed';
+        if (isDeadlineView) return 'deadlines';
+        if (fromTabState === 'completed') return 'completed';
+        if (isNotificationsView) return 'notifications';
+        return 'overview';
+    });
 
     // Filter notifications based on active tab
     const filteredNotifications = (() => {
         switch (activeTab) {
             case 'deadlines':
-                return notifications.filter(n => n.category === 'deadline');
+                return allNotifications.filter(n => n.category === 'deadline');
             case 'notifications':
-                return notifications.filter(n => n.category === 'general');
+                return allNotifications.filter(n => n.category === 'general' || n.category === 'quiz' || n.category === 'assessment');
             case 'completed':
-                return notifications.filter(n => n.category === 'completed');
+                return allNotifications.filter(n => n.category === 'completed' || n.category === 'attendance');
             default:
-                return notifications;
+                return allNotifications;
         }
     })();
 
     // Back navigation handled via persistent sidebar; no back button here
 
-    const handleDismiss = (id: number) => {
+    const handleDismiss = (id: string | number) => {
         // Handle notification dismissal
         console.log('Dismissing notification:', id);
+        if (typeof id === 'string') {
+            markAsRead(id);
+        }
     };
 
-    const toggleExpanded = (id: number) => {
+    const toggleExpanded = (id: string | number) => {
         const newExpanded = new Set(expandedNotifications);
         if (newExpanded.has(id)) {
             newExpanded.delete(id);

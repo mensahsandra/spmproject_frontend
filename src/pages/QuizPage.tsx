@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/Dashboard/DashboardLayout';
 import { markQuizCompleted } from '../utils/quizNotifications';
+import { notifyQuizSubmission } from '../utils/notificationService';
+import { getUser } from '../utils/auth';
 
 interface QuizQuestion {
   id: string;
@@ -142,6 +144,15 @@ const QuizPage: React.FC = () => {
       
       // Mark quiz as completed in notifications
       markQuizCompleted(quiz.id);
+      
+      // Send role-based notifications to both student and lecturer
+      const user = getUser('student');
+      const studentName = user?.name || user?.username || 'Student';
+      notifyQuizSubmission(
+        studentName,
+        quiz.title,
+        quiz.courseCode
+      );
       
       // Navigate to results or success page
       navigate('/student/notifications', { 

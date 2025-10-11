@@ -52,17 +52,34 @@ export interface ApiOptions extends RequestInit {
 export async function apiFetch<T = any>(path: string, options: ApiOptions = {}): Promise<T> {
   const { role, retry, headers, ...rest } = options;
   const endPoint = getApiBase();
+  const authHeaders = getAuthHeaders(role, role);
+  const finalHeaders = { ...authHeaders, ...(headers || {}) };
+  
+  // Debug logging
+  console.log('🔍 [API-FETCH] Request details:', {
+    path,
+    role,
+    hasToken: !!authHeaders.Authorization,
+    tokenPreview: authHeaders.Authorization ? authHeaders.Authorization.substring(0, 30) + '...' : 'none',
+    headers: finalHeaders
+  });
+  
   const res = await fetch(`${endPoint}${path}`, {
     ...rest,
-    headers: { ...getAuthHeaders(role, role), ...(headers || {}) }
+    headers: finalHeaders
   });
 
+  console.log('🔍 [API-FETCH] Response status:', res.status);
+
   if (res.status === 401 && !retry) {
+    console.warn('⚠️ [API-FETCH] 401 Unauthorized - attempting token refresh');
     const newToken = await refreshToken(role);
     if (newToken) {
+      console.log('✅ [API-FETCH] Token refreshed, retrying request');
       return apiFetch<T>(path, { ...options, retry: true });
     }
     // final unauthorized
+    console.error('❌ [API-FETCH] Token refresh failed, logging out');
     logout(role);
     window.location.href = '/student-login';
     throw new Error('Unauthorized');
@@ -70,11 +87,22 @@ export async function apiFetch<T = any>(path: string, options: ApiOptions = {}):
 
   if (res.status === 403) {
     // forbidden; maybe role mismatch
-    console.warn('Forbidden or role mismatch');
+    console.warn('⚠️ [API-FETCH] 403 Forbidden or role mismatch');
     throw new Error('Forbidden');
   }
 
   const data = await res.json().catch(() => ({}));
+  
+  // Check if the response indicates an error
+  if (!res.ok) {
+    console.error('❌ [API-FETCH] Request failed:', {
+      status: res.status,
+      statusText: res.statusText,
+      data
+    });
+    throw new Error(data?.message || data?.error || `Request failed with status ${res.status}`);
+  }
+  
   return data as T;
 }
 

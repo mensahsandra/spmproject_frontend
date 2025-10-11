@@ -317,36 +317,59 @@ export default function AttendanceLogs() {
       }
 
       // Call backend to reset attendance
-      const result = await apiFetch(`/api/attendance/reset/${lecturerId}`, {
-        method: 'DELETE',
-        role: 'lecturer'
-      });
+      try {
+        const result = await apiFetch(`/api/attendance/reset/${lecturerId}`, {
+          method: 'DELETE',
+          role: 'lecturer'
+        });
 
-      if (result.success) {
-        // Clear local state
-        setAttendanceRecords([]);
-        setSessionInfo(prev => prev ? { ...prev, totalAttendees: 0 } : null);
-        setLastRecordCount(0);
-        setLastRefreshTime(new Date());
-        
-        // Show success message
-        addNotification({
-          type: 'general',
-          title: '✅ Attendance Reset',
-          message: 'All attendance records have been cleared successfully.'
-        });
-        
-        // Also send a feedback notification
-        addNotification({
-          type: 'attendance',
-          title: '📊 Attendance Session',
-          message: 'Attendance session has been reset. You can now start a fresh session for new students.',
-          data: { action: 'reset', timestamp: new Date().toISOString() }
-        });
-        
-        console.log('✅ Attendance reset successfully');
-      } else {
-        throw new Error(result.message || 'Failed to reset attendance');
+        if (result.success) {
+          // Clear local state
+          setAttendanceRecords([]);
+          setSessionInfo(prev => prev ? { ...prev, totalAttendees: 0 } : null);
+          setLastRecordCount(0);
+          setLastRefreshTime(new Date());
+          
+          // Show success message
+          addNotification({
+            type: 'general',
+            title: '✅ Attendance Reset',
+            message: 'All attendance records have been cleared successfully.'
+          });
+          
+          // Also send a feedback notification
+          addNotification({
+            type: 'attendance',
+            title: '📊 Attendance Session',
+            message: 'Attendance session has been reset. You can now start a fresh session for new students.',
+            data: { action: 'reset', timestamp: new Date().toISOString() }
+          });
+          
+          console.log('✅ Attendance reset successfully');
+        } else {
+          throw new Error(result.message || 'Failed to reset attendance');
+        }
+      } catch (apiError: any) {
+        // If route doesn't exist (404), handle gracefully
+        if (apiError.message?.includes('Route not found') || apiError.message?.includes('404')) {
+          console.warn('⚠️ Reset endpoint not available, clearing local data only');
+          
+          // Clear local state anyway
+          setAttendanceRecords([]);
+          setSessionInfo(prev => prev ? { ...prev, totalAttendees: 0 } : null);
+          setLastRecordCount(0);
+          setLastRefreshTime(new Date());
+          
+          addNotification({
+            type: 'general',
+            title: '⚠️ Local Reset',
+            message: 'Attendance records cleared locally. Note: Backend reset endpoint is not available yet.'
+          });
+          
+          console.log('✅ Local attendance reset completed');
+        } else {
+          throw apiError;
+        }
       }
 
     } catch (err: any) {

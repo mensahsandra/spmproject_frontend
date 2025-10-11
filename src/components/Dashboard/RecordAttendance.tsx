@@ -29,6 +29,7 @@ import QRScanner, { type QRScannerHandle } from "./QRScanner";
 // endpoint no longer needed directly; using apiFetch wrapper
 import { apiFetch } from '../../utils/api';
 import { getUser } from '../../utils/auth';
+import { notifyAttendanceCheckIn } from '../../utils/notificationService';
 import "../../css/recordattendance.css";
 
 // Prefer role-aware user getter
@@ -177,6 +178,13 @@ const RecordAttendance: React.FC = () => {
             const courseLine = courseCode ? `${courseCode} - ${courseTitle}` : courseTitle;
             const lecturerName = lastScanMeta?.lecturer || 'Lecturer';
             const studentName = lastScanMeta?.name || 'You';
+
+            // Send role-based notifications to both student and lecturer
+            notifyAttendanceCheckIn(
+                studentName,
+                courseCode || courseTitle,
+                centre || 'Campus'
+            );
 
             const completed = {
                 id: Date.now(),

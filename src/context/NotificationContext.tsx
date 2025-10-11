@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { getActiveRole } from '../utils/auth';
 
 export type NotificationType = 'attendance' | 'assessment' | 'quiz' | 'deadline' | 'general';
 
@@ -41,22 +42,55 @@ interface NotificationProviderProps {
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // Load notifications from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('notifications');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setNotifications(parsed);
-      } catch (error) {
-        console.error('Failed to parse stored notifications:', error);
-      }
+  // Get the storage key based on active role
+  const getStorageKey = () => {
+    const role = getActiveRole();
+    if (role === 'student' || role === 'lecturer') {
+      return `notifications_${role}`;
     }
-  }, []);
+    return 'notifications'; // fallback
+  };
+
+  // Load notifications from localStorage on mount and when role changes
+  useEffect(() => {
+    const loadNotifications = () => {
+      const storageKey = getStorageKey();
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setNotifications(parsed);
+          console.log(`📱 [NotificationContext] Loaded ${parsed.length} notifications for ${storageKey}`);
+        } catch (error) {
+          console.error('Failed to parse stored notifications:', error);
+        }
+      } else {
+        setNotifications([]);
+      }
+    };
+
+    loadNotifications();
+
+    // Listen for storage changes (for cross-tab sync)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === getStorageKey() && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          setNotifications(parsed);
+        } catch (error) {
+          console.error('Failed to parse storage change:', error);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []); // Only run on mount
 
   // Save notifications to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('notifications', JSON.stringify(notifications));
+    const storageKey = getStorageKey();
+    localStorage.setItem(storageKey, JSON.stringify(notifications));
   }, [notifications]);
 
   const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {

@@ -28,6 +28,15 @@ if ((import.meta as any).env?.DEV && typeof window !== 'undefined') {
   }
 }
 
+// Load token test utilities in development
+if ((import.meta as any).env?.DEV) {
+  import('./utils/tokenTest').then(module => {
+    console.log('✅ Token test utilities loaded');
+  }).catch(err => {
+    console.warn('Could not load token test utilities:', err);
+  });
+}
+
 // For debugging purposes - to ensure React is working
 console.log("React app is initializing...");
 
