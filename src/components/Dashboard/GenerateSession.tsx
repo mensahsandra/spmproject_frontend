@@ -5,7 +5,6 @@ import { jwtDecode } from "jwt-decode";
 import { getToken } from '../../utils/auth';
 import { apiFetch } from '../../utils/api';
 import { useSession } from '../../context/SessionContext';
-import TokenDebug from '../Debug/TokenDebug';
 
 type DecodedToken = {
   id: string;
@@ -221,7 +220,6 @@ export default function GenerateSessionCode() {
 
   return (
     <>
-      <TokenDebug />
       <div className="container py-4" style={{ paddingLeft: 0, paddingRight: 0 }}>
         <div className="row g-4">
         <div className="col-lg-6">

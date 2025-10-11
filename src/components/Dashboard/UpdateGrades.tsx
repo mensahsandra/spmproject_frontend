@@ -14,7 +14,7 @@ import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade'
 import '../../css/assessment.css';
 
 const UpdateGrades: React.FC = () => {
-  const { notifyBulkGradesSubmitted, notifyGradeError, notifyAssessmentCreated } = useAssessmentNotifications();
+  const { notifyBulkGradesSubmitted, notifyGradeError } = useAssessmentNotifications(); // keep helper for real assessment events
   // Courses from lecturer profile
   const profileDataRaw = localStorage.getItem('profile');
   const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : null;
@@ -114,12 +114,6 @@ const UpdateGrades: React.FC = () => {
   // Handle course selection with notification
   const handleCourseSelect = (courseId: string) => {
     setSelectedCourseId(courseId);
-    if (courseId) {
-      const course = courses.find(c => c.id === courseId);
-      if (course) {
-        notifyAssessmentCreated('Course Selected', course.title);
-      }
-    }
   };
   const [students, setStudents] = useState<EnrolledStudent[]>([]);
   const [editedGrades, setEditedGrades] = useState<Record<string, string>>({});
@@ -138,10 +132,7 @@ const UpdateGrades: React.FC = () => {
   const [bulkTarget, setBulkTarget] = useState('all');
   const [bulkSuccess, setBulkSuccess] = useState('');
   
-  // Add notification when component loads
-  useEffect(() => {
-    notifyAssessmentCreated('Assessment Page', 'Assessment management page loaded successfully');
-  }, []);
+
 
   // Load enrolled students when course changes
   useEffect(() => {
@@ -157,11 +148,8 @@ const UpdateGrades: React.FC = () => {
         setStudents(ss);
         setEditedGrades({});
         
-        // Send notification about loaded students
-        if (ss.length > 0) {
-          const courseName = courses.find(c => c.id === selectedCourseId)?.title || selectedCourseId;
-          notifyAssessmentCreated('Students Loaded', `${ss.length} students loaded for ${courseName}`);
-        }
+        const courseName = courses.find(c => c.id === selectedCourseId)?.title || selectedCourseId;
+        console.log(`ℹ️ [UpdateGrades] Loaded ${ss.length} students for ${courseName}`);
       } catch (e: any) {
         setError(e?.message || 'Failed to load students');
       } finally { setLoading(false); }
