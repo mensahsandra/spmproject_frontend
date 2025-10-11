@@ -39,6 +39,11 @@ const ProfilePage: React.FC = () => {
   try { base = getUser() || {}; } catch {}
     
     console.log('🔍 [PROFILE] User data from storage:', base);
+    console.log('🔍 [PROFILE] Raw localStorage items:');
+    console.log('🔍 [PROFILE] - user:', localStorage.getItem('user'));
+    console.log('🔍 [PROFILE] - lecturer:', localStorage.getItem('lecturer'));
+    console.log('🔍 [PROFILE] - profile:', localStorage.getItem('profile'));
+    console.log('🔍 [PROFILE] - activeRole:', localStorage.getItem('activeRole'));
     
     const role = (base.role || '').toLowerCase();
     if (role === 'lecturer') {
@@ -47,14 +52,23 @@ const ProfilePage: React.FC = () => {
       const first = (base.firstName || '').trim() || (full.split(' ')[0] || '');
       const last = (base.lastName || '').trim() || (full.split(' ').slice(-1)[0] || '');
       
-      // Get staff ID - prioritize staffId field (NOT lecturerId which is MongoDB ObjectId)
-      const staffId = base.staffId || base.staffNumber || '—';
+      // Get staff ID - prioritize staffId field
+      const staffId = base.staffId || base.lecturerId || base.staffNumber || base.userId || '—';
       
       console.log('🔍 [PROFILE] Staff ID options:', {
         staffId: base.staffId,
+        lecturerId: base.lecturerId,
         staffNumber: base.staffNumber,
-        lecturerId: base.lecturerId, // MongoDB ObjectId - NOT staff ID
+        userId: base.userId,
         selected: staffId
+      });
+      
+      console.log('🔍 [PROFILE] Name construction:', {
+        honorific: honor,
+        firstName: first,
+        lastName: last,
+        fullName: full,
+        constructed: [honor, first, last].filter(Boolean).join(' ').trim()
       });
       
       return {
@@ -62,7 +76,6 @@ const ProfilePage: React.FC = () => {
         name: [honor, first, last].filter(Boolean).join(' ').trim() || 'Lecturer',
         staffNumber: staffId,
         course: base.course || base.subject || '—',
-        email: base.email || '—',
         avatar: '/assets/images/AugustArt.png',
       };
     }

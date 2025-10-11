@@ -86,14 +86,23 @@ const LecturerLoginForm: React.FC = () => {
                             console.log('✅ User data updated with courses:', updatedUser);
                         }
                     } else {
-                        console.warn('❌ Profile fetch failed or invalid response:', profileData);
                     }
                 } catch (profileError) {
                     console.error('❌ Profile fetch error:', profileError);
                 }
                 
-                console.log("Login successful:", user);
-                navigate("/lecturer/dashboard");
+                console.log("✅ [LOGIN] Login successful:", user);
+                console.log("✅ [LOGIN] About to navigate to /lecturer/dashboard");
+                console.log("✅ [LOGIN] Current role:", role);
+                console.log("✅ [LOGIN] Token stored:", !!data.token);
+                console.log("✅ [LOGIN] User stored in localStorage:", localStorage.getItem('user'));
+                console.log("✅ [LOGIN] Active role:", localStorage.getItem('activeRole'));
+                
+                // Add a small delay to ensure storage is complete
+                setTimeout(() => {
+                    console.log("✅ [LOGIN] Navigating now...");
+                    navigate("/lecturer/dashboard");
+                }, 100);
             } else {
                 console.warn('Lecturer login failed response:', data);
                 const serverMessage = data?.message || data?.error || data?.details;
