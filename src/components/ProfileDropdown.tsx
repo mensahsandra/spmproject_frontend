@@ -29,7 +29,8 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
   
   // Student-specific data
   const indexNo = userData.indexNo || (role === 'lecturer' ? '' : '9123456');
-  const studentId = userData.studentId || userData.lecturerId || userData.staffId || '21058161';
+  const studentId = userData.studentId || '21058161';
+  const staffId = userData.staffId || userData.staffNumber || '—';
   const programme = role === 'lecturer'
     ? (userData.courses?.join(', ') || userData.course || userData.programme || '—')
     : (userData.programme || 'BSc. Information Technology IDL (TOP-UP)');
@@ -134,7 +135,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
             <div className="lecturer-details">
               <div className="detail-row">
                 <span className="detail-label">Staff Number</span>
-                <span className="detail-value">{studentId}</span>
+                <span className="detail-value">{staffId}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Course</span>

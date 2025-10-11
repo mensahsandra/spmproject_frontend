@@ -62,11 +62,30 @@ export default function GenerateSessionCode() {
           }
           
           const lecturerInfo = data.lecturer;
+          
+          // Build full name with honorific
+          const honorific = lecturerInfo.honorific || '';
+          const firstName = lecturerInfo.firstName || '';
+          const lastName = lecturerInfo.lastName || '';
+          const fullName = lecturerInfo.name || '';
+          
+          // Construct display name
+          let displayName = fullName;
+          if (!displayName && (firstName || lastName)) {
+            displayName = [firstName, lastName].filter(Boolean).join(' ');
+          }
+          if (honorific && displayName) {
+            displayName = `${honorific} ${displayName}`.trim();
+          }
+          if (!displayName) {
+            displayName = 'Lecturer';
+          }
+          
           const lecturerData = {
             _id: lecturerInfo.id || lecturerId,
             user: {
               _id: lecturerInfo.id || lecturerId,
-              name: lecturerInfo.name || 'Lecturer',
+              name: displayName,
               email: lecturerInfo.email || '',
               role: lecturerInfo.role || 'lecturer'
             },

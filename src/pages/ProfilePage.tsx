@@ -37,16 +37,30 @@ const ProfilePage: React.FC = () => {
   const profile = useMemo(() => {
     let base: any = {};
   try { base = getUser() || {}; } catch {}
+    
+    console.log('🔍 [PROFILE] User data from storage:', base);
+    
     const role = (base.role || '').toLowerCase();
     if (role === 'lecturer') {
       const honor = (base.honorific || '').trim();
       const full = (base.name || '').trim();
       const first = (base.firstName || '').trim() || (full.split(' ')[0] || '');
       const last = (base.lastName || '').trim() || (full.split(' ').slice(-1)[0] || '');
+      
+      // Get staff ID - prioritize staffId field (NOT lecturerId which is MongoDB ObjectId)
+      const staffId = base.staffId || base.staffNumber || '—';
+      
+      console.log('🔍 [PROFILE] Staff ID options:', {
+        staffId: base.staffId,
+        staffNumber: base.staffNumber,
+        lecturerId: base.lecturerId, // MongoDB ObjectId - NOT staff ID
+        selected: staffId
+      });
+      
       return {
         role,
         name: [honor, first, last].filter(Boolean).join(' ').trim() || 'Lecturer',
-        staffNumber: base.staffId || base.userId || base.lecturerId || '—',
+        staffNumber: staffId,
         course: base.course || base.subject || '—',
         email: base.email || '—',
         avatar: '/assets/images/AugustArt.png',
