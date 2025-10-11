@@ -15,7 +15,24 @@ import { validateUserRole } from '../../utils/roleValidation';
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectTo, children }) => {
     const { user, loading, role } = useAuth();
 
-    if (loading) return null; // AuthProvider already shows splash
+    // If loading, check if we have a token - if yes, show loading, if no, redirect
+    if (loading) {
+        const activeRole = normalizeRole(role || requiredRole);
+        const tokenPresent = requiredRole ? !!getToken(requiredRole) : !!getToken(activeRole || undefined);
+        
+        if (tokenPresent) {
+            // We have a token, so show loading instead of redirecting
+            return (
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:16}}>
+                    <div style={{width:60,height:60,border:'6px solid #e5e7eb',borderTopColor:'#10b981',borderRadius:'50%',animation:'spinslow 1s linear infinite'}} />
+                    <div style={{fontSize:14,color:'#374151'}}>Loading dashboard...</div>
+                </div>
+            );
+        } else {
+            // No token, redirect to login
+            return <Navigate to={redirectTo || loginPath(requiredRole || activeRole)} replace />;
+        }
+    }
 
     // If not logged in at all OR missing user
     const activeRole = normalizeRole(role || user?.role);
