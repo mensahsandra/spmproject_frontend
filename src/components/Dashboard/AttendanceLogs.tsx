@@ -227,6 +227,16 @@ export default function AttendanceLogs() {
           setError(null);
           setLastRefreshTime(new Date());
           console.log('✅ Successfully loaded attendance data:', records.length, 'records');
+          
+          // Send feedback notification if there are attendance records
+          if (records.length > 0) {
+            addNotification({
+              type: 'attendance',
+              title: '📊 Attendance Update',
+              message: `Attendance data refreshed. ${records.length} student${records.length > 1 ? 's' : ''} have attended today.`,
+              data: { count: records.length, timestamp: new Date().toISOString() }
+            });
+          }
 
           // Initialize the record count for real-time tracking
           setLastRecordCount(records.length);
@@ -324,6 +334,14 @@ export default function AttendanceLogs() {
           type: 'general',
           title: '✅ Attendance Reset',
           message: 'All attendance records have been cleared successfully.'
+        });
+        
+        // Also send a feedback notification
+        addNotification({
+          type: 'attendance',
+          title: '📊 Attendance Session',
+          message: 'Attendance session has been reset. You can now start a fresh session for new students.',
+          data: { action: 'reset', timestamp: new Date().toISOString() }
         });
         
         console.log('✅ Attendance reset successfully');
