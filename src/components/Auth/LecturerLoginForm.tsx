@@ -95,8 +95,11 @@ const LecturerLoginForm: React.FC = () => {
                 console.log("✅ [LOGIN] About to navigate to /lecturer/dashboard");
                 console.log("✅ [LOGIN] Current role:", role);
                 console.log("✅ [LOGIN] Token stored:", !!data.token);
-                console.log("✅ [LOGIN] User stored in localStorage:", localStorage.getItem('user'));
-                console.log("✅ [LOGIN] Active role:", localStorage.getItem('activeRole'));
+                console.log("✅ [LOGIN] User stored (legacy):", localStorage.getItem('user'));
+                console.log("✅ [LOGIN] User stored (namespaced):", localStorage.getItem('user_lecturer'));
+                console.log("✅ [LOGIN] Token stored (namespaced):", localStorage.getItem('token_lecturer'));
+                console.log("✅ [LOGIN] Active role (session):", sessionStorage.getItem('activeRole'));
+                console.log("✅ [LOGIN] All localStorage keys:", Object.keys(localStorage));
                 
                 // Add a small delay to ensure storage is complete
                 setTimeout(() => {

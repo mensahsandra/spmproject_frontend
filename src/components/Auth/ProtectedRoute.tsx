@@ -14,6 +14,16 @@ import { validateUserRole } from '../../utils/roleValidation';
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectTo, children }) => {
     const { user, loading, role } = useAuth();
+    
+    console.log('🔍 [PROTECTED-ROUTE] Checking access:', {
+        requiredRole,
+        user: user ? { role: user.role, name: user.name } : null,
+        loading,
+        contextRole: role,
+        tokenPresent: requiredRole ? !!getToken(requiredRole) : !!getToken(),
+        activeRole: sessionStorage.getItem('activeRole'),
+        userStorageKeys: Object.keys(localStorage).filter(k => k.includes('user'))
+    });
 
     // If loading, check if we have a token - if yes, show loading, if no, redirect
     if (loading) {
