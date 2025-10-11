@@ -92,6 +92,8 @@ const LecturerLoginForm: React.FC = () => {
                 }
                 
                 console.log("✅ [LOGIN] Login successful:", user);
+                console.log("✅ [LOGIN] Backend response data:", data);
+                console.log("✅ [LOGIN] User object from backend:", data.user);
                 console.log("✅ [LOGIN] About to navigate to /lecturer/dashboard");
                 console.log("✅ [LOGIN] Current role:", role);
                 console.log("✅ [LOGIN] Token stored:", !!data.token);
@@ -100,6 +102,14 @@ const LecturerLoginForm: React.FC = () => {
                 console.log("✅ [LOGIN] Token stored (namespaced):", localStorage.getItem('token_lecturer'));
                 console.log("✅ [LOGIN] Active role (session):", sessionStorage.getItem('activeRole'));
                 console.log("✅ [LOGIN] All localStorage keys:", Object.keys(localStorage));
+                
+                // Additional debugging for role validation
+                console.log("🔍 [LOGIN] Role validation check:");
+                console.log("🔍 [LOGIN] - Backend role:", data.user?.role);
+                console.log("🔍 [LOGIN] - Normalized role:", backendRole);
+                console.log("🔍 [LOGIN] - Stored user role:", user.role);
+                console.log("🔍 [LOGIN] - Staff ID from backend:", data.user?.staffId);
+                console.log("🔍 [LOGIN] - Staff ID from input:", staffId);
                 
                 // Add a small delay to ensure storage is complete
                 setTimeout(() => {

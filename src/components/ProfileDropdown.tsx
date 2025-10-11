@@ -16,8 +16,20 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ user: propUser }) => 
   const role = (userData.role || '').toLowerCase();
   
   // Debug: Log user data to see what's available
-  console.log('ProfileDropdown userData:', userData);
-  console.log('ProfileDropdown role:', role);
+  console.log('🔍 [PROFILE-DROPDOWN] User data:', userData);
+  console.log('🔍 [PROFILE-DROPDOWN] Role:', role);
+  console.log('🔍 [PROFILE-DROPDOWN] Staff ID fields:', {
+    staffId: userData.staffId,
+    lecturerId: userData.lecturerId,
+    staffNumber: userData.staffNumber,
+    userId: userData.userId
+  });
+  console.log('🔍 [PROFILE-DROPDOWN] Name fields:', {
+    name: userData.name,
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    honorific: userData.honorific
+  });
   
   // Construct display name
   const honor = (userData.honorific || '').trim();

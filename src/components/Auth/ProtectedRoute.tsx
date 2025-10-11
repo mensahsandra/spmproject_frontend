@@ -17,12 +17,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectT
     
     console.log('🔍 [PROTECTED-ROUTE] Checking access:', {
         requiredRole,
-        user: user ? { role: user.role, name: user.name } : null,
+        user: user ? { role: user.role, name: user.name, staffId: user.staffId } : null,
         loading,
         contextRole: role,
         tokenPresent: requiredRole ? !!getToken(requiredRole) : !!getToken(),
         activeRole: sessionStorage.getItem('activeRole'),
-        userStorageKeys: Object.keys(localStorage).filter(k => k.includes('user'))
+        userStorageKeys: Object.keys(localStorage).filter(k => k.includes('user')),
+        allStorageKeys: Object.keys(localStorage),
+        sessionStorageKeys: Object.keys(sessionStorage)
     });
 
     // If loading, check if we have a token - if yes, show loading, if no, redirect
