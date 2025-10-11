@@ -46,7 +46,7 @@ const LecturerNotificationsPage: React.FC = () => {
   // Load notifications on mount and when context updates
   useEffect(() => {
     // Get role-based notifications from localStorage
-    const storedNotifs = getStoredNotifications('lecturer');
+    getStoredNotifications('lecturer');
     
     // Convert context notifications to NotificationItem format
     const contextNotifs: NotificationItem[] = contextNotifications.map(notif => ({

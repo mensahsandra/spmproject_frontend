@@ -148,8 +148,10 @@ const QuizPage: React.FC = () => {
       // Send role-based notifications to both student and lecturer
       const user = getUser('student');
       const studentName = user?.name || user?.username || 'Student';
+      const studentId = user?.studentId || user?.id || 'Unknown ID';
       notifyQuizSubmission(
         studentName,
+        studentId,
         quiz.title,
         quiz.courseCode
       );

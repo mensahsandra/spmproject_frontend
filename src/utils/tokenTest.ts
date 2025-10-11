@@ -75,10 +75,13 @@ export function testTokenStorage() {
   // Test token retrieval
   console.log('\n🔍 Token Retrieval Test:');
   try {
-    const { getToken } = require('./auth');
-    console.log('getToken("lecturer"):', getToken('lecturer') ? '✅ SUCCESS' : '❌ FAILED');
-    console.log('getToken("student"):', getToken('student') ? '✅ SUCCESS' : '❌ FAILED');
-    console.log('getToken():', getToken() ? '✅ SUCCESS' : '❌ FAILED');
+    import('./auth').then(({ getToken }) => {
+      console.log('getToken("lecturer"):', getToken('lecturer') ? '✅ SUCCESS' : '❌ FAILED');
+      console.log('getToken("student"):', getToken('student') ? '✅ SUCCESS' : '❌ FAILED');
+      console.log('getToken():', getToken() ? '✅ SUCCESS' : '❌ FAILED');
+    }).catch(e => {
+      console.log('Could not test getToken function:', e);
+    });
   } catch (e) {
     console.log('Could not test getToken function:', e);
   }

@@ -182,8 +182,9 @@ const RecordAttendance: React.FC = () => {
             // Send role-based notifications to both student and lecturer
             notifyAttendanceCheckIn(
                 studentName,
+                studentId || 'Unknown ID',
                 courseCode || courseTitle,
-                centre || 'Campus'
+                sessionCode || scannedCode || 'N/A'
             );
 
             const completed = {

@@ -56,7 +56,7 @@ const NotificationsPage: React.FC = () => {
     // Load student notifications
     React.useEffect(() => {
         // Get role-based notifications from localStorage
-        const storedNotifs = getStoredNotifications('student');
+        getStoredNotifications('student');
         
         // Convert context notifications to NotificationItem format
         const contextNotifs: NotificationItem[] = contextNotifications.map(notif => ({

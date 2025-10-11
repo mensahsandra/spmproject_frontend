@@ -210,14 +210,10 @@ const UpdateGrades: React.FC = () => {
       // Send role-based grading notifications to students
       const lecturer = getUser('lecturer');
       const lecturerName = lecturer?.name || lecturer?.username || 'Lecturer';
-      const studentNames = updates.map(u => {
-        const student = students.find(s => s.studentId === u.studentId);
-        return student?.name || u.studentId;
-      });
-      
+
       // Send bulk grading notification
-      notifyBulkGrading(lecturerName, courseName, updates.length, studentNames);
-      
+      notifyBulkGrading(selectedCourseId, courseName, updates.length, lecturerName);
+
       // Send individual notifications to each student
       updates.forEach(update => {
         const student = students.find(s => s.studentId === update.studentId);
@@ -226,8 +222,8 @@ const UpdateGrades: React.FC = () => {
           const gradeStr = update.grade.toString();
           const score = parseFloat(gradeStr.split('/')[0]) || 0;
           const maxScore = gradeStr.includes('/') ? parseFloat(gradeStr.split('/')[1]) : 100;
-          
-          notifyQuizGraded(student.name, courseName, score, maxScore);
+
+          notifyQuizGraded(student.name, student.studentId, courseName, selectedCourseId, `${score}/${maxScore}`);
         }
       });
       
