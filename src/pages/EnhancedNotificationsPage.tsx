@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNotifications } from '../context/NotificationContext';
 import type { NotificationType } from '../context/NotificationContext';
-import { Bell, Check, CheckCheck, Trash2, GraduationCap, FileText, BookOpen, Clock, AlertCircle, X, Info } from 'lucide-react';
+import { Bell, Check, CheckCheck, Trash2, GraduationCap, FileText, BookOpen, Clock, X, Info } from 'lucide-react';
 
 const EnhancedNotificationsPage: React.FC = () => {
   const { notifications, unreadCount, unreadByType, markAsRead, markAllAsRead, clearNotifications, addNotification } = useNotifications();
@@ -39,25 +39,6 @@ const EnhancedNotificationsPage: React.FC = () => {
     ? notifications 
     : notifications.filter(n => n.type === activeTab);
 
-  const getIcon = (type: NotificationType) => {
-    switch (type) {
-      case 'attendance': return <GraduationCap className="w-5 h-5" />;
-      case 'assessment': return <FileText className="w-5 h-5" />;
-      case 'quiz': return <BookOpen className="w-5 h-5" />;
-      case 'deadline': return <Clock className="w-5 h-5" />;
-      case 'general': return <AlertCircle className="w-5 h-5" />;
-    }
-  };
-
-  const getColor = (type: NotificationType) => {
-    switch (type) {
-      case 'attendance': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-      case 'assessment': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
-      case 'quiz': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400';
-      case 'deadline': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-      case 'general': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
-    }
-  };
 
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
