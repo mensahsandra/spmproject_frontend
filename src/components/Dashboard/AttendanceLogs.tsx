@@ -32,6 +32,7 @@ export default function AttendanceLogs() {
   const [error, setError] = useState<string | null>(null);
   const [lastRecordCount, setLastRecordCount] = useState(0);
   const [isChecking, setIsChecking] = useState(false);
+  const [lastRefreshTime, setLastRefreshTime] = useState<Date | null>(null);
 
   useEffect(() => {
     // Request notification permission on mount
@@ -44,8 +45,12 @@ export default function AttendanceLogs() {
 
     fetchAttendanceData();
 
-    // Set up polling to refresh data every 10 seconds
-    const interval = setInterval(fetchAttendanceData, 10000);
+    // Set up polling to refresh data every 10 minutes (as requested)
+    const interval = setInterval(() => {
+      console.log('🔄 Auto-refreshing attendance data (10-minute interval)');
+      fetchAttendanceData();
+      setLastRefreshTime(new Date());
+    }, 10 * 60 * 1000);
 
     return () => {
       clearInterval(interval);
@@ -220,6 +225,7 @@ export default function AttendanceLogs() {
           });
 
           setError(null);
+          setLastRefreshTime(new Date());
           console.log('✅ Successfully loaded attendance data:', records.length, 'records');
 
           // Initialize the record count for real-time tracking
@@ -260,6 +266,80 @@ export default function AttendanceLogs() {
 
       setAttendanceRecords([]);
       setError(`Connection error: ${err.message || 'Please check your internet connection and try again.'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Reset attendance function
+  const resetAttendance = async () => {
+    if (!window.confirm('Are you sure you want to reset all attendance records? This action cannot be undone.')) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = getToken('lecturer');
+      if (!token) {
+        setError('Please log in as a lecturer to reset attendance.');
+        setLoading(false);
+        return;
+      }
+
+      // Get lecturer ID
+      const userData = await apiFetch('/api/auth/me-enhanced', {
+        method: 'GET',
+        role: 'lecturer'
+      });
+
+      if (!userData?.user) {
+        setError('Failed to get user information. Please log in again.');
+        setLoading(false);
+        return;
+      }
+
+      const lecturerId = userData.user.id || userData.user._id || userData.user.lecturerId || userData.user.staffId;
+      
+      if (!lecturerId) {
+        setError('Invalid user data: No lecturer ID found.');
+        setLoading(false);
+        return;
+      }
+
+      // Call backend to reset attendance
+      const result = await apiFetch(`/api/attendance/reset/${lecturerId}`, {
+        method: 'DELETE',
+        role: 'lecturer'
+      });
+
+      if (result.success) {
+        // Clear local state
+        setAttendanceRecords([]);
+        setSessionInfo(prev => prev ? { ...prev, totalAttendees: 0 } : null);
+        setLastRecordCount(0);
+        setLastRefreshTime(new Date());
+        
+        // Show success message
+        addNotification({
+          type: 'general',
+          title: '✅ Attendance Reset',
+          message: 'All attendance records have been cleared successfully.'
+        });
+        
+        console.log('✅ Attendance reset successfully');
+      } else {
+        throw new Error(result.message || 'Failed to reset attendance');
+      }
+
+    } catch (err: any) {
+      console.error('❌ Error resetting attendance:', err);
+      setError(`Failed to reset attendance: ${err.message || 'Please try again.'}`);
+      
+      addNotification({
+        type: 'general',
+        title: '❌ Reset Failed',
+        message: `Could not reset attendance: ${err.message || 'Please try again.'}`
+      });
     } finally {
       setLoading(false);
     }
@@ -339,28 +419,42 @@ export default function AttendanceLogs() {
             </div>
             <div className="col-md-4 text-md-end">
               <div className="text-muted">
-                <small>Last updated: {new Date().toLocaleTimeString()}</small>
+                <small>Last updated: {lastRefreshTime ? lastRefreshTime.toLocaleTimeString() : new Date().toLocaleTimeString()}</small>
               </div>
-              <button
-                onClick={fetchAttendanceData}
-                className={`btn ${loading ? 'btn-primary' : 'btn-outline-primary'} btn-sm mt-2`}
-                disabled={loading}
-                style={{ minWidth: '120px' }}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Refreshing...
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="me-1">
-                      <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
-                    </svg>
-                    Refresh Data
-                  </>
-                )}
-              </button>
+              <div className="d-flex gap-2 mt-2">
+                <button
+                  onClick={fetchAttendanceData}
+                  className={`btn ${loading ? 'btn-primary' : 'btn-outline-primary'} btn-sm`}
+                  disabled={loading}
+                  style={{ minWidth: '120px' }}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Refreshing...
+                    </>
+                  ) : (
+                    <>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="me-1">
+                        <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z" />
+                      </svg>
+                      Refresh Data
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={resetAttendance}
+                  className="btn btn-outline-danger btn-sm"
+                  disabled={loading}
+                  style={{ minWidth: '120px' }}
+                  title="Reset all attendance records"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="me-1">
+                    <path d="M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10L7,5L12,0V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z" />
+                  </svg>
+                  Reset
+                </button>
+              </div>
             </div>
           </div>
         </div>
