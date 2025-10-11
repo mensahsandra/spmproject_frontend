@@ -4,36 +4,9 @@ import type { NotificationType } from '../context/NotificationContext';
 import { Bell, Check, CheckCheck, Trash2, GraduationCap, FileText, BookOpen, Clock, X, Info } from 'lucide-react';
 
 const EnhancedNotificationsPage: React.FC = () => {
-  const { notifications, unreadCount, unreadByType, markAsRead, markAllAsRead, clearNotifications, addNotification } = useNotifications();
+  const { notifications, unreadCount, unreadByType, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
   const [activeTab, setActiveTab] = useState<'all' | NotificationType>('all');
   
-  // Add sample notifications for demo
-  const addSampleNotifications = () => {
-    // Clear existing notifications first
-    clearNotifications();
-    
-    // Add sample notifications
-    addNotification({
-      type: 'deadline',
-      title: 'IMPORTANT:',
-      message: 'You have 3 days left to complete lecturer assessments.',
-      data: { priority: 'high' }
-    });
-    
-    addNotification({
-      type: 'assessment',
-      title: 'REMINDER:',
-      message: 'Have you uploaded your group presentation for [Principles in Mgt]? Due today!',
-      data: { course: 'Principles in Mgt' }
-    });
-    
-    addNotification({
-      type: 'general',
-      title: 'REMINDER:',
-      message: 'Final exams are in two weeks - check the timetable and plan ahead.',
-      data: { examWeek: true }
-    });
-  };
 
   const filteredNotifications = activeTab === 'all' 
     ? notifications 
@@ -61,8 +34,13 @@ const EnhancedNotificationsPage: React.FC = () => {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-[#007A3B] rounded-lg">
+              <div className="relative p-3 bg-[#007A3B] rounded-lg">
                 <Bell className="w-6 h-6 text-white" />
+                {unreadCount > 0 && (
+                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center min-w-[24px]">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </div>
+                )}
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
@@ -72,12 +50,6 @@ const EnhancedNotificationsPage: React.FC = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <button
-                onClick={addSampleNotifications}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                🧪 Load Sample Data
-              </button>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
