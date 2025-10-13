@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { apiFetch } from '../../utils/api';
+
 import CourseSelector from './CourseSelector';
 import StudentGradeTable from './StudentGradeTable';
 import GradeHistoryViewer from './GradeHistoryViewer';

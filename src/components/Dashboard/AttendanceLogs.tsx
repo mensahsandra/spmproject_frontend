@@ -464,7 +464,7 @@ export default function AttendanceLogs() {
               </div>
               <div className="d-flex gap-2 mt-2">
                 <button
-                  onClick={fetchAttendanceData}
+                  onClick={() => fetchAttendanceData({ skipNotifications: false })}
                   className={`btn ${loading ? 'btn-primary' : 'btn-outline-primary'} btn-sm`}
                   disabled={loading}
                   style={{ minWidth: '120px' }}

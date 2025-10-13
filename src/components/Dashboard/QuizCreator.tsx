@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { addQuizNotification } from '../../utils/quizNotifications';
 import { notifyQuizCreated } from '../../utils/notificationService';
 import '../../css/assessment.css';
 
