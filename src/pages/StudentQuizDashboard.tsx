@@ -1,3 +1,16 @@
+/**
+ * Student Quiz Dashboard - Updated for Backend Integration
+ * 
+ * Changes made per backend guidance:
+ * - Updated API endpoint from /api/student/quizzes to /api/assessments/student
+ * - Added support for both student.courses[] (preferred) and student.course (legacy)  
+ * - Enhanced error handling: treats success:true with empty assessments[] as valid
+ * - Added isArchived filtering (archived assessments hidden from students)
+ * - Added isPublished support (missing isPublished treated as published)
+ * - Added submission metadata support (status, submittedAt, score, grade, feedback)
+ * - Short-circuit when no course context exists
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/Dashboard/DashboardLayout';
@@ -15,6 +28,19 @@ interface Quiz {
   studentAttended: boolean;
   description?: string;
   assessmentType?: 'upload' | 'typing' | 'multiple-choice';
+  
+  // New fields based on backend specification
+  isPublished?: boolean;  // backend treats missing as published
+  isArchived?: boolean;   // if true, hidden from students
+  
+  // Submission metadata as per backend specification
+  submission?: {
+    status: 'submitted' | 'graded' | 'pending';
+    submittedAt?: string;
+    score?: number;
+    grade?: string;
+    feedback?: string;
+  };
 }
 
 const StudentQuizDashboard: React.FC = () => {
@@ -27,20 +53,85 @@ const StudentQuizDashboard: React.FC = () => {
     loadQuizzes();
   }, []);
 
+  // Helper function to get student course data (supports both array and string formats)
+  const getStudentCourseData = () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      // Check for courses array (preferred format)
+      if (Array.isArray(user.courses) && user.courses.length > 0) {
+        return { courses: user.courses };
+      }
+      
+      // Check for legacy course string
+      if (typeof user.course === 'string' && user.course.trim()) {
+        return { course: user.course };
+      }
+
+      console.warn('No course information found for student');
+      return null;
+    } catch (error) {
+      console.error('Error getting student courses:', error);
+      return null;
+    }
+  };
+
   const loadQuizzes = async () => {
     try {
-      // Try to fetch real quiz data from backend
-      const response = await fetch('/api/student/quizzes', {
+      console.log('📚 Loading student assessments...');
+      
+      // Get student course data - backend guidance: support both formats
+      const courseData = getStudentCourseData();
+      
+      // Early return if no course context (backend short-circuits in this case)
+      if (!courseData) {
+        console.log('No course enrollment found, showing empty state');
+        setQuizzes([]);
+        setLoading(false);
+        return;
+      }
+
+      // Use the new endpoint as per backend guidance
+      const response = await fetch('/api/assessments/student', {
+        method: 'GET', // Backend infers course context; no request body needed
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
 
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.quizzes) {
-          setQuizzes(data.quizzes);
+        
+        // Backend guidance: treat success: true with empty array as valid
+        if (data.success === true) {
+          const assessments = Array.isArray(data.assessments) ? data.assessments : [];
+          
+          // Filter out archived assessments (backend hides these from students)
+          const visibleAssessments = assessments.filter((assessment: any) => {
+            return !assessment.isArchived;
+          });
+
+          // Process assessments for display
+          const processedQuizzes = visibleAssessments.map((assessment: any) => ({
+            id: assessment.id,
+            title: assessment.title,
+            lecturerName: assessment.lecturerName,
+            courseName: assessment.courseName,
+            courseCode: assessment.courseCode,
+            deadline: assessment.deadline,
+            status: assessment.status || 'available',
+            attendanceRequired: assessment.attendanceRequired || false,
+            studentAttended: assessment.studentAttended ?? true,
+            description: assessment.description,
+            assessmentType: assessment.assessmentType || 'multiple-choice',
+            // Backend guidance: missing isPublished treated as published
+            isPublished: assessment.isPublished !== false,
+            isArchived: assessment.isArchived || false,
+            submission: assessment.submission // Include submission metadata
+          }));
+
+          setQuizzes(processedQuizzes);
+          console.log(`✅ Loaded ${processedQuizzes.length} assessments (${assessments.length - visibleAssessments.length} archived)`);
           setLoading(false);
           return;
         }
@@ -49,9 +140,13 @@ const StudentQuizDashboard: React.FC = () => {
       console.warn('Backend API not available, using sample data:', error);
     }
 
-    // Fallback to sample data with current user context
+    // Enhanced fallback with proper course context
+    console.log('🔄 Using fallback assessment data');
+    
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const userDepartment = currentUser.department || 'Computer Science';
+    
+
 
     const mockQuizzes: Quiz[] = [
       {
@@ -66,11 +161,14 @@ const StudentQuizDashboard: React.FC = () => {
         attendanceRequired: true,
         studentAttended: true,
         description: `Test your understanding of ${userDepartment.toLowerCase()} fundamentals.`,
-        assessmentType: 'multiple-choice'
+        assessmentType: 'multiple-choice',
+        isPublished: true,
+        isArchived: false,
+        submission: undefined // No submission yet
       },
       {
         id: 'quiz_2',
-        title: 'Advanced Topics',
+        title: 'Advanced Topics Quiz',
         lecturerName: 'Dr. Course Instructor',
         courseName: 'Advanced Studies',
         courseCode: userDepartment === 'Computer Science' ? 'CS201' :
@@ -80,7 +178,16 @@ const StudentQuizDashboard: React.FC = () => {
         attendanceRequired: false,
         studentAttended: true,
         description: 'Advanced concepts and practical applications',
-        assessmentType: 'typing'
+        assessmentType: 'typing',
+        isPublished: true,
+        isArchived: false,
+        submission: {
+          status: 'pending',
+          submittedAt: undefined,
+          score: undefined,
+          grade: undefined,
+          feedback: undefined
+        }
       },
       {
         id: 'quiz_3',
@@ -93,12 +200,15 @@ const StudentQuizDashboard: React.FC = () => {
         status: 'blocked',
         attendanceRequired: true,
         studentAttended: false,
-        description: 'Hands-on practical assessment',
-        assessmentType: 'multiple-choice'
+        description: 'Hands-on practical assessment (attendance required)',
+        assessmentType: 'multiple-choice',
+        isPublished: true,
+        isArchived: false,
+        submission: undefined
       },
       {
         id: 'quiz_4',
-        title: 'Final Project',
+        title: 'Final Project Submission',
         lecturerName: 'Dr. Project Supervisor',
         courseName: 'Capstone Project',
         courseCode: userDepartment === 'Computer Science' ? 'CS401' :
@@ -107,8 +217,17 @@ const StudentQuizDashboard: React.FC = () => {
         status: 'missed',
         attendanceRequired: true,
         studentAttended: true,
-        description: 'Final project submission and presentation',
-        assessmentType: 'upload'
+        description: 'Final project submission and presentation (deadline passed)',
+        assessmentType: 'upload',
+        isPublished: true,
+        isArchived: false,
+        submission: {
+          status: 'pending',
+          submittedAt: undefined,
+          score: undefined,
+          grade: undefined,
+          feedback: 'Submission deadline has passed'
+        }
       }
     ];
 
@@ -271,7 +390,12 @@ const StudentQuizDashboard: React.FC = () => {
                 textAlign: 'center',
                 color: '#0369a1'
               }}>
-                No quizzes available at the moment. Check back later!
+                <div style={{ fontSize: '1.1rem', fontWeight: '500', marginBottom: '0.5rem' }}>
+                  No Active Assessments
+                </div>
+                <div style={{ fontSize: '0.9rem', opacity: '0.8' }}>
+                  No assessments are currently available for your enrolled courses. Check back later or contact your lecturer if you expect to see assessments here.
+                </div>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -396,10 +520,42 @@ const StudentQuizDashboard: React.FC = () => {
                             {quiz.assessmentType?.replace('-', ' ')}
                           </span>
                         </div>
-                        <div>
+                        <div style={{ marginBottom: '0.75rem' }}>
                           <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Description: </span>
                           <span style={{ fontSize: '0.875rem', color: '#374151' }}>{quiz.description}</span>
                         </div>
+                        
+                        {/* Submission Status - New per backend guidance */}
+                        {quiz.submission && (
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Submission Status: </span>
+                            <span style={{
+                              fontSize: '0.875rem',
+                              color: quiz.submission.status === 'graded' ? '#16a34a' : 
+                                    quiz.submission.status === 'submitted' ? '#0066cc' : 
+                                    '#92400e',
+                              fontWeight: '500',
+                              textTransform: 'capitalize'
+                            }}>
+                              {quiz.submission.status}
+                            </span>
+                            {quiz.submission.score !== undefined && (
+                              <span style={{ fontSize: '0.875rem', color: '#374151', marginLeft: '0.5rem' }}>
+                                (Score: {quiz.submission.score})
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Submission Feedback */}
+                        {quiz.submission?.feedback && (
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>Feedback: </span>
+                            <span style={{ fontSize: '0.875rem', color: '#374151' }}>
+                              {quiz.submission.feedback}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
