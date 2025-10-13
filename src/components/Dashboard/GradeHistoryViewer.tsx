@@ -3,13 +3,14 @@ import type { GradeChangeLog } from "../../types/grade";
 interface Props {
   history: GradeChangeLog[];
   loading?: boolean;
+  title?: string;
 }
 
-export default function GradeHistoryViewer({ history, loading }: Props) {
+export default function GradeHistoryViewer({ history, loading, title = "Grade Change History" }: Props) {
   return (
     <div className="card shadow-sm border-0 mt-4">
       <div className="card-body">
-        <h5 className="fw-bold mb-3">Grade Change History</h5>
+        <h5 className="fw-bold mb-3">{title}</h5>
         <div className="table-responsive">
           <table className="table table-sm table-hover">
             <thead className="table-light">

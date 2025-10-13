@@ -14,6 +14,8 @@ const DisplayResultPage: React.FC = () => {
     const selectedYear = urlParams.get('year') || "2024-2025";
     const selectedSemester = urlParams.get('semester') || "First Semester";
     const selectedBlock = urlParams.get('block') || "Block 1";
+    const [semesters, setSemesters] = useState<{ value: string; label: string }[]>([]);
+    const [selectedBlockState, setSelectedBlockState] = useState(selectedBlock);
 
     // Get user data from localStorage or use defaults with "Pending" fallback
     const getUserData = () => {

@@ -9,12 +9,12 @@ import { setupKwabenaWithBIT } from '../../utils/quickSetup';
 import { simulateStudentQuizNotifications } from '../../utils/quizNotifications';
 import { useAssessmentNotifications } from '../../hooks/useAssessmentNotifications';
 import { notifyQuizGraded, notifyBulkGrading } from '../../utils/notificationService';
-import { getUser } from '../../utils/auth';
+import { getToken, getUser } from '../../utils/auth';
 import type { Course, EnrolledStudent, GradeChangeLog } from '../../types/grade';
 import '../../css/assessment.css';
 
 const UpdateGrades: React.FC = () => {
-  const { notifyBulkGradesSubmitted, notifyGradeError } = useAssessmentNotifications(); // keep helper for real assessment events
+  const { notifyBulkGradesSubmitted, notifyGradeError } = useAssessmentNotifications(); // helpers already gate duplicate notifications
   // Courses from lecturer profile
   const profileDataRaw = localStorage.getItem('profile');
   const profileData = profileDataRaw ? JSON.parse(profileDataRaw) : null;
@@ -121,6 +121,7 @@ const UpdateGrades: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [history, setHistory] = useState<GradeChangeLog[]>([]);
+  const [token, setToken] = useState<string | null>(null);
   
   // Quiz creation state
   const [showQuizForm, setShowQuizForm] = useState(false);
@@ -132,18 +133,31 @@ const UpdateGrades: React.FC = () => {
   const [bulkTarget, setBulkTarget] = useState('all');
   const [bulkSuccess, setBulkSuccess] = useState('');
   
-
+  useEffect(() => {
+    setToken(getToken('lecturer'));
+  }, []);
 
   // Load enrolled students when course changes
   useEffect(() => {
     const load = async () => {
       setError('');
       setStudents([]);
-      if (!selectedCourseId) return;
+      if (!selectedCourseId || !token) return;
       setLoading(true);
       try {
-        const data: any = await apiFetch(`/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
-        // Expect shape { ok, students: [{ id, studentId, name, currentGrade }] }
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`Failed to load students (${response.status})`);
+        }
+        const data = await response.json();
         const ss: EnrolledStudent[] = data?.students || [];
         setStudents(ss);
         setEditedGrades({});
@@ -155,20 +169,30 @@ const UpdateGrades: React.FC = () => {
       } finally { setLoading(false); }
     };
     load();
-  }, [selectedCourseId]);
+  }, [selectedCourseId, token, courses]);
 
   // Load grade change history (optional; safe if endpoint missing)
   useEffect(() => {
     const loadHistory = async () => {
       setHistory([]);
-      if (!selectedCourseId) return;
+      if (!selectedCourseId || !token) return;
       try {
-        const data: any = await apiFetch(`/api/grades/history?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/grades/history?courseCode=${encodeURIComponent(selectedCourseId)}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        if (!response.ok) return;
+        const data: any = await response.json().catch(() => ({}));
         setHistory(data?.history || []);
       } catch { /* ignore */ }
     };
     loadHistory();
-  }, [selectedCourseId]);
+  }, [selectedCourseId, token]);
 
   const dirtyCount = Object.keys(editedGrades).length;
 
@@ -184,12 +208,20 @@ const UpdateGrades: React.FC = () => {
     try {
       // Transform into payload array
       const updates = Object.entries(editedGrades).map(([studentId, grade]) => ({ studentId, grade }));
-      const data: any = await apiFetch('/api/grades/bulk-update', {
-        method: 'POST',
-        role: 'lecturer',
-        body: JSON.stringify({ courseCode: selectedCourseId, updates })
-      });
-      if (!data?.ok) throw new Error(data?.message || 'Save failed');
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/grades/bulk-update`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ courseCode: selectedCourseId, updates })
+        }
+      );
+
+      const data: any = await response.json().catch(() => ({}));
+      if (!response.ok || !data?.ok) throw new Error(data?.message || 'Save failed');
       
       // Show notification for successful grade submission
       const courseName = courses.find(c => c.id === selectedCourseId)?.title || selectedCourseId;
@@ -217,7 +249,16 @@ const UpdateGrades: React.FC = () => {
       
       // refresh students list to reflect current grades
       setEditedGrades({});
-      const refreshed: any = await apiFetch(`/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
+      const refreshedResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      const refreshed: any = await refreshedResponse.json().catch(() => ({}));
       setStudents(refreshed?.students || []);
     } catch (e: any) {
       const errorMsg = e?.message || 'Failed to save grades';
@@ -241,17 +282,24 @@ const UpdateGrades: React.FC = () => {
     
     try {
       // API call to bulk assign grades
-      const data: any = await apiFetch('/api/grades/bulk-assign', {
-        method: 'POST',
-        role: 'lecturer',
-        body: JSON.stringify({
-          courseCode: selectedCourseId,
-          score: bulkScore,
-          target: bulkTarget
-        })
-      });
-      
-      if (!data?.ok) throw new Error(data?.message || 'Failed to assign bulk scores');
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/grades/bulk-assign`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            courseCode: selectedCourseId,
+            score: bulkScore,
+            target: bulkTarget
+          })
+        }
+      );
+
+      const data: any = await response.json().catch(() => ({}));
+      if (!response.ok || !data?.ok) throw new Error(data?.message || 'Failed to assign bulk scores');
       
       const targetText = bulkTarget === 'all' ? 'all students' : 
                         bulkTarget === 'attendees' ? 'attendees only' : 
@@ -268,7 +316,16 @@ const UpdateGrades: React.FC = () => {
       setBulkTarget('all');
       
       // Refresh students list
-      const refreshed: any = await apiFetch(`/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`, { method: 'GET', role: 'lecturer' });
+      const refreshedResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/grades/enrolled?courseCode=${encodeURIComponent(selectedCourseId)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      const refreshed: any = await refreshedResponse.json().catch(() => ({}));
       setStudents(refreshed?.students || []);
       
       setTimeout(() => setBulkSuccess(''), 5000);
@@ -478,7 +535,7 @@ const UpdateGrades: React.FC = () => {
         </div>
       )}
 
-      <GradeHistoryViewer history={history} />
+      <GradeHistoryViewer history={history} title="Student Performance" />
     </div>
   );
 };

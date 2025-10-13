@@ -8,7 +8,9 @@ import { useNotifications } from '../context/NotificationContext';
 export const useAssessmentNotifications = () => {
   const { addNotification } = useNotifications();
 
-  const notifyGradeSubmitted = (studentName: string, courseName: string, grade: number | string) => {
+  const notifyGradeSubmitted = (studentName: string, courseName: string, grade: number | string, options: { skip?: boolean } = {}) => {
+    if (!studentName || !courseName || options.skip) return;
+
     addNotification({
       type: 'assessment',
       title: '📝 Grade Submitted',
@@ -17,16 +19,23 @@ export const useAssessmentNotifications = () => {
     });
   };
 
-  const notifyBulkGradesSubmitted = (count: number, courseName: string) => {
+  const notifyBulkGradesSubmitted = (count: number, courseName: string, options: { force?: boolean } = {}) => {
+    const hasMeaningfulUpdate = Number.isFinite(count) && count > 0;
+    if (!hasMeaningfulUpdate && !options.force) return;
+
     addNotification({
       type: 'assessment',
       title: '✅ Grades Submitted',
       message: `Successfully submitted grades for ${count} student${count > 1 ? 's' : ''} in ${courseName}`,
-      data: { count, courseName }
+      data: { count, courseName, options }
     });
   };
 
-  const notifyGradeUpdated = (studentName: string, courseName: string, oldGrade: number | string, newGrade: number | string) => {
+  const notifyGradeUpdated = (studentName: string, courseName: string, oldGrade: number | string, newGrade: number | string, options: { skip?: boolean } = {}) => {
+    if (!studentName || !courseName || options.skip) return;
+    const didChange = oldGrade !== newGrade;
+    if (!didChange) return;
+
     addNotification({
       type: 'assessment',
       title: '📝 Grade Updated',
@@ -35,16 +44,20 @@ export const useAssessmentNotifications = () => {
     });
   };
 
-  const notifyGradeError = (studentName: string, error: string) => {
+  const notifyGradeError = (studentName: string, error: string, options: { skip?: boolean } = {}) => {
+    if ((!studentName && !error) || options.skip) return;
+
     addNotification({
       type: 'general',
       title: '❌ Grade Submission Failed',
-      message: `Failed to submit grade for ${studentName}: ${error}`,
+      message: `Failed to submit grade for ${studentName || 'the selected student'}: ${error}`,
       data: { studentName, error }
     });
   };
 
-  const notifyAssessmentCreated = (assessmentName: string, courseName: string) => {
+  const notifyAssessmentCreated = (assessmentName: string, courseName: string, options: { skip?: boolean } = {}) => {
+    if (!assessmentName || !courseName || options.skip) return;
+
     addNotification({
       type: 'assessment',
       title: '📋 Assessment Created',
@@ -53,7 +66,9 @@ export const useAssessmentNotifications = () => {
     });
   };
 
-  const notifyAssessmentDeleted = (assessmentName: string) => {
+  const notifyAssessmentDeleted = (assessmentName: string, options: { skipNotification?: boolean } = {}) => {
+    if (!assessmentName || options.skipNotification) return;
+
     addNotification({
       type: 'assessment',
       title: '🗑️ Assessment Deleted',

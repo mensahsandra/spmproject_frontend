@@ -130,22 +130,12 @@ const QuizCreator: React.FC<QuizCreatorProps> = ({
         // Add notification for students and lecturer
         const courseInfo = getCourseInfo(selectedCourseId);
         
-        // Use the new notification service (sends to both roles)
+        // Use the centralized notification service (sends to both roles)
         notifyQuizCreated(
           quizData.title,
           selectedCourseId,
           courseInfo.name,
           quizData.endTime
-        );
-        
-        // Also use the old method for backward compatibility
-        addQuizNotification(
-          quizData.title,
-          selectedCourseId,
-          courseInfo.name,
-          mockResponse.quizId,
-          quizData.endTime,
-          quizData.restrictToAttendees
         );
 
         const studentCount = quizData.restrictToAttendees ? 'attendees' : 'all enrolled students';

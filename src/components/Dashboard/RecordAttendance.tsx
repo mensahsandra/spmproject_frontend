@@ -179,7 +179,7 @@ const RecordAttendance: React.FC = () => {
             const lecturerName = lastScanMeta?.lecturer || 'Lecturer';
             const studentName = lastScanMeta?.name || 'You';
 
-            // Send role-based notifications to both student and lecturer
+            // Send role-based notifications to both student and lecturer (handled centrally)
             notifyAttendanceCheckIn(
                 studentName,
                 studentId || 'Unknown ID',

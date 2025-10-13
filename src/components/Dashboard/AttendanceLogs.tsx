@@ -43,12 +43,12 @@ export default function AttendanceLogs() {
       });
     }
 
-    fetchAttendanceData();
+    fetchAttendanceData({ skipNotifications: true });
 
     // Set up polling to refresh data every 10 minutes (as requested)
     const interval = setInterval(() => {
       console.log('🔄 Auto-refreshing attendance data (10-minute interval)');
-      fetchAttendanceData();
+      fetchAttendanceData({ skipNotifications: true });
       setLastRefreshTime(new Date());
     }, 10 * 60 * 1000);
 
@@ -147,7 +147,7 @@ export default function AttendanceLogs() {
     };
   }, [lastRecordCount, attendanceRecords.length, addNotification]); // Dependencies for comparison
 
-  const fetchAttendanceData = async () => {
+  const fetchAttendanceData = async ({ skipNotifications = false } = {}) => {
     setLoading(true);
 
     try {
@@ -228,8 +228,8 @@ export default function AttendanceLogs() {
           setLastRefreshTime(new Date());
           console.log('✅ Successfully loaded attendance data:', records.length, 'records');
           
-          // Send feedback notification if there are attendance records
-          if (records.length > 0) {
+          // Send feedback notification only when explicitly requested (not during auto-refresh)
+          if (!skipNotifications && records.length > 0) {
             addNotification({
               type: 'attendance',
               title: '📊 Attendance Update',
