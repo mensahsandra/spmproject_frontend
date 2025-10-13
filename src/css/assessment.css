@@ -1,10 +1,10 @@
 /* Assessment Page Styles */
 .assessment-container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 10px;
+  background-color: #f8f9fa;
 }
 
 .assessment-container::-webkit-scrollbar {
@@ -23,6 +23,43 @@
 
 .assessment-container::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
+}
+
+/* Section-specific styling */
+.section-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.section-card:hover {
+  transform: translateY(-2px);
+}
+
+.section-card .card-header {
+  border-radius: 12px 12px 0 0;
+  font-weight: 600;
+}
+
+.section-card .card-header h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+/* Course selection section */
+.course-selection-section {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+/* Assessment creation section */
+.assessment-creation-section {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+}
+
+/* Student management section */
+.student-management-section {
+  background: linear-gradient(135deg, #17a2b8, #117a8b);
 }
 
 /* Ensure cards don't overflow */

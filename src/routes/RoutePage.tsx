@@ -28,6 +28,8 @@ import LecturerExportPage from '../pages/LecturerExportPage';
 // import LecturerNotificationsPage from '../pages/LecturerNotificationsPage'; // Replaced with EnhancedNotificationsPage
 import EnhancedNotificationsPage from '../pages/EnhancedNotificationsPage';
 import ProfileSettingsPage from '../pages/ProfileSettingsPage';
+import TestAssessmentPage from '../pages/TestAssessmentPage';
+import TestLecturerAssessment from '../pages/TestLecturerAssessment';
 import ProtectedRoute from '../components/Auth/ProtectedRoute';
 import { normalizeRole } from '../utils/roles';
 import StudentLayout from '../layouts/StudentLayout';
@@ -79,6 +81,12 @@ const RoutePage = () => {
       <Route path="/test-select-result" element={<NewSelectResultPage />} />
       {/* Simple test route */}
       <Route path="/simple-test" element={<SimpleTestPage />} />
+      {/* Test assessment page without authentication */}
+      <Route path="/test-assessment" element={<TestAssessmentPage />} />
+      {/* Test lecturer assessment page without authentication */}
+      <Route path="/test-lecturer-assessment" element={<LecturerAssessmentPage />} />
+      {/* Simple test lecturer assessment UI */}
+      <Route path="/test-lecturer-ui" element={<TestLecturerAssessment />} />
       <Route path="/student/record-attendance" element={
         <ProtectedRoute requiredRole="student">
           {withStudent(<RecordAttendance />)}

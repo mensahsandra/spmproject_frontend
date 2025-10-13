@@ -9,7 +9,11 @@
     "seed:users": "node spm-backend-main/students-performance-metric/scripts/seedUsers.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -27,6 +31,7 @@
   "devDependencies": {
     "@eslint/js": "^9.30.1",
     "@iconify/json": "^2.2.382",
+    "@playwright/test": "^1.56.0",
     "@svgr/core": "^8.1.0",
     "@svgr/plugin-jsx": "^8.1.0",
     "@tailwindcss/postcss": "^4.1.13",

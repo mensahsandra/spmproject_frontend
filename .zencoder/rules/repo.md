@@ -32,4 +32,7 @@
 - Keep `package-lock.json` committed for consistent dependency resolution.
 
 ---
+## Testing Framework
+targetFramework: Playwright
+
 Generated automatically to assist future debugging sessions.
