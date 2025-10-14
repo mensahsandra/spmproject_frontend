@@ -564,7 +564,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
         <div className="row mb-5">
           <div className="col-12">
             <div className="card shadow-sm" data-testid="section-1">
-              <div className="card-header bg-primary text-white">
+              <div className="card-header section-header-green text-white">
                 <h4 className="mb-0">Section 1: Course Selection</h4>
               </div>
               <div className="card-body">
@@ -647,7 +647,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
         <div className="row mb-5">
           <div className="col-12">
             <div className={`card shadow-sm ${!selectedCourse ? 'disabled' : ''}`} data-testid="section-2">
-              <div className="card-header bg-success text-white">
+              <div className="card-header section-header-green text-white">
                 <h4 className="mb-0">Section 2: Assessment Creation & Grading</h4>
               </div>
               <div className="card-body">
@@ -985,7 +985,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
         <div className="row">
           <div className="col-12">
             <div className={`card shadow-sm ${!selectedCourse ? 'disabled' : ''}`} data-testid="section-3">
-              <div className="card-header bg-info text-white">
+              <div className="card-header section-header-green text-white">
                 <h4 className="mb-0">Section 3: Student Management & Performance</h4>
               </div>
               <div className="card-body">
