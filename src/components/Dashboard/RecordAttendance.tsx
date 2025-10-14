@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
+import { useSession } from '../../context/SessionContext';
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; message?: string }> {
     constructor(props: any) {
         super(props);
@@ -37,6 +38,7 @@ const getUserFromLocalStorage = () => getUser('student');
 
 const RecordAttendance: React.FC = () => {
     const navigate = useNavigate();
+    const { sessionData } = useSession(); // Get session data for course display
     const [sessionCode, setSessionCode] = useState("");
     const [studentId, setStudentId] = useState("");
     const [success, setSuccess] = useState("");
@@ -82,6 +84,12 @@ const RecordAttendance: React.FC = () => {
             console.log("No student ID found in user data");
         }
 
+        // Auto-fill session code if available from session context
+        if (sessionData?.sessionCode && !sessionCode) {
+            setSessionCode(sessionData.sessionCode);
+            console.log("Auto-filled session code from active session:", sessionData.sessionCode);
+        }
+
         // Get geolocation if available
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -105,7 +113,7 @@ const RecordAttendance: React.FC = () => {
                 toastTimerRef.current = null;
             }
         };
-    }, []);
+    }, [sessionData?.sessionCode, sessionCode]);
 
     const handleQRResult = async (result: string) => {
         // Try parse JSON, otherwise treat as raw code
@@ -173,10 +181,10 @@ const RecordAttendance: React.FC = () => {
             setSuccess("✅ Attendance recorded successfully!");
 
             // Inject a completed notification and navigate to Notifications → Completed
-            const courseTitle = lastScanMeta?.course || 'Attendance';
-            const courseCode = lastScanMeta?.courseCode ? String(lastScanMeta.courseCode).toUpperCase() : '';
-            const courseLine = courseCode ? `${courseCode} - ${courseTitle}` : courseTitle;
-            const lecturerName = lastScanMeta?.lecturer || 'Lecturer';
+            const courseTitle = lastScanMeta?.course || 'Course';
+            const courseCode = lastScanMeta?.courseCode || sessionData?.courseCode || '';
+            const courseLine = courseCode ? `${courseCode} - ${courseTitle}` : (sessionData?.courseCode || courseTitle);
+            const lecturerName = lastScanMeta?.lecturer || sessionData?.lecturerName || 'Lecturer';
             const studentName = lastScanMeta?.name || 'You';
 
             // Send role-based notifications to both student and lecturer (handled centrally)
@@ -327,6 +335,41 @@ const RecordAttendance: React.FC = () => {
                     >
                         📋 Record Attendance
                     </h3>
+
+                    {/* Session Course Information */}
+                    {sessionData && (
+                        <div style={{
+                            backgroundColor: "#f0f9ff",
+                            border: "2px solid #10A75B",
+                            borderRadius: "12px",
+                            padding: "1rem",
+                            marginBottom: "1.5rem",
+                            textAlign: "center"
+                        }}>
+                            <div style={{ 
+                                fontWeight: "600", 
+                                color: "#10A75B", 
+                                fontSize: "1.1rem",
+                                marginBottom: "0.5rem"
+                            }}>
+                                📚 Current Session Course
+                            </div>
+                            <div style={{ 
+                                fontSize: "1rem", 
+                                color: "#333",
+                                fontWeight: "500"
+                            }}>
+                                {sessionData.courseCode} - {sessionData.lecturerName ? `Lecturer: ${sessionData.lecturerName}` : 'Course'}
+                            </div>
+                            <div style={{ 
+                                fontSize: "0.85rem", 
+                                color: "#6b7280",
+                                marginTop: "0.3rem"
+                            }}>
+                                Session will expire in {Math.floor((new Date(sessionData.expiresAt).getTime() - new Date().getTime()) / (1000 * 60))} minutes
+                            </div>
+                        </div>
+                    )}
 
                     {/* Student ID - Read Only */}
                     <div style={{ marginBottom: "1rem" }}>
