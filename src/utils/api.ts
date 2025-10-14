@@ -56,7 +56,7 @@ export async function apiFetch<T = any>(path: string, options: ApiOptions = {}):
   const finalHeaders = { ...authHeaders, ...(headers || {}) };
   
   // Debug logging
-  console.log('🔍 [API-FETCH] Request details:', {
+  console.log('[API-FETCH] Request details:', {
     path,
     role,
     hasToken: !!authHeaders.Authorization,
@@ -69,17 +69,17 @@ export async function apiFetch<T = any>(path: string, options: ApiOptions = {}):
     headers: finalHeaders
   });
 
-  console.log('🔍 [API-FETCH] Response status:', res.status);
+  console.log('[API-FETCH] Response status:', res.status);
 
   if (res.status === 401 && !retry) {
-    console.warn('⚠️ [API-FETCH] 401 Unauthorized - attempting token refresh');
+    console.warn('[API-FETCH] 401 Unauthorized - attempting token refresh');
     const newToken = await refreshToken(role);
     if (newToken) {
-      console.log('✅ [API-FETCH] Token refreshed, retrying request');
+      console.log('[API-FETCH] Token refreshed, retrying request');
       return apiFetch<T>(path, { ...options, retry: true });
     }
     // final unauthorized
-    console.error('❌ [API-FETCH] Token refresh failed, logging out');
+    console.error('[API-FETCH] Token refresh failed, logging out');
     logout(role);
     window.location.href = '/student-login';
     throw new Error('Unauthorized');
@@ -87,7 +87,7 @@ export async function apiFetch<T = any>(path: string, options: ApiOptions = {}):
 
   if (res.status === 403) {
     // forbidden; maybe role mismatch
-    console.warn('⚠️ [API-FETCH] 403 Forbidden or role mismatch');
+    console.warn('[API-FETCH] 403 Forbidden or role mismatch');
     throw new Error('Forbidden');
   }
 
@@ -95,7 +95,7 @@ export async function apiFetch<T = any>(path: string, options: ApiOptions = {}):
   
   // Check if the response indicates an error
   if (!res.ok) {
-    console.error('❌ [API-FETCH] Request failed:', {
+    console.error('[API-FETCH] Request failed:', {
       status: res.status,
       statusText: res.statusText,
       data
