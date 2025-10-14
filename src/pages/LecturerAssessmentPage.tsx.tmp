@@ -245,7 +245,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
           
           // Reset form
           setAssessmentTitle('');
-
+          setAssessmentDescription('');
           setAssessmentFormat('');
           setMultipleChoiceQuestions([]);
           setDescriptiveQuestions(['']);
