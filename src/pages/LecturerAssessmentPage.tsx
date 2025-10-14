@@ -15,6 +15,7 @@ import {
   type StudentPerformance,
   type MultipleChoiceQuestion
 } from '../utils/assessmentApi';
+import { storeNotification } from '../utils/notificationService';
 
 interface Course {
   id: string;
@@ -210,6 +211,36 @@ const LecturerAssessmentPageContent: React.FC = () => {
           if (result.success && result.assessment) {
             setCreatedAssessments(prev => [...prev, result.assessment]);
             
+            // Send notification to students about new assessment
+            storeNotification({
+              type: 'assessment',
+              title: '📝 New Assessment Available',
+              message: `New assessment "${assessmentData.title}" is now available for ${assessmentData.courseName} (${assessmentData.courseCode})`,
+              data: { 
+                assessmentId: result.assessment.id,
+                assessmentTitle: assessmentData.title,
+                courseCode: assessmentData.courseCode,
+                courseName: assessmentData.courseName,
+                assessmentType: assessmentData.assessmentType,
+                format: assessmentData.format
+              },
+              targetRole: 'student'
+            });
+
+            // Send confirmation to lecturer
+            storeNotification({
+              type: 'assessment',
+              title: '✅ Assessment Created',
+              message: `Assessment "${assessmentData.title}" for ${assessmentData.courseName} has been created successfully`,
+              data: { 
+                assessmentId: result.assessment.id,
+                assessmentTitle: assessmentData.title,
+                courseCode: assessmentData.courseCode,
+                courseName: assessmentData.courseName
+              },
+              targetRole: 'lecturer'
+            });
+            
             // Reset form
             setAssessmentTitle('');
 
@@ -234,6 +265,36 @@ const LecturerAssessmentPageContent: React.FC = () => {
             };
             
             setCreatedAssessments(prev => [...prev, mockAssessment]);
+            
+            // Send notification to students about new assessment (mock case)
+            storeNotification({
+              type: 'assessment',
+              title: '📝 New Assessment Available',
+              message: `New assessment "${assessmentData.title}" is now available for ${assessmentData.courseName} (${assessmentData.courseCode})`,
+              data: { 
+                assessmentId: mockAssessment.id,
+                assessmentTitle: assessmentData.title,
+                courseCode: assessmentData.courseCode,
+                courseName: assessmentData.courseName,
+                assessmentType: assessmentData.assessmentType,
+                format: assessmentData.format
+              },
+              targetRole: 'student'
+            });
+
+            // Send confirmation to lecturer (mock case)
+            storeNotification({
+              type: 'assessment',
+              title: '✅ Assessment Created',
+              message: `Assessment "${assessmentData.title}" for ${assessmentData.courseName} has been created successfully`,
+              data: { 
+                assessmentId: mockAssessment.id,
+                assessmentTitle: assessmentData.title,
+                courseCode: assessmentData.courseCode,
+                courseName: assessmentData.courseName
+              },
+              targetRole: 'lecturer'
+            });
             
             // Reset form
             setAssessmentTitle('');

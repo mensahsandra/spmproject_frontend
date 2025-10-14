@@ -167,6 +167,27 @@ export const notifyQuizSubmission = (studentName: string, studentId: string, qui
   });
 };
 
+// Student submits assessment
+export const notifyAssessmentSubmission = (studentName: string, studentId: string, assessmentTitle: string, courseCode: string, courseName?: string) => {
+  // Notify lecturer
+  storeNotification({
+    type: 'assessment',
+    title: '📋 Assessment Submission Received',
+    message: `${studentName} (${studentId}) submitted "${assessmentTitle}" for ${courseName || courseCode}`,
+    data: { studentName, studentId, assessmentTitle, courseCode, courseName, timestamp: new Date().toISOString() },
+    targetRole: 'lecturer'
+  });
+
+  // Notify student (confirmation)
+  storeNotification({
+    type: 'assessment',
+    title: '✅ Assessment Submitted',
+    message: `Your submission for "${assessmentTitle}" has been received. You'll be notified when it's graded.`,
+    data: { assessmentTitle, courseCode, courseName, timestamp: new Date().toISOString() },
+    targetRole: 'student'
+  });
+};
+
 // Lecturer grades quiz
 export const notifyQuizGraded = (studentName: string, studentId: string, quizTitle: string, courseCode: string, grade: string) => {
   // Notify student

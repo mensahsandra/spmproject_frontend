@@ -222,6 +222,47 @@ export const getAssessmentSubmissions = async (
 };
 
 /**
+ * Submit assessment answers by student
+ */
+export const submitAssessment = async (
+  assessmentId: string,
+  answers: any[]
+): Promise<{ success: boolean; submission?: AssessmentSubmission; error?: string }> => {
+  try {
+    console.log('📝 Submitting assessment:', assessmentId);
+    
+    const response = await apiFetch(`/api/assessments/${assessmentId}/submit`, {
+      method: 'POST',
+      role: 'student',
+      body: JSON.stringify({
+        answers,
+        submittedAt: new Date().toISOString()
+      })
+    });
+
+    if (response.success) {
+      console.log('✅ Assessment submitted successfully');
+      return {
+        success: true,
+        submission: response.submission
+      };
+    }
+
+    return {
+      success: false,
+      error: response.message || 'Failed to submit assessment'
+    };
+
+  } catch (error) {
+    console.error('❌ Error submitting assessment:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Network error occurred'
+    };
+  }
+};
+
+/**
  * Grade individual submission
  */
 export const gradeSubmission = async (
