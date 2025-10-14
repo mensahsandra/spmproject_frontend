@@ -44,6 +44,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
   const [assessmentTitle, setAssessmentTitle] = useState<string>('');
   const [multipleChoiceQuestions, setMultipleChoiceQuestions] = useState<MultipleChoiceQuestion[]>([]);
   const [descriptiveQuestions, setDescriptiveQuestions] = useState<string[]>(['']);
+  const [fileUploadQuestions, setFileUploadQuestions] = useState<string[]>(['']);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [createdAssessments, setCreatedAssessments] = useState<any[]>([]);
 
@@ -147,12 +148,20 @@ const LecturerAssessmentPageContent: React.FC = () => {
         type: 'descriptive'
       }));
     } else if (assessmentFormat === 'File/Document Upload') {
-      questions = uploadedFile ? [{
-        id: '1',
+      const fileQuestions = fileUploadQuestions.filter(q => q.trim() !== '').map((question, index) => ({
+        id: (index + 1).toString(),
+        question: question,
+        type: 'file-upload-question'
+      }));
+      
+      const fileInfo = uploadedFile ? [{
+        id: 'file-info',
         fileName: uploadedFile.name,
         fileSize: uploadedFile.size,
         type: 'file'
       }] : [];
+      
+      questions = [...fileQuestions, ...fileInfo];
     }
 
     const assessmentData: CreateAssessmentRequest = {
@@ -187,6 +196,8 @@ const LecturerAssessmentPageContent: React.FC = () => {
         setAssessmentFormat('');
         setMultipleChoiceQuestions([]);
         setDescriptiveQuestions(['']);
+        setFileUploadQuestions(['']);
+        setFileUploadQuestions(['']);
         setUploadedFile(null);
         
         alert('Assessment created successfully!');
@@ -204,6 +215,9 @@ const LecturerAssessmentPageContent: React.FC = () => {
             setAssessmentFormat('');
             setMultipleChoiceQuestions([]);
             setDescriptiveQuestions(['']);
+        setFileUploadQuestions(['']);
+          setFileUploadQuestions(['']);
+            setFileUploadQuestions(['']);
             setUploadedFile(null);
             
             alert('Assessment created successfully!');
@@ -226,6 +240,9 @@ const LecturerAssessmentPageContent: React.FC = () => {
             setAssessmentFormat('');
             setMultipleChoiceQuestions([]);
             setDescriptiveQuestions(['']);
+        setFileUploadQuestions(['']);
+          setFileUploadQuestions(['']);
+            setFileUploadQuestions(['']);
             setUploadedFile(null);
             
             alert('Assessment created successfully!');
@@ -249,6 +266,8 @@ const LecturerAssessmentPageContent: React.FC = () => {
           setAssessmentFormat('');
           setMultipleChoiceQuestions([]);
           setDescriptiveQuestions(['']);
+        setFileUploadQuestions(['']);
+          setFileUploadQuestions(['']);
           setUploadedFile(null);
           
           alert('Assessment created successfully!');
@@ -505,6 +524,21 @@ const LecturerAssessmentPageContent: React.FC = () => {
     }
   };
 
+  // File Upload Questions Management
+  const addFileUploadQuestion = () => {
+    setFileUploadQuestions(prev => [...prev, '']);
+  };
+
+  const updateFileUploadQuestion = (index: number, value: string) => {
+    setFileUploadQuestions(prev => prev.map((q, i) => i === index ? value : q));
+  };
+
+  const removeFileUploadQuestion = (index: number) => {
+    if (fileUploadQuestions.length > 1) {
+      setFileUploadQuestions(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
   return (
     <div className="assessment-container">
       <div className="container-fluid p-4">
@@ -726,52 +760,98 @@ const LecturerAssessmentPageContent: React.FC = () => {
                     )}
 
                     {assessmentFormat === 'File/Document Upload' && (
-                      <div className="row mb-3">
-                        <div className="col-12">
-                          <label className="form-label fw-bold">Upload Assessment Document</label>
-                          
-                          {!uploadedFile ? (
-                            <div className="border border-dashed rounded p-4 text-center">
-                              <div className="mb-3">
-                                <i className="fas fa-cloud-upload-alt fa-3x text-muted"></i>
+                      <>
+                        {/* File Upload Section */}
+                        <div className="row mb-3">
+                          <div className="col-12">
+                            <label className="form-label fw-bold">Upload Assessment Document</label>
+                            
+                            {!uploadedFile ? (
+                              <div className="border border-dashed rounded p-4 text-center">
+                                <div className="mb-3">
+                                  <i className="fas fa-cloud-upload-alt fa-3x text-muted"></i>
+                                </div>
+                                <p className="text-muted mb-3">Choose a file or drag and drop it here</p>
+                                <input 
+                                  type="file"
+                                  className="form-control mb-2"
+                                  accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
+                                  onChange={handleFileUpload}
+                                />
+                                <small className="text-muted">
+                                  Supported formats: PDF, DOC, DOCX, TXT, PNG, JPG, JPEG (Max 10MB)
+                                </small>
                               </div>
-                              <p className="text-muted mb-3">Choose a file or drag and drop it here</p>
-                              <input 
-                                type="file"
-                                className="form-control mb-2"
-                                accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
-                                onChange={handleFileUpload}
-                              />
-                              <small className="text-muted">
-                                Supported formats: PDF, DOC, DOCX, TXT, PNG, JPG, JPEG (Max 10MB)
-                              </small>
-                            </div>
-                          ) : (
-                            <div className="card">
-                              <div className="card-body">
-                                <div className="d-flex justify-content-between align-items-center">
-                                  <div className="d-flex align-items-center">
-                                    <i className="fas fa-file-alt fa-2x text-primary me-3"></i>
-                                    <div>
-                                      <h6 className="mb-0">{uploadedFile.name}</h6>
-                                      <small className="text-muted">
-                                        {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                                      </small>
+                            ) : (
+                              <div className="card">
+                                <div className="card-body">
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <div className="d-flex align-items-center">
+                                      <i className="fas fa-file-alt fa-2x text-primary me-3"></i>
+                                      <div>
+                                        <h6 className="mb-0">{uploadedFile.name}</h6>
+                                        <small className="text-muted">
+                                          {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                                        </small>
+                                      </div>
                                     </div>
+                                    <button 
+                                      type="button"
+                                      className="btn btn-outline-danger btn-sm"
+                                      onClick={removeUploadedFile}
+                                    >
+                                      Remove
+                                    </button>
                                   </div>
-                                  <button 
-                                    type="button"
-                                    className="btn btn-outline-danger btn-sm"
-                                    onClick={removeUploadedFile}
-                                  >
-                                    Remove
-                                  </button>
                                 </div>
                               </div>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      </div>
+
+                        {/* Questions/Instructions Section */}
+                        <div className="row mb-3">
+                          <div className="col-12">
+                            <label className="form-label fw-bold">Questions/Instructions for File Upload</label>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                              <span>Questions: {fileUploadQuestions.length}</span>
+                              <button 
+                                type="button"
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={addFileUploadQuestion}
+                              >
+                                + Add Question
+                              </button>
+                            </div>
+                            
+                            {fileUploadQuestions.map((question, index) => (
+                              <div key={index} className="card mb-2">
+                                <div className="card-body">
+                                  <div className="d-flex justify-content-between align-items-start mb-2">
+                                    <h6>Question {index + 1}</h6>
+                                    {fileUploadQuestions.length > 1 && (
+                                      <button 
+                                        type="button"
+                                        className="btn btn-outline-danger btn-sm"
+                                        onClick={() => removeFileUploadQuestion(index)}
+                                      >
+                                        Remove
+                                      </button>
+                                    )}
+                                  </div>
+                                  <textarea 
+                                    className="form-control"
+                                    rows={3}
+                                    placeholder={`Enter question or instruction ${index + 1} (e.g., "Submit a report on...", "Upload your project files including...", etc.)`}
+                                    value={question}
+                                    onChange={(e) => updateFileUploadQuestion(index, e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
                     )}
 
                     {assessmentFormat === 'Multiple Choice' && (
