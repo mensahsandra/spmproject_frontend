@@ -872,7 +872,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
                                 {students.map(student => (
                                   <tr key={student.studentId}>
                                     <td>{student.studentId}</td>
-                                    <td>{student.studentName}</td>
+                                    <td>{student.studentName || 'Name not available'}</td>
                                     <td>
                                       <span className={`badge ${student.classAssessment ? 'bg-success' : 'bg-secondary'}`}>
                                         {student.classAssessment || '—'}

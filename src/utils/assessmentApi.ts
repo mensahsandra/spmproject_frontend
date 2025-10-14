@@ -328,10 +328,23 @@ export const getStudentPerformanceLog = async (
       role: 'lecturer'
     });
 
+    console.log('🌐 Raw API response:', response);
+
     if (response.success) {
+      // Transform API response to match frontend interface
+      const students = (response.students || []).map((student: any) => ({
+        studentId: student.studentId || student.student_id || student.id || '',
+        studentName: student.studentName || student.student_name || student.name || student.fullName || student.full_name || '',
+        classAssessment: student.classAssessment || student.class_assessment || student.classGrade || 0,
+        midSemester: student.midSemester || student.mid_semester || student.midGrade || 0,
+        endOfSemester: student.endOfSemester || student.end_of_semester || student.finalGrade || 0
+      }));
+      
+      console.log('🔄 Transformed student data:', students);
+      
       return {
         success: true,
-        students: response.students || []
+        students
       };
     }
 
