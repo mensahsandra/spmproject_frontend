@@ -55,8 +55,11 @@ const NotificationsPage: React.FC = () => {
 
     // Load student notifications
     React.useEffect(() => {
+        console.log('🔍 [NotificationsPage] Loading notifications...');
+        
         // Get role-based notifications from localStorage
-        getStoredNotifications('student');
+        const storedNotifications = getStoredNotifications('student');
+        console.log('📱 [NotificationsPage] Stored student notifications:', storedNotifications);
         
         // Convert context notifications to NotificationItem format
         const contextNotifs: NotificationItem[] = contextNotifications.map(notif => ({
@@ -72,6 +75,25 @@ const NotificationsPage: React.FC = () => {
             details: notif.data ? JSON.stringify(notif.data, null, 2) : undefined,
             read: notif.read
         }));
+
+        console.log('📱 [NotificationsPage] Context notifications:', contextNotifs);
+
+        // Convert stored notifications to NotificationItem format
+        const storedNotifs: NotificationItem[] = storedNotifications.map((notif: any) => ({
+            id: notif.id,
+            type: notif.type === 'quiz' || notif.type === 'assessment' ? 'INFO' : 
+                  notif.type === 'attendance' ? 'REMINDER' : 'REMINDER',
+            message: notif.message,
+            timestamp: notif.timestamp,
+            timeAgo: getTimeAgo(notif.timestamp),
+            category: notif.type === 'quiz' ? 'quiz' : 
+                     notif.type === 'assessment' ? 'assessment' :
+                     notif.type === 'attendance' ? 'completed' : 'general',
+            details: notif.data ? JSON.stringify(notif.data, null, 2) : undefined,
+            read: notif.read || false
+        }));
+
+        console.log('📱 [NotificationsPage] Stored notifications converted:', storedNotifs);
 
         // Mock notifications for students
         const mockNotifications: NotificationItem[] = [
@@ -219,10 +241,10 @@ const NotificationsPage: React.FC = () => {
         const injected = (history.state as any)?.injectedNotification;
         const injectedNotifs = injected ? [injected as NotificationItem] : [];
 
-        // Merge all notifications (real ones first, then mock)
-        const merged = [...contextNotifs, ...injectedNotifs, ...mockNotifications];
+        // Merge all notifications (stored ones first, then context, then mock)
+        const merged = [...storedNotifs, ...contextNotifs, ...injectedNotifs, ...mockNotifications];
         setAllNotifications(merged);
-        console.log(`📱 [StudentNotifications] Loaded ${merged.length} total notifications (${contextNotifs.length} real, ${mockNotifications.length} mock)`);
+        console.log(`📱 [StudentNotifications] Loaded ${merged.length} total notifications (${storedNotifs.length} stored, ${contextNotifs.length} context, ${mockNotifications.length} mock)`);
     }, [contextNotifications]);
     
     // Check if we came from deadlines (will show only deadline notifications)
