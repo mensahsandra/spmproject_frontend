@@ -648,7 +648,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
                           <option value="">-- Select Format --</option>
                           <option value="Multiple Choice">Multiple Choice</option>
                           <option value="Description/Typing">Description/Typing</option>
-                          <option value="File Upload">File Upload</option>
+                          <option value="File/Document Upload">File/Document Upload</option>
                         </select>
                       </div>
                     </div>
