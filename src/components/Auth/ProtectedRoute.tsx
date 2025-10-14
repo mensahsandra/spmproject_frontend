@@ -2,6 +2,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { dashboardPath, loginPath, normalizeRole } from '../../utils/roles';
+import { isDevelopmentMode, bypassAuthForDevelopment } from '../../utils/assessmentApi';
 
 interface ProtectedRouteProps {
     requiredRole?: string;
@@ -15,12 +16,24 @@ import { validateUserRole } from '../../utils/roleValidation';
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectTo, children }) => {
     const { user, loading, role } = useAuth();
     
+    // Check for development mode and setup demo authentication if needed
+    const isDevMode = isDevelopmentMode();
+    const currentToken = requiredRole ? getToken(requiredRole) : getToken();
+    
+    if (isDevMode && !currentToken && requiredRole === 'lecturer') {
+        console.log('🔧 [DEMO-MODE] Setting up demo authentication for lecturer...');
+        bypassAuthForDevelopment();
+        window.location.reload();
+        return null;
+    }
+    
     console.log('🔍 [PROTECTED-ROUTE] Checking access:', {
         requiredRole,
         user: user ? { role: user.role, name: user.name, staffId: user.staffId } : null,
         loading,
         contextRole: role,
-        tokenPresent: requiredRole ? !!getToken(requiredRole) : !!getToken(),
+        tokenPresent: !!currentToken,
+        isDevMode,
         activeRole: sessionStorage.getItem('activeRole'),
         userStorageKeys: Object.keys(localStorage).filter(k => k.includes('user')),
         allStorageKeys: Object.keys(localStorage),
@@ -49,6 +62,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectT
     // If not logged in at all OR missing user
     const activeRole = normalizeRole(role || user?.role);
     const tokenPresent = requiredRole ? !!getToken(requiredRole) : !!getToken(activeRole || undefined);
+    
+    // In development mode, bypass authentication if APIs are not working
+    if (isDevMode && !tokenPresent && requiredRole) {
+        console.log('🔧 [DEMO-MODE] Bypassing authentication due to development mode');
+        bypassAuthForDevelopment();
+        window.location.reload();
+        return null;
+    }
+    
     if (!tokenPresent || !user) {
         return <Navigate to={redirectTo || loginPath(requiredRole || activeRole)} replace />;
     }
