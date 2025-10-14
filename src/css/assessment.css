@@ -98,13 +98,13 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #d5f2e6;
   border-radius: 6px;
   border: 2px solid #f1f1f1;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #d5f2e6;
 }
 
 /* Force scrollbar to always show */
