@@ -12,7 +12,7 @@ interface AuthState {
   logoutUser: (role?: string) => void;
 }
 
-const AuthContext = createContext<AuthState | undefined>(undefined);
+export const AuthContext = createContext<AuthState | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [role, setRole] = useState<string | null>(getActiveRole());

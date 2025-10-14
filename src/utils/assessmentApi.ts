@@ -522,7 +522,7 @@ export const getMockStudentPerformance = (): StudentPerformance[] => {
  * Development mode flag for API calls
  */
 export const isDevelopmentMode = (): boolean => {
-  return process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost';
+  return import.meta.env.MODE === 'development' || window.location.hostname === 'localhost';
 };
 
 /**
