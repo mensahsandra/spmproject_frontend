@@ -21,7 +21,21 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectT
     const currentToken = requiredRole ? getToken(requiredRole) : getToken();
     
     if (isDevMode && !currentToken && requiredRole === 'lecturer') {
+        // Check if we've already tried to set up demo mode recently
+        const lastDemoSetup = sessionStorage.getItem('lastDemoSetup');
+        const now = Date.now();
+        if (lastDemoSetup && (now - parseInt(lastDemoSetup)) < 5000) {
+            // Avoid infinite loops, just wait a moment
+            return (
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:16}}>
+                    <div style={{width:60,height:60,border:'6px solid #e5e7eb',borderTopColor:'#10b981',borderRadius:'50%',animation:'spinslow 1s linear infinite'}} />
+                    <div style={{fontSize:14,color:'#374151'}}>Setting up demo mode...</div>
+                </div>
+            );
+        }
+        
         console.log('🔧 [DEMO-MODE] Setting up demo authentication for lecturer...');
+        sessionStorage.setItem('lastDemoSetup', now.toString());
         bypassAuthForDevelopment();
         window.location.reload();
         return null;
@@ -65,7 +79,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requiredRole, redirectT
     
     // In development mode, bypass authentication if APIs are not working
     if (isDevMode && !tokenPresent && requiredRole) {
+        const lastDemoSetup = sessionStorage.getItem('lastDemoSetup');
+        const now = Date.now();
+        if (lastDemoSetup && (now - parseInt(lastDemoSetup)) < 5000) {
+            return (
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:16}}>
+                    <div style={{width:60,height:60,border:'6px solid #e5e7eb',borderTopColor:'#10b981',borderRadius:'50%',animation:'spinslow 1s linear infinite'}} />
+                    <div style={{fontSize:14,color:'#374151'}}>Setting up demo mode...</div>
+                </div>
+            );
+        }
+        
         console.log('🔧 [DEMO-MODE] Bypassing authentication due to development mode');
+        sessionStorage.setItem('lastDemoSetup', now.toString());
         bypassAuthForDevelopment();
         window.location.reload();
         return null;

@@ -23,6 +23,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const targetRole = (r || role || getActiveRole() || '').toLowerCase();
     if (!targetRole) { setLoading(false); return; }
     setLoading(true);
+    
+    // Check if we're in development mode and should skip API calls
+    const isDevMode = window.location.hostname.includes('vercel.app') || 
+                      window.location.hostname === 'localhost' || 
+                      import.meta.env.MODE === 'development';
+    
+    if (isDevMode && targetRole === 'lecturer') {
+      // Use demo user data in development mode
+      const demoUser = {
+        name: 'Dr. John Doe',
+        email: 'john.doe@example.com',
+        role: 'lecturer',
+        staffId: '12345'
+      };
+      storeUser(targetRole, demoUser);
+      setUser(demoUser);
+      setRole(targetRole);
+      setActiveRole(targetRole);
+      setLoading(false);
+      return;
+    }
+    
     const u = await fetchUser(targetRole);
     if (u) {
       storeUser(targetRole, u);
