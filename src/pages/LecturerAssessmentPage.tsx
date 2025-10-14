@@ -79,6 +79,22 @@ const LecturerAssessmentPageContent: React.FC = () => {
     }
   }, []);
 
+  // Load saved assessments from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedAssessments = localStorage.getItem('createdAssessments');
+      if (savedAssessments) {
+        const assessments = JSON.parse(savedAssessments);
+        if (Array.isArray(assessments)) {
+          setCreatedAssessments(assessments);
+          console.log('📚 Loaded', assessments.length, 'saved assessments from localStorage');
+        }
+      }
+    } catch (error) {
+      console.error('Error loading saved assessments:', error);
+    }
+  }, []);
+
   // Load students when course is selected
   useEffect(() => {
     if (selectedCourse && token) {
@@ -209,7 +225,12 @@ const LecturerAssessmentPageContent: React.FC = () => {
           const result = await createAssessment(assessmentData);
           
           if (result.success && result.assessment) {
-            setCreatedAssessments(prev => [...prev, result.assessment]);
+            setCreatedAssessments(prev => {
+              const newAssessments = [...prev, result.assessment];
+              // Persist to localStorage for cross-page availability
+              localStorage.setItem('createdAssessments', JSON.stringify(newAssessments));
+              return newAssessments;
+            });
             
             // Send notification to students about new assessment
             storeNotification({
@@ -240,6 +261,9 @@ const LecturerAssessmentPageContent: React.FC = () => {
               },
               targetRole: 'lecturer'
             });
+
+            // Force reload notifications in NotificationContext
+            window.dispatchEvent(new CustomEvent('notificationsUpdated'));
             
             // Reset form
             setAssessmentTitle('');
@@ -264,7 +288,12 @@ const LecturerAssessmentPageContent: React.FC = () => {
               updatedAt: new Date().toISOString()
             };
             
-            setCreatedAssessments(prev => [...prev, mockAssessment]);
+            setCreatedAssessments(prev => {
+              const newAssessments = [...prev, mockAssessment];
+              // Persist to localStorage for cross-page availability
+              localStorage.setItem('createdAssessments', JSON.stringify(newAssessments));
+              return newAssessments;
+            });
             
             // Send notification to students about new assessment (mock case)
             storeNotification({
@@ -295,6 +324,9 @@ const LecturerAssessmentPageContent: React.FC = () => {
               },
               targetRole: 'lecturer'
             });
+
+            // Force reload notifications in NotificationContext
+            window.dispatchEvent(new CustomEvent('notificationsUpdated'));
             
             // Reset form
             setAssessmentTitle('');

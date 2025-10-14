@@ -144,8 +144,39 @@ const StudentQuizDashboard: React.FC = () => {
       console.warn('Backend API not available, using sample data:', error);
     }
 
-    // Enhanced fallback with proper course context
+    // Enhanced fallback with proper course context + lecturer created assessments
     console.log('🔄 Using fallback assessment data');
+    
+    // Load lecturer-created assessments from localStorage
+    let lecturerAssessments: Quiz[] = [];
+    try {
+      const savedAssessments = localStorage.getItem('createdAssessments');
+      if (savedAssessments) {
+        const assessments = JSON.parse(savedAssessments);
+        if (Array.isArray(assessments)) {
+          lecturerAssessments = assessments.map(assessment => ({
+            id: assessment.id,
+            title: assessment.title,
+            lecturerName: 'Dr. Course Lecturer', // Default lecturer name
+            courseName: assessment.courseName,
+            courseCode: assessment.courseCode,
+            deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+            status: 'available' as const,
+            attendanceRequired: false,
+            studentAttended: true,
+            description: `Assessment: ${assessment.title} (${assessment.format})`,
+            assessmentType: assessment.format === 'Multiple Choice' ? 'multiple-choice' : 
+                           assessment.format === 'Description/Typing' ? 'typing' : 'upload',
+            isPublished: true,
+            isArchived: false,
+            submission: undefined
+          }));
+          console.log('📚 Loaded', lecturerAssessments.length, 'lecturer-created assessments');
+        }
+      }
+    } catch (error) {
+      console.error('Error loading lecturer assessments:', error);
+    }
     
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const userDepartment = currentUser.department || 'Computer Science';
@@ -235,7 +266,9 @@ const StudentQuizDashboard: React.FC = () => {
       }
     ];
 
-    setQuizzes(mockQuizzes);
+    // Combine lecturer assessments with mock quizzes
+    const allQuizzes = [...lecturerAssessments, ...mockQuizzes];
+    setQuizzes(allQuizzes);
     setLoading(false);
   };
 
@@ -312,6 +345,38 @@ const StudentQuizDashboard: React.FC = () => {
                 }
               : q
           ));
+
+          // Update lecturer's assessment submission count
+          try {
+            const savedAssessments = localStorage.getItem('createdAssessments');
+            if (savedAssessments) {
+              const assessments = JSON.parse(savedAssessments);
+              const updatedAssessments = assessments.map((assessment: any) => {
+                if (assessment.id === quiz.id) {
+                  return {
+                    ...assessment,
+                    submissions: [
+                      ...(assessment.submissions || []),
+                      {
+                        id: Date.now().toString(),
+                        studentId,
+                        studentName,
+                        assessmentId: quiz.id,
+                        answers: mockAnswers,
+                        submittedAt: new Date().toISOString(),
+                        isGraded: false,
+                        maxScore: 100
+                      }
+                    ]
+                  };
+                }
+                return assessment;
+              });
+              localStorage.setItem('createdAssessments', JSON.stringify(updatedAssessments));
+            }
+          } catch (error) {
+            console.error('Error updating lecturer assessment list:', error);
+          }
           
           alert('Assessment submitted successfully!');
         } else {
@@ -337,6 +402,38 @@ const StudentQuizDashboard: React.FC = () => {
                 }
               : q
           ));
+
+          // Update lecturer's assessment submission count (fallback case)
+          try {
+            const savedAssessments = localStorage.getItem('createdAssessments');
+            if (savedAssessments) {
+              const assessments = JSON.parse(savedAssessments);
+              const updatedAssessments = assessments.map((assessment: any) => {
+                if (assessment.id === quiz.id) {
+                  return {
+                    ...assessment,
+                    submissions: [
+                      ...(assessment.submissions || []),
+                      {
+                        id: Date.now().toString(),
+                        studentId,
+                        studentName,
+                        assessmentId: quiz.id,
+                        answers: mockAnswers,
+                        submittedAt: new Date().toISOString(),
+                        isGraded: false,
+                        maxScore: 100
+                      }
+                    ]
+                  };
+                }
+                return assessment;
+              });
+              localStorage.setItem('createdAssessments', JSON.stringify(updatedAssessments));
+            }
+          } catch (error) {
+            console.error('Error updating lecturer assessment list:', error);
+          }
           
           alert('Assessment submitted successfully! (Demo mode)');
         }

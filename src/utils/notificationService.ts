@@ -44,6 +44,9 @@ export const storeNotification = (notification: NotificationData) => {
     console.log('📱 [NotificationService] Stored notification for lecturers:', fullNotification);
   }
 
+  // Trigger context refresh for immediate UI updates
+  window.dispatchEvent(new CustomEvent('notificationsUpdated'));
+
   return fullNotification;
 };
 

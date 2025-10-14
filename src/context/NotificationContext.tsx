@@ -83,8 +83,19 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       }
     };
 
+    // Listen for custom notification update events
+    const handleNotificationUpdate = () => {
+      console.log('📱 [NotificationContext] Reloading notifications due to update event');
+      loadNotifications();
+    };
+
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener('notificationsUpdated', handleNotificationUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('notificationsUpdated', handleNotificationUpdate);
+    };
   }, []); // Only run on mount
 
   // Save notifications to localStorage whenever they change
