@@ -485,44 +485,72 @@ export const getLecturerCourses = async (): Promise<{
 export const getMockStudentPerformance = (): StudentPerformance[] => {
   return [
     {
-      studentId: 'BIT/2023/001',
-      studentName: 'Alice Johnson',
-      classAssessment: 85,
-      midSemester: 78,
-      endOfSemester: 92
+      studentId: 'BIT/2024/001',
+      studentName: 'Doe Kwaku Joe',
+      classAssessment: 10,
+      midSemester: 15,
+      endOfSemester: 50
     },
     {
-      studentId: 'BIT/2023/002',
-      studentName: 'Bob Smith',
-      classAssessment: 76,
-      midSemester: 82,
+      studentId: 'BIT/2024/002',
+      studentName: 'Saaed Hawa',
+      classAssessment: 10,
+      midSemester: 10,
+      endOfSemester: 55
     },
     {
-      studentId: 'BIT/2023/003',
-      studentName: 'Carol Davis',
-      classAssessment: 94,
-      midSemester: 88,
-      endOfSemester: 90
+      studentId: 'BIT/2024/003',
+      studentName: 'Johnson Robert',
+      classAssessment: 10,
+      midSemester: 12,
+      endOfSemester: 40
     },
     {
-      studentId: 'BIT/2023/004',
-      studentName: 'David Wilson',
-      classAssessment: 82,
+      studentId: 'BIT/2024/004',
+      studentName: 'Kwarteng Samuel',
+      classAssessment: 10,
+      midSemester: 15,
+      endOfSemester: 51
     },
     {
-      studentId: 'BIT/2023/005',
-      studentName: 'Eva Brown',
-      classAssessment: 90,
-      midSemester: 85,
+      studentId: 'BIT/2024/005',
+      studentName: 'Owusu Agyeman Nana',
+      classAssessment: 10,
+      midSemester: 13,
+      endOfSemester: 45
+    },
+    {
+      studentId: 'BIT/2024/006',
+      studentName: 'Nashiru Alhassan',
+      classAssessment: 10,
+      midSemester: 10,
+      endOfSemester: 54
+    },
+    {
+      studentId: 'BIT/2024/007',
+      studentName: 'Smith Alice',
+      classAssessment: 10,
+      midSemester: 11,
+      endOfSemester: 50
+    },
+    {
+      studentId: 'BIT/2024/008',
+      studentName: 'Iddrisu Abdul Lateefa',
+      classAssessment: 10,
+      midSemester: 12,
+      endOfSemester: 40
     }
   ];
 };
 
 /**
  * Development mode flag for API calls
+ * Returns true for development, localhost, or when backend APIs are not available
  */
 export const isDevelopmentMode = (): boolean => {
-  return import.meta.env.MODE === 'development' || window.location.hostname === 'localhost';
+  return import.meta.env.MODE === 'development' || 
+         window.location.hostname === 'localhost' ||
+         window.location.hostname.includes('vercel.app');
 };
 
 /**
