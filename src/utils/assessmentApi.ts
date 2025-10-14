@@ -526,7 +526,7 @@ export const getMockStudentPerformance = (): StudentPerformance[] => {
       endOfSemester: 51
     },
     {
-      studentId: 'BIT/2024/005',
+      studentId: '1234005',
       studentName: 'Owusu Agyeman Nana',
       classAssessment: 10,
       midSemester: 13,

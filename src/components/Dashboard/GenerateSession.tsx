@@ -149,6 +149,9 @@ export default function GenerateSessionCode() {
   const handleGenerate = async () => {
     setError(null);
     
+    // Clear any existing session before generating a new one
+    clearSession();
+    
     // Verify token exists before proceeding
     const token = getToken('lecturer');
     if (!token) {
@@ -167,6 +170,14 @@ export default function GenerateSessionCode() {
       setError('Please enter a course code'); 
       return; 
     }
+    
+    // Debug expiry calculation
+    console.log('[SESSION-GEN] Expiry settings:', {
+      expiryValue,
+      expiryUnit,
+      expiryInMs,
+      expiryInMinutes: expiryInMs / (60 * 1000)
+    });
     
     const payload = {
       lecturer: lecturer._id,
@@ -310,13 +321,21 @@ export default function GenerateSessionCode() {
                     type="number" 
                     min={1} 
                     value={expiryValue} 
-                    onChange={e => setExpiryValue(Number(e.target.value))} 
+                    onChange={e => {
+                      const newValue = Number(e.target.value);
+                      console.log('[SESSION-GEN] Expiry value changed to:', newValue);
+                      setExpiryValue(newValue);
+                    }} 
                     className="form-control"
                     disabled={isSessionActive}
                   />
                   <select 
                     value={expiryUnit} 
-                    onChange={e => setExpiryUnit(e.target.value as any)} 
+                    onChange={e => {
+                      const newUnit = e.target.value as "seconds" | "minutes" | "hours";
+                      console.log('[SESSION-GEN] Expiry unit changed to:', newUnit);
+                      setExpiryUnit(newUnit);
+                    }} 
                     className="form-select"
                     disabled={isSessionActive}
                   >
