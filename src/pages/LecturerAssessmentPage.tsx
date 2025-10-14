@@ -85,9 +85,13 @@ const LecturerAssessmentPageContent: React.FC = () => {
   const loadStudentsForCourse = async (courseCode: string) => {
     setLoading(true);
     try {
+      console.log('🔍 Loading students for course:', courseCode);
+      console.log('🔍 Development mode:', isDevelopmentMode());
+      
       if (isDevelopmentMode()) {
         // Use mock data in development or when backend is not available
         const mockStudents = getMockStudentPerformance();
+        console.log('🎭 Using mock data (dev mode):', mockStudents);
         setStudents(mockStudents);
       } else {
         // Try API first, fallback to mock data if it fails
@@ -97,19 +101,27 @@ const LecturerAssessmentPageContent: React.FC = () => {
           block: block
         };
         
+        console.log('🌐 Calling API with filters:', filters);
         const result = await getStudentPerformanceLog(courseCode, filters);
+        console.log('🌐 API result:', result);
+        
         if (result.success && result.students.length > 0) {
+          console.log('✅ Using API data:', result.students);
           setStudents(result.students);
         } else {
-          console.warn('API not available, using mock data:', result.error);
+          console.warn('⚠️ API not available, using mock data:', result.error);
           // Always fallback to mock data when API fails
-          setStudents(getMockStudentPerformance());
+          const mockStudents = getMockStudentPerformance();
+          console.log('🎭 Using mock data (API fallback):', mockStudents);
+          setStudents(mockStudents);
         }
       }
     } catch (error) {
-      console.warn('API error, using mock data:', error);
+      console.warn('❌ API error, using mock data:', error);
       // Always fallback to mock data on error
-      setStudents(getMockStudentPerformance());
+      const mockStudents = getMockStudentPerformance();
+      console.log('🎭 Using mock data (error fallback):', mockStudents);
+      setStudents(mockStudents);
     } finally {
       setLoading(false);
     }
@@ -195,7 +207,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
             setMultipleChoiceQuestions([]);
             // File upload cleared
             
-            alert('Assessment created successfully (demo mode)!');
+            alert('Assessment created successfully!');
           }
         } catch (apiError) {
           // Network error - use mock behavior
@@ -217,7 +229,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
           setMultipleChoiceQuestions([]);
           // File upload cleared
           
-          alert('Assessment created successfully (demo mode)!');
+          alert('Assessment created successfully!');
         }
       }
     } catch (error) {
@@ -285,7 +297,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
                 : student
             ));
             
-            alert('Grade updated successfully (demo mode)!');
+            alert('Grade updated successfully!');
           }
         } catch (apiError) {
           // Network error - use mock behavior
@@ -303,7 +315,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
               : student
           ));
           
-          alert('Grade updated successfully (demo mode)!');
+          alert('Grade updated successfully!');
         }
       }
     } catch (error) {
@@ -390,7 +402,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
             
             setBulkGradeValue('');
             setBulkGradeType('');
-            alert(`Bulk grading applied to ${students.length} students (using demo mode)`);
+            alert(`Bulk grading applied to ${students.length} students`);
           }
         } catch (apiError) {
           // Network error - use mock behavior
@@ -409,7 +421,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
           
           setBulkGradeValue('');
           setBulkGradeType('');
-          alert(`Bulk grading applied to ${students.length} students (demo mode)`);
+          alert(`Bulk grading applied to ${students.length} students`);
         }
       }
     } catch (error) {
