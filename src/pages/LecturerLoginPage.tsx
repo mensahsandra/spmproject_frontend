@@ -11,8 +11,11 @@ const LecturerLoginPage: React.FC = () => {
             const raw = localStorage.getItem('user');
             if (token && raw) {
                 const role = (JSON.parse(raw).role || '').toLowerCase();
-                if (role === 'lecturer') navigate('/lecturer-dashboard');
-                else if (role === 'student') navigate('/dashboard');
+                if (role === 'lecturer')  {
+                    navigate('/lecturer-dashboard')
+                } else if (role === 'student') {
+                    navigate('/dashboard');
+                }                
             }
         } catch {}
     }, [navigate]);
