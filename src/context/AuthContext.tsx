@@ -25,8 +25,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     
     // Check if we're in development mode and should skip API calls
-    const isDevMode = window.location.hostname.includes('vercel.app') || 
-                      window.location.hostname === 'localhost' || 
+    const isDevMode = window.location.hostname === 'localhost' || 
+                      window.location.hostname === '127.0.0.1' ||
                       import.meta.env.MODE === 'development';
     
     if (isDevMode && targetRole === 'lecturer') {

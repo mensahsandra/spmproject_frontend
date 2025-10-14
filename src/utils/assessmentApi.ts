@@ -545,12 +545,20 @@ export const getMockStudentPerformance = (): StudentPerformance[] => {
 
 /**
  * Development mode flag for API calls
- * Returns true for development, localhost, or when backend APIs are not available
+ * Returns true only for actual development environments and localhost
+ * 
+ * FIXED: Previously included 'vercel.app' which incorrectly treated production
+ * Vercel deployments as development mode, causing demo banners in production.
+ * 
+ * Now only considers development mode for:
+ * 1. Vite development mode (import.meta.env.MODE === 'development')
+ * 2. Localhost/127.0.0.1 (for local development)
  */
 export const isDevelopmentMode = (): boolean => {
   return import.meta.env.MODE === 'development' || 
          window.location.hostname === 'localhost' ||
-         window.location.hostname.includes('vercel.app');
+         window.location.hostname === '127.0.0.1' ||
+         (window.location.port !== '' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'));
 };
 
 /**
