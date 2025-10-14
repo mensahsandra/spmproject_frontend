@@ -49,7 +49,7 @@
 
 /* Course selection section */
 .course-selection-section {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: linear-gradient(135deg, #28a745, #1e7e34);
 }
 
 /* Assessment creation section */
@@ -59,7 +59,7 @@
 
 /* Student management section */
 .student-management-section {
-  background: linear-gradient(135deg, #17a2b8, #117a8b);
+  background: linear-gradient(135deg, #28a745, #1e7e34);
 }
 
 /* Ensure cards don't overflow */

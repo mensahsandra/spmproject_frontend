@@ -29,7 +29,8 @@ const LecturerAssessmentPageContent: React.FC = () => {
     { id: 'BIT102', code: 'BIT 102', name: 'Data Structures' },
     { id: 'BIT201', code: 'BIT 201', name: 'Database Systems' },
     { id: 'BIT202', code: 'BIT 202', name: 'Web Development' },
-    { id: 'BIT301', code: 'BIT 301', name: 'Software Engineering' }
+    { id: 'BIT301', code: 'BIT 301', name: 'Software Engineering' },
+    { id: 'BIT364', code: 'BIT 364', name: 'Project Management' }
   ]);
 
   const [selectedCourse, setSelectedCourse] = useState<string>('');
@@ -93,7 +94,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
       if (isDevelopmentMode()) {
         // Use mock data in development or when backend is not available
         const mockStudents = getMockStudentPerformance();
-        console.log('🎭 Using mock data (dev mode):', mockStudents);
+        console.log(' Using mock data (dev mode):', mockStudents);
         setStudents(mockStudents);
       } else {
         // Try API first, fallback to mock data if it fails
@@ -103,18 +104,18 @@ const LecturerAssessmentPageContent: React.FC = () => {
           block: block
         };
         
-        console.log('🌐 Calling API with filters:', filters);
+        console.log(' Calling API with filters:', filters);
         const result = await getStudentPerformanceLog(courseCode, filters);
-        console.log('🌐 API result:', result);
+        console.log(' API result:', result);
         
         if (result.success && result.students.length > 0) {
-          console.log('✅ Using API data:', result.students);
+          console.log(' Using API data:', result.students);
           setStudents(result.students);
         } else {
-          console.warn('⚠️ API not available, using mock data:', result.error);
+          console.warn(' API not available, using mock data:', result.error);
           // Always fallback to mock data when API fails
           const mockStudents = getMockStudentPerformance();
-          console.log('🎭 Using mock data (API fallback):', mockStudents);
+          console.log(' Using mock data (API fallback):', mockStudents);
           setStudents(mockStudents);
         }
       }
@@ -651,7 +652,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
               </div>
               <div className="card-body">
                 {!selectedCourse ? (
-                  <div className="alert alert-warning">
+                  <div className="alert alert-secondary">
                     <strong>Please select a course first to create assessments.</strong>
                   </div>
                 ) : (
@@ -989,7 +990,7 @@ const LecturerAssessmentPageContent: React.FC = () => {
               </div>
               <div className="card-body">
                 {!selectedCourse ? (
-                  <div className="alert alert-warning">
+                  <div className="alert alert-secondary">
                     <strong>Please select a course first to view student performance.</strong>
                   </div>
                 ) : loading ? (

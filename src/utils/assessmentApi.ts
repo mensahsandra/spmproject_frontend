@@ -283,7 +283,7 @@ export const bulkGradeSubmissions = async (
     });
 
     if (response.success) {
-      console.log(`✅ Bulk grading completed: ${response.updatedCount} submissions updated`);
+      console.log(`Bulk grading completed: ${response.updatedCount} submissions updated`);
       return {
         success: true,
         updatedCount: response.updatedCount
@@ -498,28 +498,28 @@ export const getLecturerCourses = async (): Promise<{
 export const getMockStudentPerformance = (): StudentPerformance[] => {
   return [
     {
-      studentId: 'BIT/2024/001',
+      studentId: '1234568',
       studentName: 'Doe Kwaku Joe',
       classAssessment: 10,
       midSemester: 15,
       endOfSemester: 50
     },
     {
-      studentId: 'BIT/2024/002',
+      studentId: '1234456',
       studentName: 'Saaed Hawa',
       classAssessment: 10,
       midSemester: 10,
       endOfSemester: 55
     },
     {
-      studentId: 'BIT/2024/003',
+      studentId: '1234003',
       studentName: 'Johnson Robert',
       classAssessment: 10,
       midSemester: 12,
       endOfSemester: 40
     },
     {
-      studentId: 'BIT/2024/004',
+      studentId: '1233456',
       studentName: 'Kwarteng Samuel',
       classAssessment: 10,
       midSemester: 15,
@@ -533,21 +533,21 @@ export const getMockStudentPerformance = (): StudentPerformance[] => {
       endOfSemester: 45
     },
     {
-      studentId: 'BIT/2024/006',
+      studentId: '1234557',
       studentName: 'Nashiru Alhassan',
       classAssessment: 10,
       midSemester: 10,
       endOfSemester: 54
     },
     {
-      studentId: 'BIT/2024/007',
+      studentId: '1234007',
       studentName: 'Smith Alice',
       classAssessment: 10,
       midSemester: 11,
       endOfSemester: 50
     },
     {
-      studentId: 'BIT/2024/008',
+      studentId: '1234008',
       studentName: 'Iddrisu Abdul Lateefa',
       classAssessment: 10,
       midSemester: 12,
