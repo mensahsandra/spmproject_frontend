@@ -163,13 +163,13 @@ const LecturerAssessmentPageContent: React.FC = () => {
       questions = descriptiveQuestions.filter(q => q.trim() !== '').map((question, index) => ({
         id: index.toString(),
         question: question,
-        type: 'descriptive'
+        type: 'text'
       }));
     } else if (assessmentFormat === 'File/Document Upload') {
       const fileQuestions = fileUploadQuestions.filter(q => q.trim() !== '').map((question, index) => ({
         id: (index + 1).toString(),
         question: question,
-        type: 'file-upload-question'
+        type: 'file_upload'
       }));
       
       const fileInfo = uploadedFile ? [{
@@ -760,9 +760,9 @@ const LecturerAssessmentPageContent: React.FC = () => {
                           onChange={(e) => setAssessmentType(e.target.value as any)}
                         >
                           <option value="">-- Select Assessment Type --</option>
-                          <option value="Class Assessment">Class Assessment</option>
-                          <option value="Mid Semester">Mid Semester</option>
-                          <option value="End of Semester">End of Semester</option>
+                          <option value="class">Class Assessment</option>
+                          <option value="mid_semester">Mid Semester</option>
+                          <option value="end_semester">End of Semester</option>
                         </select>
                       </div>
                       <div className="col-md-6">
@@ -1108,9 +1108,9 @@ const LecturerAssessmentPageContent: React.FC = () => {
                               onChange={(e) => setBulkGradeType(e.target.value as any)}
                             >
                               <option value="">-- Select Grade Type --</option>
-                              <option value="Class Assessment">Class Assessment</option>
-                              <option value="Mid Semester">Mid Semester</option>
-                              <option value="End of Semester">End of Semester</option>
+                              <option value="class">Class Assessment</option>
+                              <option value="mid_semester">Mid Semester</option>
+                              <option value="end_semester">End of Semester</option>
                             </select>
                           </div>
                           <div className="col-md-4">
