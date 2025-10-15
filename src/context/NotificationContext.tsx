@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { getActiveRole } from '../utils/auth';
+import type { NotificationMetadata } from '../utils/notificationService';
 
 export type NotificationType = 'attendance' | 'assessment' | 'quiz' | 'deadline' | 'general';
 
@@ -12,6 +13,9 @@ export interface Notification {
   timestamp: string;
   read: boolean;
   data?: any;
+  actionUrl?: string;
+  actionLabel?: string;
+  metadata?: NotificationMetadata;
 }
 
 interface NotificationContextType {
@@ -20,6 +24,7 @@ interface NotificationContextType {
   unreadByType: Record<NotificationType, number>;
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
   markAsRead: (id: string) => void;
+  removeNotification: (id: string) => void;
   markAllAsRead: () => void;
   clearNotifications: () => void;
   getNotificationsByType: (type: NotificationType) => Notification[];
@@ -194,6 +199,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     );
   };
 
+  const removeNotification = (id: string) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== id));
+  };
+
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
   };
@@ -230,6 +239,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     unreadByType: completeUnreadByType,
     addNotification,
     markAsRead,
+    removeNotification,
     markAllAsRead,
     clearNotifications,
     getNotificationsByType,

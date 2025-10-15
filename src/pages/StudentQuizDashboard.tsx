@@ -12,7 +12,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/Dashboard/DashboardLayout';
 import { submitAssessment } from '../utils/assessmentApi';
 import { notifyAssessmentSubmission } from '../utils/notificationService';
@@ -48,13 +48,24 @@ interface Quiz {
 
 const StudentQuizDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedQuiz, setExpandedQuiz] = useState<string | null>(null);
+  const [highlightedAssessmentId, setHighlightedAssessmentId] = useState<string | null>(null);
 
   useEffect(() => {
     loadQuizzes();
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const highlightId = params.get('highlight');
+    if (highlightId) {
+      setHighlightedAssessmentId(highlightId);
+      setExpandedQuiz(highlightId);
+    }
+  }, [location.search]);
 
   // Helper function to get student course data (supports both array and string formats)
   const getStudentCourseData = () => {
