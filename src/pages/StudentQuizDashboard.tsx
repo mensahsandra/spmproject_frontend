@@ -52,7 +52,6 @@ const StudentQuizDashboard: React.FC = () => {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedQuiz, setExpandedQuiz] = useState<string | null>(null);
-  const [highlightedAssessmentId, setHighlightedAssessmentId] = useState<string | null>(null);
 
   useEffect(() => {
     loadQuizzes();
@@ -62,7 +61,6 @@ const StudentQuizDashboard: React.FC = () => {
     const params = new URLSearchParams(location.search);
     const highlightId = params.get('highlight');
     if (highlightId) {
-      setHighlightedAssessmentId(highlightId);
       setExpandedQuiz(highlightId);
     }
   }, [location.search]);
