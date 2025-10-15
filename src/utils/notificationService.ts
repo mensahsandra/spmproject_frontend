@@ -5,11 +5,19 @@
 
 import { getActiveRole } from './auth';
 
+export interface NotificationMetadata {
+  deepLink?: string;
+  [key: string]: any;
+}
+
 export interface NotificationData {
   type: 'attendance' | 'assessment' | 'quiz' | 'deadline' | 'general';
   title: string;
   message: string;
   data?: any;
+  actionUrl?: string;
+  actionLabel?: string;
+  metadata?: NotificationMetadata;
   targetRole?: 'student' | 'lecturer' | 'both';
 }
 
@@ -25,7 +33,11 @@ export const storeNotification = (notification: NotificationData) => {
     id,
     ...notificationContent,
     timestamp,
-    read: false
+    read: false,
+    metadata: {
+      ...(notification.metadata || {}),
+      generatedAt: timestamp
+    }
   };
 
   // Store for student

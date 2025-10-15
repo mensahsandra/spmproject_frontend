@@ -215,7 +215,6 @@ const LecturerAssessmentPageContent: React.FC = () => {
         setMultipleChoiceQuestions([]);
         setDescriptiveQuestions(['']);
         setFileUploadQuestions(['']);
-        setFileUploadQuestions(['']);
         setUploadedFile(null);
         
         alert('Assessment created successfully!');
@@ -245,6 +244,12 @@ const LecturerAssessmentPageContent: React.FC = () => {
                 assessmentType: assessmentData.assessmentType,
                 format: assessmentData.format
               },
+              actionLabel: 'View assessment',
+              actionUrl: `/student/assessment?highlight=${encodeURIComponent(result.assessment.id)}`,
+              metadata: {
+                deepLink: `/student/assessment?highlight=${encodeURIComponent(result.assessment.id)}`,
+                assessmentId: result.assessment.id
+              },
               targetRole: 'student'
             });
 
@@ -271,8 +276,6 @@ const LecturerAssessmentPageContent: React.FC = () => {
             setAssessmentFormat('');
             setMultipleChoiceQuestions([]);
             setDescriptiveQuestions(['']);
-        setFileUploadQuestions(['']);
-          setFileUploadQuestions(['']);
             setFileUploadQuestions(['']);
             setUploadedFile(null);
             
@@ -334,8 +337,6 @@ const LecturerAssessmentPageContent: React.FC = () => {
             setAssessmentFormat('');
             setMultipleChoiceQuestions([]);
             setDescriptiveQuestions(['']);
-        setFileUploadQuestions(['']);
-          setFileUploadQuestions(['']);
             setFileUploadQuestions(['']);
             setUploadedFile(null);
             
@@ -360,7 +361,6 @@ const LecturerAssessmentPageContent: React.FC = () => {
           setAssessmentFormat('');
           setMultipleChoiceQuestions([]);
           setDescriptiveQuestions(['']);
-        setFileUploadQuestions(['']);
           setFileUploadQuestions(['']);
           setUploadedFile(null);
           

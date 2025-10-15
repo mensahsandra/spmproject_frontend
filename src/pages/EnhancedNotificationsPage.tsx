@@ -4,7 +4,7 @@ import type { NotificationType } from '../context/NotificationContext';
 import { Bell, Check, CheckCheck, Trash2, GraduationCap, FileText, BookOpen, Clock, X, Info } from 'lucide-react';
 
 const EnhancedNotificationsPage: React.FC = () => {
-  const { notifications, unreadCount, unreadByType, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
+  const { notifications, unreadCount, unreadByType, markAsRead, markAllAsRead, clearNotifications, removeNotification } = useNotifications();
   const [activeTab, setActiveTab] = useState<'all' | NotificationType>('all');
   
 
@@ -12,6 +12,21 @@ const EnhancedNotificationsPage: React.FC = () => {
     ? notifications 
     : notifications.filter(n => n.type === activeTab);
 
+  const getPrimaryAction = (notification: typeof notifications[number]) => {
+    if (notification.actionUrl) {
+      return {
+        label: notification.actionLabel || 'View details',
+        url: notification.actionUrl
+      };
+    }
+    if (notification.metadata?.deepLink) {
+      return {
+        label: 'Go to assessment',
+        url: notification.metadata.deepLink
+      };
+    }
+    return null;
+  };
 
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -179,13 +194,25 @@ const EnhancedNotificationsPage: React.FC = () => {
                     </p>
                     
                     {/* Timestamp */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-2">
                       <span className="text-xs text-gray-500">
                         {formatTime(notification.timestamp)}
                       </span>
                       
-                      {/* Action buttons */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {(() => {
+                          const primaryAction = getPrimaryAction(notification);
+                          if (!primaryAction) return null;
+                          return (
+                            <a
+                              href={primaryAction.url}
+                              className="flex items-center gap-1 px-3 py-1 bg-blue-500 text-white text-xs rounded-full hover:bg-blue-600 transition-colors"
+                              onClick={() => markAsRead(notification.id)}
+                            >
+                              {primaryAction.label}
+                            </a>
+                          );
+                        })()}
                         {!notification.read && (
                           <button
                             onClick={() => markAsRead(notification.id)}
@@ -196,13 +223,9 @@ const EnhancedNotificationsPage: React.FC = () => {
                           </button>
                         )}
                         <button
-                          onClick={() => {
-                            // Remove notification (dismiss)
-                            const updatedNotifications = notifications.filter(n => n.id !== notification.id);
-                            localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
-                            window.location.reload(); // Simple refresh to update state
-                          }}
+                          onClick={() => removeNotification(notification.id)}
                           className="text-gray-400 hover:text-gray-600 transition-colors"
+                          aria-label="Dismiss notification"
                         >
                           <X className="w-4 h-4" />
                         </button>
