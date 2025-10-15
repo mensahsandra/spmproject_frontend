@@ -103,7 +103,7 @@ export const createAssessment = async (
   try {
     console.log('📝 Creating assessment:', assessmentData);
     
-    const response = await apiFetch('/api/assessments/create', {
+    const response = await apiFetch('/api/assessments', {
       method: 'POST',
       role: 'lecturer',
       body: JSON.stringify({
